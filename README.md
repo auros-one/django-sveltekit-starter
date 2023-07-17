@@ -22,9 +22,9 @@ To create a production version of your app:
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+## Deploying
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Add all environment variables listed in .env.example to Cloudflare Pages.
 
 ## Troubleshooting
 
@@ -35,3 +35,7 @@ run `npm run check` might resolve the issue. ([soure](https://github.com/sveltej
 ## Supabase Setup
 
 Add your [project URL and public API (anon) key](https://supabase.com/dashboard/project/_/settings/api) to the `.env` file (copy `.env.example`)
+
+## Sentry
+
+A test button is provided at /sentry/test to check if raising an error results in a Sentry issue. You might want to remove this page once you have confirmed Sentry is working.
