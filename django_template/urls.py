@@ -6,5 +6,4 @@ from . import views
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("admin/", admin.site.urls),
-    path("", views.homepage),
 ]

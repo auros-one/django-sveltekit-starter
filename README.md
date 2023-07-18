@@ -49,10 +49,9 @@ docker compose run --rm web manage.py <command>
 docker compose run --rm web -m pytest --dist=no -n 0 --no-cov
 ```
 
+**Running a single file**
 ```console
-docker compose run --rm web -m manage shell_plus pytest home/epcs/tests/test_models.py --dist=no -n 0 --no-cov
-docker compose run --rm web -m pytest home/epcs/tests/test_models.py::TestPVParsing --dist=no -n 0 --no-cov
-docker compose run --rm web -m pytest home/epcs/tests/test_models.py::TestPVParsing::test_roof_area_regex_valid_string_1 --dist=no -n 0 --no-cov
+docker compose run --rm web -m manage shell_plus pytest django_template/app_name/tests.py --dist=no -n 0 --no-cov
 ```
 
 **generating coverage**

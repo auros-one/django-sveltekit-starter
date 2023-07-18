@@ -16,7 +16,6 @@ gunicorn = "*"
 httpx = "*"
 hypothesis = "*"
 psycopg2 = "*"
-jinja2 = "*"
 python-dotenv = "*"
 sentry-sdk = "*"
 whitenoise = {version = "*", extras = ["brotli"]}

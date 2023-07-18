@@ -122,19 +122,9 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
             ],
         },
-    },
-    {
-        "BACKEND": "django.template.backends.jinja2.Jinja2",
-        "APP_DIRS": True,
-        "DIRS": [BASE_DIR / "django_template" / "jinja2"],
-        "OPTIONS": {
-            "environment": "django_template.jinja2.environment",
-        },
-    },
+    }
 ]
 
 WSGI_APPLICATION = "django_template.wsgi.application"
