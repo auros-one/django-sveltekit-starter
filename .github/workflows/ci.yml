@@ -1,0 +1,78 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          cache: pipenv
+          python-version: "3.10"
+      - name: Install Pipenv
+        run: pip install pipenv
+      - name: Install dependencies
+        run: python -m pipenv install --dev --deploy
+
+  lint:
+    # Dependencies are required for some linters.
+    needs: [dependencies]
+    uses: ./.github/workflows/lint-python.yml
+    with:
+      mypy-dot-env: .env.example
+      mypy-system-dependencies: libproj-dev gdal-bin
+
+  test:
+    needs: [dependencies]
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: django_template
+          POSTGRES_PASSWORD: django_template
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        volumes:
+          - type=tmpfs,destination=/var/lib/postgresql/data
+    steps:
+      - name: Install system dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install --no-install-recommends libproj-dev gdal-bin
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          cache: pipenv
+          python-version: "3.10"
+      - name: Install Pipenv
+        run: pip install pipenv
+      - name: Set up environment
+        run: cp .env.example .env
+      - name: Check for missing migrations
+        run: pipenv run python manage.py makemigrations --check --dry-run
+      - name: Run system checks
+        run: pipenv run python manage.py check
+      - name: Run pytest
+        uses: liskin/gh-problem-matcher-wrap@v1
+        env:
+          ENVIRONMENT: ci
+          POSTGRES_HOST: localhost
+        with:
+          linters: pytest
+          run: pipenv run python -m pytest --create-db

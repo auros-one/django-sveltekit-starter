@@ -1,0 +1,32 @@
+[tool.coverage.run]
+branch = true
+omit = ["manage.py", "django_template/asgi.py", "django_template/wsgi.py"]
+source = ["."]
+
+[tool.coverage.report]
+exclude_lines = [
+    "class .*\\bProtocol\\):",
+    "@overload",
+    "@typing.overload",
+    "pragma: no cover",
+]
+fail_under = 100
+
+[tool.django-stubs]
+django_settings_module = "django_template.settings"
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+files = "."
+plugins = ["mypy_django_plugin.main"]
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = ["rich.*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "django_template.settings"
+addopts = "--cov --numprocesses auto --dist loadscope --reuse-db"
+python_files = ["tests.py", "django_template/**/tests/test_*.py"]

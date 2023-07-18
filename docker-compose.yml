@@ -1,0 +1,31 @@
+version: "3"
+
+volumes:
+  db:
+
+services:
+  web:
+    build:
+      context: .
+      args:
+        ENVIRONMENT: development
+    command: -m gunicorn
+    depends_on:
+      - db
+    env_file:
+      - .env
+    image: django-template
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - .:/app
+
+  db:
+    env_file:
+      - .env
+    image: postgres:14-alpine
+    volumes:
+      - db:/var/lib/postgresql/data
+    restart: unless-stopped

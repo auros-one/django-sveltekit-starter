@@ -1,0 +1,42 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = {version = "~=4.2", extras = ["argon2"]}
+django-cors-headers = "*"
+django-csp = "*"
+django-debug-toolbar = "*"
+django-extensions = "*"
+django-permissions-policy = "*"
+django-rich = "*"
+gunicorn = "*"
+httpx = "*"
+hypothesis = "*"
+psycopg2 = "*"
+jinja2 = "*"
+python-dotenv = "*"
+sentry-sdk = "*"
+whitenoise = {version = "*", extras = ["brotli"]}
+
+[dev-packages]
+black = "*"
+django-stubs = "*"
+flake8 = "*"
+inotify = "*"
+ipython = "*"
+isort = "*"
+model-bakery = "*"
+mypy = "*"
+pre-commit = "*"
+ptpython = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-django = "*"
+pytest-mock = "*"
+pytest-xdist = "*"
+respx = "*"
+
+[requires]
+python_version = "3.10"
