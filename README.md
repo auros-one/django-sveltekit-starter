@@ -65,3 +65,7 @@ docker compose run --rm web -m pytest --dist=no -n 0 --cov-report=html
 ```console
 docker compose run --rm web -m mypy
 ```
+
+## Accounts Verification and Other Emails
+
+We're using dj-rest-auth for authentication which in turn uses django-allauth for email verification. The templates for the emails are overridden in `django_template/accounts/templates/account/email` and the original templates can be found here: https://github.com/pennersr/django-allauth/tree/main/allauth/templates/account/email
