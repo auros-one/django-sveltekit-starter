@@ -12,6 +12,7 @@ django-extensions = "*"
 django-permissions-policy = "*"
 django-rich = "*"
 djangorestframework = "*"
+dj-rest-auth = {version = "*", extras = ["with_social"]}
 gunicorn = "*"
 httpx = "*"
 hypothesis = "*"
