@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+backoff = "*"
 django = {version = "~=4.2", extras = ["argon2"]}
 django-cors-headers = "*"
 django-csp = "*"
@@ -24,6 +25,8 @@ whitenoise = {version = "*", extras = ["brotli"]}
 [dev-packages]
 black = "*"
 django-stubs = "*"
+django-test-migrations = "*"
+djangorestframework-stubs = "*"
 flake8 = "*"
 inotify = "*"
 ipython = "*"

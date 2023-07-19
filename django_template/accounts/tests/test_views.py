@@ -1,7 +1,9 @@
 from http import HTTPStatus
-from django.core import mail
+
 import pytest
+from django.core import mail
 from rest_framework.test import APIClient
+
 from ..models import User
 
 

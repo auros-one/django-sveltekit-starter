@@ -24,7 +24,7 @@ plugins = ["mypy_django_plugin.main"]
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
-module = ["rich.*"]
+module = ["rich.*", "allauth.*"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "django_template.settings"
