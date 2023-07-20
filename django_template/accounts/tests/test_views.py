@@ -3,16 +3,22 @@ from http import HTTPStatus
 import pytest
 from django.core import mail
 from rest_framework.test import APIClient
-
+import re
+from allauth.account.admin import EmailAddress
 from ..models import User
 
+from django.urls import reverse
 
 @pytest.mark.django_db
 class TestAuth:
     def test_signup(self, api_client: APIClient):
+
+        # sanity checks
         assert User.objects.count() == 0
+        assert EmailAddress.objects.count() == 0
         assert len(mail.outbox) == 0
 
+        # create user
         response = api_client.post(
             "/accounts/signup/",
             {
@@ -22,9 +28,35 @@ class TestAuth:
             },
         )
 
-        assert response.status_code == HTTPStatus.NO_CONTENT
+        # check results
+        assert response.status_code == HTTPStatus.CREATED
+        assert "access" in response.data
+        assert "refresh" in response.data
+        assert "user" in response.data
+        assert response.data["user"]["email"] == "test@example.com"
+
         assert User.objects.count() == 1
+        assert EmailAddress.objects.count() == 1
+        assert not EmailAddress.objects.first().verified
         assert len(mail.outbox) == 1
+
+        # get the verify key from the verification url
+        url_match = re.search(r'http[^"\']+?/(?=\s)', mail.outbox[0].body)
+        assert url_match is not None, "No URL found in the email body"
+        verification_url = url_match.group()
+        key = [item for item in verification_url.split("/") if item][-1]
+
+        # verify email
+        response = api_client.post('/accounts/signup/verify-email/',
+                                   {
+                                        "key": key
+                                   })
+
+        # check results
+        assert response.status_code == HTTPStatus.OK
+        assert EmailAddress.objects.first().verified
+
+
 
     def test_login(self, api_client: APIClient):
         user = User.objects.create_user(
@@ -42,4 +74,7 @@ class TestAuth:
         )
 
         assert response.status_code == HTTPStatus.OK
-        assert response.data["key"] == user.auth_token.key
+        assert "access" in response.data
+        assert "refresh" in response.data
+        assert "user" in response.data
+        assert response.data["user"]["email"] == "test@example.com"

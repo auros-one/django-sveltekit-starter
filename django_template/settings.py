@@ -2,6 +2,7 @@
 Django settings for django-template.
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 from urllib.parse import urlparse
@@ -26,6 +27,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "https://django-template.com",
+    "http://localhost:5173",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -143,6 +145,22 @@ TEMPLATES = [
 WSGI_APPLICATION = "django_template.wsgi.application"
 
 
+# DRF
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    )
+}
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_REFRESH_COOKIE': 'refresh-token',
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+'USER_DETAILS_SERIALIZER': 'django_template.accounts.serializers.UserDetailsSerializer',
+}
+
+
+
 # Authentication
 
 OLD_PASSWORD_FIELD_ENABLED = True
@@ -153,6 +171,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
 
 
 # Database.
@@ -188,6 +207,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
+
+
+# Email
+
+if ENVIRONMENT == "development":  # pragma: no cover
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    raise NotImplementedError("Email backend not configured for production.")
 
 
 # Internationalization.

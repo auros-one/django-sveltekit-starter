@@ -13,6 +13,7 @@ django-extensions = "*"
 django-permissions-policy = "*"
 django-rich = "*"
 djangorestframework = "*"
+djangorestframework-simplejwt = "*"
 dj-rest-auth = {version = "*", extras = ["with_social"]}
 gunicorn = "*"
 httpx = "*"
