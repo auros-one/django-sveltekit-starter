@@ -21,15 +21,6 @@ RUN if [ "$ENVIRONMENT" = "development" ] ;\
     else /root/.local/bin/pipenv install --deploy ;\
     fi
 
-# npm dependencies
-
-FROM node:16-alpine AS builder_node
-
-WORKDIR /build
-
-COPY django_template/static/ django_template/static/
-
-
 # Final runner
 
 FROM python:3.10-slim AS runtime
@@ -49,9 +40,8 @@ RUN find /opt/venv/bin/ -type f -iname "*" -exec sed -i 's@#\!/build/.venv/bin/p
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY . .
-COPY --from=builder_node /build/django_template/static/dist/ /app/django_template/static/dist/
 
-RUN python manage.py collectstatic
+RUN python manage.py collectstatic --no-input
 
 ENTRYPOINT ["python"]
 CMD ["-m", "gunicorn"]
