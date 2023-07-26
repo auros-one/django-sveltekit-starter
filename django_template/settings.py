@@ -25,6 +25,19 @@ ALLOWED_HOSTS = ["https://django-template.com", "localhost"]
 
 CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOW_HEADERS = [
+    # Defaults:
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    # Added for front-end Sentry
+    "baggage",
+    "sentry-trace",
+]
+
 CORS_ALLOWED_ORIGINS = [
     "https://django-template.com",
     "http://localhost:5173",

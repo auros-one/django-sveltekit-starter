@@ -13,6 +13,7 @@
 Probably a good idea to have stuff working locally for linters, etc.:
 
 ```console
+pip install --user pipenv
 pipenv install --dev
 ```
 
