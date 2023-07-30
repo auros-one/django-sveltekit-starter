@@ -66,6 +66,7 @@ if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: n
 
 if ENVIRONMENT == "development":  # pragma: no cover
     CORS_ORIGIN_ALLOW_ALL = True
+    ALLOWED_HOSTS = ["*"]
     CSRF_TRUSTED_ORIGINS.append("http://localhost:5173")
     CSP_DEFAULT_SRC = (
         "'self'",
