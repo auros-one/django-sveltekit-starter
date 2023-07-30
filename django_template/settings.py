@@ -21,7 +21,7 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
 
 # Security.
 
-ALLOWED_HOSTS = ["https://django-template.com", "localhost"]
+ALLOWED_HOSTS = ["https://django-template.com", "http://localhost"]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -40,7 +40,6 @@ CORS_ALLOW_HEADERS = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://django-template.com",
-    "http://localhost:5173",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -65,12 +64,14 @@ if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: n
 
 if ENVIRONMENT == "development":  # pragma: no cover
     CORS_ALLOWED_ORIGINS.append("http://localhost:5173")
+    CSRF_TRUSTED_ORIGINS.append("http://localhost:5173")
     CSP_DEFAULT_SRC = (
         "'self'",
         "'unsafe-inline'",
         "http://localhost:5173",
         "ws://localhost:5173",
     )
+    SESSION_COOKIE_SECURE = False
 
 PERMISSIONS_POLICY: dict[str, list[str]] = {
     "accelerometer": [],
@@ -169,7 +170,8 @@ REST_AUTH = {
     'USE_JWT': True,
     'JWT_AUTH_REFRESH_COOKIE': 'refresh-token',
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-'USER_DETAILS_SERIALIZER': 'django_template.accounts.serializers.UserDetailsSerializer',
+    'USER_DETAILS_SERIALIZER': 'django_template.accounts.serializers.UserDetailsSerializer',
+    'JWT_AUTH_SAMESITE': 'None',
 }
 
 

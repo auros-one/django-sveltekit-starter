@@ -23,6 +23,22 @@ pipenv install --dev
 pipenv run pre-commit install
 ```
 
+# Without docker compose
+
+**setup**
+```console
+docker compose up db
+pipenv run python manage.py migrate
+```
+
+**run**
+```console
+pipenv run python manage.py runserver
+```
+
+
+# Running in docker compose
+
 ### Run the project:
 
 ```console
