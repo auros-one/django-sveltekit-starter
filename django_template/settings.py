@@ -53,8 +53,6 @@ SECRET_KEY = os.environ.get(
     "SECRET_KEY", "django-insecure-o4_+-(&c531@xq6a5d1++n*aqt5r08$f*siuahdadskp1sq^"
 )
 
-SESSION_COOKIE_SAMESITE = None
-CSRF_COOKIE_SAMESITE = None
 
 if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: no cover
     ALLOWED_HOSTS.append(urlparse(cloud_run_service_url).netloc)
@@ -177,7 +175,6 @@ REST_AUTH = {
     'JWT_AUTH_REFRESH_COOKIE': 'refresh-token',
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     'USER_DETAILS_SERIALIZER': 'django_template.accounts.serializers.UserDetailsSerializer',
-    'JWT_AUTH_SAMESITE': 'None',
 }
 
 
