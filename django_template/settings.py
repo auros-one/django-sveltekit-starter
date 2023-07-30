@@ -21,7 +21,7 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
 
 # Security.
 
-ALLOWED_HOSTS = ["https://django-template.com", "localhost"]
+ALLOWED_HOSTS = ["https://django-template.com", "localhost", "127.0.0.1"]
 
 CORS_ALLOW_CREDENTIALS = True
 
