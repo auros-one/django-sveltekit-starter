@@ -63,7 +63,7 @@ if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: n
     SESSION_COOKIE_SECURE = True
 
 if ENVIRONMENT == "development":  # pragma: no cover
-    CORS_ALLOWED_ORIGINS.append("http://localhost:5173")
+    CORS_ORIGIN_ALLOW_ALL = True
     CSRF_TRUSTED_ORIGINS.append("http://localhost:5173")
     CSP_DEFAULT_SRC = (
         "'self'",
@@ -72,6 +72,7 @@ if ENVIRONMENT == "development":  # pragma: no cover
         "ws://localhost:5173",
     )
     SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 PERMISSIONS_POLICY: dict[str, list[str]] = {
     "accelerometer": [],
