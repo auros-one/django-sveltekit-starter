@@ -21,9 +21,10 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
 
 # Security.
 
-ALLOWED_HOSTS = ["https://django-template.com", "http://localhost"]
+ALLOWED_HOSTS = ["https://django-template.com", "localhost"]
 
 CORS_ALLOW_CREDENTIALS = True
+
 
 CORS_ALLOW_HEADERS = [
     # Defaults:
@@ -51,6 +52,9 @@ DEBUG = os.environ.get("DEBUG") == "1"
 SECRET_KEY = os.environ.get(
     "SECRET_KEY", "django-insecure-o4_+-(&c531@xq6a5d1++n*aqt5r08$f*siuahdadskp1sq^"
 )
+
+SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_SAMESITE = None
 
 if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: no cover
     ALLOWED_HOSTS.append(urlparse(cloud_run_service_url).netloc)
@@ -106,6 +110,7 @@ INSTALLED_APPS = [
     # Needs to go before other apps.
     "django_template.accounts.apps.AccountsConfig",
     "django_template.utils.apps.UtilsConfig",
+    "corsheaders",
     "debug_toolbar",
     "django_extensions",
     "django.contrib.admin",
@@ -125,10 +130,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "csp.middleware.CSPMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
