@@ -1,4 +1,4 @@
-# django-template
+# Blackbear Boilerplate
 
 ## Setup
 
@@ -8,67 +8,62 @@
 -   Pipenv
 -   Docker & Docker Compose
 
+### Cloning the template
+
+Search the project files (CTRL+SHIFT+F) and replace all instances of `project_name` with your project name (using the same snake_case style).
+
 ### Installation
 
-Probably a good idea to have stuff working locally for linters, etc.:
+**using pipenv**
 
 ```console
-pip install --user pipenv
+cp .env.example .env
 pipenv install --dev
-```
-
-#### Install pre-commit hooks:
-
-```console
 pipenv run pre-commit install
 ```
 
-# Without docker compose
+**using venv**
+
+```console
+cp .env.example .env
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip pre-commit install
+```
+
+## Running
 
 **setup**
+
 ```console
-docker compose up db
+docker compose up db -d
 pipenv run python manage.py migrate
 ```
 
 **run**
+
 ```console
 pipenv run python manage.py runserver
 ```
 
-
-# Running in docker compose
-
-### Run the project:
+### Running in docker compose
 
 ```console
 docker compose up -d
 docker compose run --rm web manage.py migrate
 ```
 
-You should be able to access the site at [http://localhost:8000](http://localhost:8000)
-
-### Migrations
-
-```console
-docker compose run --rm web manage.py makemigrations
-```
-
-### Running management commands
-
-```console
-docker compose run --rm web manage.py <command>
-```
-
-### Testing
+# Testing
 
 ```console
 docker compose run --rm web -m pytest --dist=no -n 0 --no-cov
 ```
 
 **Running a single file**
+
 ```console
-docker compose run --rm web -m manage shell_plus pytest django_template/app_name/tests.py --dist=no -n 0 --no-cov
+docker compose run --rm web -m manage shell_plus pytest project/app_name/tests.py --dist=no -n 0 --no-cov
 ```
 
 **generating coverage**
@@ -83,6 +78,20 @@ docker compose run --rm web -m pytest --dist=no -n 0 --cov-report=html
 docker compose run --rm web -m mypy
 ```
 
+# Django
+
+## Migrations
+
+```console
+docker compose run --rm web manage.py makemigrations
+```
+
+## Running management commands
+
+```console
+docker compose run --rm web manage.py <command>
+```
+
 ## Accounts Verification and Other Emails
 
-We're using dj-rest-auth for authentication which in turn uses django-allauth for email verification. The templates for the emails are overridden in `django_template/accounts/templates/account/email` and the original templates can be found here: https://github.com/pennersr/django-allauth/tree/main/allauth/templates/account/email
+We're using dj-rest-auth for authentication which in turn uses django-allauth for email verification. The templates for the emails are overridden in `project/accounts/templates/account/email` and the original templates can be found here: https://github.com/pennersr/django-allauth/tree/main/allauth/templates/account/email

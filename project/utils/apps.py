@@ -5,7 +5,7 @@ from django.db.models.functions import Length
 
 class UtilsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "django_template.utils"
+    name = "project.utils"
 
     def ready(self) -> None:
         CharField.register_lookup(Length)

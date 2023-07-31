@@ -6,7 +6,7 @@ from model_bakery import baker
 from model_bakery.random_gen import gen_slug, gen_text
 from rest_framework.test import APIClient
 
-from django_template.utils import fields
+from project.utils import fields
 
 
 def _gen_slug(max_length: int = 500) -> str:
@@ -16,8 +16,8 @@ def _gen_slug(max_length: int = 500) -> str:
     return gen_slug(max_length)
 
 
-baker.generators.add("django_template.utils.fields.SlugField", _gen_slug)
-baker.generators.add("django_template.utils.fields.StringField", gen_text)
+baker.generators.add("project.utils.fields.SlugField", _gen_slug)
+baker.generators.add("project.utils.fields.StringField", gen_text)
 
 
 @register_for(fields.SlugField)

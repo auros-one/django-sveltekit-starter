@@ -17,4 +17,4 @@ max_requests_jitter = 50
 reload = os.environ.get("GUNICORN_RELOAD") == "1"
 timeout = 0
 workers = os.environ.get("GUNICORN_WORKERS", multiprocessing.cpu_count() * 2 + 1)
-wsgi_app = "django_template.wsgi"
+wsgi_app = "project.wsgi"

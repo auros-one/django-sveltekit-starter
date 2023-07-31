@@ -1,6 +1,6 @@
 [tool.coverage.run]
 branch = true
-omit = ["manage.py", "django_template/asgi.py", "django_template/wsgi.py"]
+omit = ["manage.py", "project/asgi.py", "project/wsgi.py"]
 source = ["."]
 
 [tool.coverage.report]
@@ -13,7 +13,7 @@ exclude_lines = [
 fail_under = 100
 
 [tool.django-stubs]
-django_settings_module = "django_template.settings"
+django_settings_module = "project.settings"
 
 [tool.isort]
 profile = "black"
@@ -27,6 +27,6 @@ ignore_missing_imports = true
 module = ["rich.*", "allauth.*"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "django_template.settings"
+DJANGO_SETTINGS_MODULE = "project.settings"
 addopts = "--cov --numprocesses auto --dist loadscope --reuse-db"
-python_files = ["tests.py", "django_template/**/tests/test_*.py"]
+python_files = ["tests.py", "project/**/tests/test_*.py"]

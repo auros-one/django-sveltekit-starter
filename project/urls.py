@@ -4,5 +4,5 @@ from django.urls import include, path
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("admin/", admin.site.urls),
-    path("accounts/", include("django_template.accounts.urls")),
+    path("accounts/", include("project.accounts.urls")),
 ]

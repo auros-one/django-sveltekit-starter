@@ -4,7 +4,7 @@ import django.db.models.functions.text
 import django.utils.timezone
 from django.db import migrations, models
 
-import django_template.utils.fields
+import project.utils.fields
 
 
 class Migration(migrations.Migration):
@@ -44,11 +44,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "email",
-                    django_template.utils.fields.EmailField(
+                    project.utils.fields.EmailField(
                         max_length=254, verbose_name="email address"
                     ),
                 ),
-                ("name", django_template.utils.fields.StringField(max_length=500)),
+                ("name", project.utils.fields.StringField(max_length=500)),
                 (
                     "is_staff",
                     models.BooleanField(

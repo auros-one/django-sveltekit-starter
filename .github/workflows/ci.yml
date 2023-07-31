@@ -39,8 +39,8 @@ jobs:
       db:
         image: postgres:14-alpine
         env:
-          POSTGRES_USER: django_template
-          POSTGRES_PASSWORD: django_template
+          POSTGRES_USER: project_name
+          POSTGRES_PASSWORD: project_name
         ports:
           - "5432:5432"
         options: >-

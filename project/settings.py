@@ -108,8 +108,8 @@ AUTH_USER_MODEL = "accounts.User"
 
 INSTALLED_APPS = [
     # Needs to go before other apps.
-    "django_template.accounts.apps.AccountsConfig",
-    "django_template.utils.apps.UtilsConfig",
+    "project.accounts.apps.AccountsConfig",
+    "project.utils.apps.UtilsConfig",
     "corsheaders",
     "debug_toolbar",
     "django_extensions",
@@ -144,7 +144,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "django_template.urls"
+ROOT_URLCONF = "project.urls"
 
 TEMPLATES = [
     {
@@ -162,7 +162,7 @@ TEMPLATES = [
     }
 ]
 
-WSGI_APPLICATION = "django_template.wsgi.application"
+WSGI_APPLICATION = "project.wsgi.application"
 
 
 # DRF
@@ -174,7 +174,7 @@ REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_REFRESH_COOKIE": "refresh-token",
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
-    "USER_DETAILS_SERIALIZER": "django_template.accounts.serializers.UserDetailsSerializer",
+    "USER_DETAILS_SERIALIZER": "project.accounts.serializers.UserDetailsSerializer",
 }
 
 
@@ -246,7 +246,7 @@ USE_TZ = True
 
 # Static files.
 
-STATICFILES_DIRS = [BASE_DIR / "django_template" / "static" / "dist"]
+STATICFILES_DIRS = [BASE_DIR / "project" / "static" / "dist"]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
