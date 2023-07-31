@@ -18,6 +18,7 @@ dj-rest-auth = {version = "*", extras = ["with_social"]}
 gunicorn = "*"
 httpx = "*"
 hypothesis = "*"
+openai = "*"
 psycopg2 = "*"
 python-dotenv = "*"
 sentry-sdk = "*"

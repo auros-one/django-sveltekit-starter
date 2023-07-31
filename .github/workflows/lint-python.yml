@@ -235,19 +235,6 @@ jobs:
         if: inputs.package-manager == 'pipenv'
         run: pipenv run python -m pyright
 
-  pyupgrade:
-    if: inputs.pyupgrade
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ inputs.python-version }}
-      - name: Install pyupgrade
-        run: pip install pyupgrade
-      - name: Run pyupgrade
-        run: git ls-files -- '*.py' | xargs pyupgrade --py`echo ${{ inputs.python-version }} | tr -d .`-plus
-
   reorder-python-imports:
     if: inputs.reorder-python-imports
     runs-on: ubuntu-latest

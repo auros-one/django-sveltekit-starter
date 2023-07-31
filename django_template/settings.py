@@ -2,11 +2,12 @@
 Django settings for django-template.
 """
 
-from datetime import timedelta
 import os
+from datetime import timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
+import openai
 import sentry_sdk
 from dotenv import load_dotenv
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -167,17 +168,14 @@ WSGI_APPLICATION = "django_template.wsgi.application"
 # DRF
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-    )
+    "DEFAULT_AUTHENTICATION_CLASSES": ("dj_rest_auth.jwt_auth.JWTCookieAuthentication",)
 }
 REST_AUTH = {
-    'USE_JWT': True,
-    'JWT_AUTH_REFRESH_COOKIE': 'refresh-token',
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'USER_DETAILS_SERIALIZER': 'django_template.accounts.serializers.UserDetailsSerializer',
+    "USE_JWT": True,
+    "JWT_AUTH_REFRESH_COOKIE": "refresh-token",
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "USER_DETAILS_SERIALIZER": "django_template.accounts.serializers.UserDetailsSerializer",
 }
-
 
 
 # Authentication
@@ -190,7 +188,6 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-
 
 
 # Database.
@@ -231,7 +228,7 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 # Email
 
 if ENVIRONMENT == "development":
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:  # pragma: no cover
     raise NotImplementedError("Email backend not configured for production.")
 
@@ -280,7 +277,7 @@ if sentry_dsn := os.environ.get("SENTRY_DSN"):  # pragma: no cover
         dsn=sentry_dsn,
         environment=ENVIRONMENT,
         integrations=[DjangoIntegration(), LoggingIntegration()],
-        request_bodies="medium",
+        request_bodies="medium",  # type: ignore
         send_default_pii=True,
     )
 

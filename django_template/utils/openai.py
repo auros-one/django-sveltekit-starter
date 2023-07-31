@@ -1,7 +1,6 @@
 import asyncio
 from dataclasses import dataclass
 
-import bs4
 import openai
 from openai.error import InvalidRequestError
 
@@ -15,7 +14,6 @@ MODEL_PRICINGS = {
         "completion": 0.00006,
     },
 }
-
 
 
 @dataclass
@@ -84,7 +82,3 @@ async def query_openai(
                 )
             else:
                 await asyncio.sleep(5 * tries)
-
-
-
-
