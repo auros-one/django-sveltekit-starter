@@ -230,9 +230,9 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 
 # Email
 
-if ENVIRONMENT == "development":  # pragma: no cover
+if ENVIRONMENT == "development":
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
+else:  # pragma: no cover
     raise NotImplementedError("Email backend not configured for production.")
 
 
