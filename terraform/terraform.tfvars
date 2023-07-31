@@ -1,0 +1,8 @@
+project_id        = "my-gcp-project-id"
+region            = "europe-north1"
+repo_name         = "my-repo"
+repo_description  = "My Artifact Registry Repository"
+gcp_env_name      = "my-gcp-env"
+env_file          = ".env.production"
+cloud_run_name    = "my-cloud-run-service"
+image_name        = "my-image"
