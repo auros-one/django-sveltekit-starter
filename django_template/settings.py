@@ -310,3 +310,8 @@ except ImportError:  # pragma: no cover
     pass
 else:
     django_stubs_ext.monkeypatch()
+
+
+# OpenAI
+
+openai.api_key = os.environ.get("OPENAI_API_KEY")
