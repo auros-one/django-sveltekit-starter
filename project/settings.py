@@ -1,5 +1,5 @@
 """
-Django settings for django-template.
+Django settings
 """
 
 import os
@@ -14,18 +14,23 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 load_dotenv()
-load_dotenv("/app/secrets/.env")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
 
-# Security.
 
-ALLOWED_HOSTS = ["https://django-template.com", "localhost", "127.0.0.1"]
+# Domains
+
+HOST_DOMAIN = os.environ.get("HOST_DOMAIN", "localhost:8000")
+FRONTEND_DOMAINS = os.environ.get("FRONTEND_DOMAINS", "localhost:5173").split(",")
+
+
+# Security
+
+ALLOWED_HOSTS = [f"{HOST_DOMAIN}", "localhost", "127.0.0.1"]
 
 CORS_ALLOW_CREDENTIALS = True
-
 
 CORS_ALLOW_HEADERS = [
     # Defaults:
@@ -41,29 +46,20 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://django-template.com",
-]
+    f"https://{HOST_DOMAIN}",
+] + [f"https://{frontend_domain}" for frontend_domain in FRONTEND_DOMAINS]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://django-template.com",
-]
+    f"https://{HOST_DOMAIN}",
+] + [f"https://{frontend_domain}" for frontend_domain in FRONTEND_DOMAINS]
 
 DEBUG = os.environ.get("DEBUG") == "1"
 
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "django-insecure-o4_+-(&c531@xq6a5d1++n*aqt5r08$f*siuahdadskp1sq^"
-)
-
-
-if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: no cover
-    ALLOWED_HOSTS.append(urlparse(cloud_run_service_url).netloc)
-    CSRF_COOKIE_SECURE = True
-    CSRF_TRUSTED_ORIGINS.append(cloud_run_service_url)
-    LANGUAGE_COOKIE_SECURE = True
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_HSTS_SECONDS = 31_536_000  # One year.
-    SESSION_COOKIE_SECURE = True
+SECRET_KEY = os.environ.get("SECRET_KEY", None)
+if ENVIRONMENT != "development":  # pragma: no cover
+    raise Exception("SECRET_KEY must be set in production.")
+else:
+    SECRET_KEY = "django-insecure-o4_+-(&c531@xq6a5d1++n*aqt5r08$f*siuahdadskp1sq^"
 
 if ENVIRONMENT == "development":  # pragma: no cover
     CORS_ORIGIN_ALLOW_ALL = True
@@ -77,6 +73,16 @@ if ENVIRONMENT == "development":  # pragma: no cover
     )
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
+
+if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: no cover
+    ALLOWED_HOSTS.append(urlparse(cloud_run_service_url).netloc)
+    CSRF_COOKIE_SECURE = True
+    CSRF_TRUSTED_ORIGINS.append(cloud_run_service_url)
+    LANGUAGE_COOKIE_SECURE = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_SECONDS = 31_536_000  # One year.
+    SESSION_COOKIE_SECURE = True
 
 PERMISSIONS_POLICY: dict[str, list[str]] = {
     "accelerometer": [],

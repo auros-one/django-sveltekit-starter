@@ -14,7 +14,7 @@ services:
       - db
     env_file:
       - .env
-    image: django-template
+    image: project_name
     ports:
       - "8000:8000"
     restart: unless-stopped
