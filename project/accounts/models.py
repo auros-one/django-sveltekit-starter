@@ -9,7 +9,6 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Upper
 from django.utils import timezone
-
 from project.utils.fields import EmailField, StringField
 
 
@@ -46,7 +45,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = EmailField(verbose_name="email address")
-    name = StringField(max_length=500)
+    name = StringField(max_length=500, blank=True, null=True)
 
     is_staff = models.BooleanField(
         default=False,
@@ -81,4 +80,4 @@ class User(AbstractBaseUser, PermissionsMixin):
         ]
 
     def __str__(self) -> str:
-        return self.name
+        return self.email
