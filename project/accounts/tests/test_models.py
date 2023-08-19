@@ -1,4 +1,5 @@
 import pytest
+
 from django.db import IntegrityError, transaction
 
 from ..models import User
@@ -70,4 +71,4 @@ class TestUser:
             name="Piet Mondrian",
             password="correcthorsebatterystaple",
         )
-        assert str(user) == "Piet Mondrian"
+        assert str(user) == "piet@example.com"

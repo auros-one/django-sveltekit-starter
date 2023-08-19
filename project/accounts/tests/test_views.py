@@ -3,8 +3,9 @@ from http import HTTPStatus
 
 import pytest
 from allauth.account.admin import EmailAddress
-from django.core import mail
 from rest_framework.test import APIClient
+
+from django.core import mail
 
 from ..models import User
 
@@ -68,6 +69,7 @@ class TestAuth:
         )
 
         assert response.status_code == HTTPStatus.OK
+        assert response.cookies.get("refresh-token") is not None
         assert "access" in response.data
         assert "refresh" in response.data
         assert "user" in response.data
