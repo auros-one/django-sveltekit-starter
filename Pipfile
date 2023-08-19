@@ -19,7 +19,7 @@ gunicorn = "*"
 httpx = "*"
 hypothesis = "*"
 openai = "*"
-psycopg2 = "*"
+psycopg2-binary = "*"
 python-dotenv = "*"
 sentry-sdk = "*"
 whitenoise = {version = "*", extras = ["brotli"]}
