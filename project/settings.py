@@ -179,8 +179,10 @@ REST_FRAMEWORK = {
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_REFRESH_COOKIE": "refresh-token",
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "USER_DETAILS_SERIALIZER": "project.accounts.serializers.UserDetailsSerializer",
+}
+SIMPLE_JWT = {
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
 
 
