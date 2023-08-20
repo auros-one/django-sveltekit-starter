@@ -103,6 +103,8 @@ celerybeat.pid
 
 # Environments
 .env
+.env.production
+terraform/terraform.tfvars
 .venv
 env/
 venv/
@@ -129,3 +131,6 @@ dmypy.json
 .pyre/
 
 node_modules/
+
+# Summarize
+**/summary.txt
