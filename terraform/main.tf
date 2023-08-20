@@ -30,9 +30,112 @@ resource "google_cloud_run_service" "default" {
     spec {
       containers {
         image = "europe-north1-docker.pkg.dev/${var.project_id}/${var.repo_name}/${var.image_name}:latest"
-        envs {
-          name  = "ENV_FILE"
-          value = "/app/secrets/.env"
+        env {
+          name  = "ENVIRONMENT"
+          value = "production"
+          value_from {
+            secret_key_ref {
+              name = var.gcp_env_name
+              key  = "ENVIRONMENT"
+              optional = true
+            }
+          }
+        }
+        env {
+          name = "HOST_DOMAIN"
+            value_from {
+                secret_key_ref {
+                name = var.gcp_env_name
+                key  = "HOST_DOMAIN"
+                }
+            }
+        }
+        env {
+          name = "FRONTEND_DOMAINS"
+            value_from {
+                secret_key_ref {
+                name = var.gcp_env_name
+                key  = "FRONTEND_DOMAINS"
+                }
+            }
+        }
+        env {
+          name = "POSTGRES_HOST"
+            value_from {
+                secret_key_ref {
+                name = var.gcp_env_name
+                key  = "POSTGRES_HOST"
+                }
+            }
+        }
+        env {
+          name  = "POSTGRES_PORT"
+          value = "5432"
+          value_from {
+            secret_key_ref {
+              name = var.gcp_env_name
+              key  = "POSTGRES_PORT"
+              optional = true
+            }
+          }
+        }
+        env {
+          name = "POSTGRES_DB"
+            value_from {
+                secret_key_ref {
+                name = var.gcp_env_name
+                key  = "POSTGRES_DB"
+                }
+            }
+        }
+        env {
+          name = "POSTGRES_USER"
+            value_from {
+                secret_key_ref {
+                name = var.gcp_env_name
+                key  = "POSTGRES_USER"
+                }
+            }
+        }
+        env {
+          name = "POSTGRES_PASSWORD"
+            value_from {
+                secret_key_ref {
+                name = var.gcp_env_name
+                key  = "POSTGRES_PASSWORD"
+                }
+            }
+        }
+        env {
+          name  = "GUNICORN_WORKERS"
+          value = "1"
+          value_from {
+            secret_key_ref {
+              name = var.gcp_env_name
+              key  = "GUNICORN_WORKERS"
+              optional = true
+            }
+          }
+        }
+        env {
+          name  = "SENTRY_DSN"
+          value = ""
+          value_from {
+            secret_key_ref {
+              name = var.gcp_env_name
+              key  = "SENTRY_DSN"
+              optional = true
+            }
+          }
+        }
+        env {
+          name = "OPENAI_API_KEY"
+            value_from {
+                secret_key_ref {
+                name = var.gcp_env_name
+                key  = "OPENAI_API_KEY"
+                }
+            }
         }
       }
     }
