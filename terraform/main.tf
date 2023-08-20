@@ -193,3 +193,28 @@ resource "google_cloud_run_service_iam_member" "public" {
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
+
+
+resource "google_service_account" "github_actions" {
+  account_id   = format("%s-backend-github-actions", var.project_slug)
+  display_name = "GitHub Actions"
+  description  = format("The service account used by the GitHub Actions of the %s backend to deploy from its ci.yml", var.project_slug)
+}
+
+resource "google_project_iam_member" "github_actions_roles" {
+  for_each = toset([
+    "roles/artifactregistry.writer",
+    "roles/cloudsql.admin",
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+    "roles/storage.admin"
+  ])
+
+  project = var.project_id
+  role    = each.key
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_service_account_key" "github_actions_key" {
+  service_account_id = google_service_account.github_actions.name
+}
