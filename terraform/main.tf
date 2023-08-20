@@ -5,13 +5,13 @@ provider "google" {
 
 resource "google_artifact_registry_repository" "repo" {
   location      = var.region
-  repository_id = var.repo_name
+  repository_id = format("%s-image", var.project_slug)
   format        = "DOCKER"
-  description   = var.repo_description
+  description   = format("The Artifact Registry of the %s project", var.project_slug)
 }
 
 resource "google_secret_manager_secret" "secret" {
-  secret_id = var.gcp_env_name
+  secret_id = format("%s-env", var.project_slug)
   replication {
     automatic = true
   }
@@ -24,7 +24,7 @@ resource "google_secret_manager_secret_version" "version" {
 
 
 resource "google_sql_database_instance" "default" {
-  name             = var.instance_name
+  name             = format("%s-instance", var.project_slug)
   database_version = "POSTGRES_15"
   region           = var.region
 
@@ -34,8 +34,8 @@ resource "google_sql_database_instance" "default" {
 }
 
 resource "google_sql_database" "default" {
-  name       = var.database_name
-  instance   = google_sql_database_instance.default.name
+  name     = format("%s-db", var.project_slug)
+  instance = google_sql_database_instance.default.name
 }
 
 resource "google_sql_user" "default" {
@@ -45,19 +45,19 @@ resource "google_sql_user" "default" {
 }
 
 resource "google_cloud_run_service" "default" {
-  name     = var.cloud_run_name
+  name     = format("%s-service", var.project_slug)
   location = var.region
 
   template {
     spec {
       containers {
-        image = "europe-north1-docker.pkg.dev/${var.project_id}/${var.repo_name}/${var.image_name}:latest"
+        image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-image/${var.image_name}:latest", var.project_slug)
         env {
           name  = "ENVIRONMENT"
           value = "production"
           value_from {
             secret_key_ref {
-              name = var.gcp_env_name
+              name = format("%s-env", var.project_slug)
               key  = "ENVIRONMENT"
               optional = true
             }

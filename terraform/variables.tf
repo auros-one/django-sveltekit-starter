@@ -9,18 +9,8 @@ variable "region" {
   default     = "europe-north1"
 }
 
-variable "repo_name" {
-  description = "The name of the Artifact Registry repository."
-  type        = string
-}
-
-variable "repo_description" {
-  description = "The description of the Artifact Registry repository."
-  type        = string
-}
-
-variable "gcp_env_name" {
-  description = "The name of the secret in GCP Secret Manager."
+variable "project_slug" {
+  description = "The slug of the project."
   type        = string
 }
 
@@ -29,23 +19,8 @@ variable "env_file" {
   type        = string
 }
 
-variable "cloud_run_name" {
-  description = "The name of the Cloud Run service."
-  type        = string
-}
-
 variable "image_name" {
   description = "The name of the Docker image."
-  type        = string
-}
-
-variable "instance_name" {
-  description = "The name of the Cloud SQL instance."
-  type        = string
-}
-
-variable "database_name" {
-  description = "The name of the database in the Cloud SQL instance."
   type        = string
 }
 
