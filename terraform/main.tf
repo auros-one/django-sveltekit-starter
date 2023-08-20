@@ -181,6 +181,12 @@ resource "google_cloud_run_service" "default" {
   }
 }
 
+
+/*
+This resource grants public access to the Cloud Run service by assigning the 'roles/run.invoker' role to 'allUsers'.
+-> This means any authenticated or unauthenticated user can invoke (access) the service.
+This configuration is equivalent to using the --allow-unauthenticated option in the gcloud run deploy command
+*/
 resource "google_cloud_run_service_iam_member" "public" {
   service  = google_cloud_run_service.default.name
   location = google_cloud_run_service.default.location
