@@ -162,6 +162,15 @@ resource "google_cloud_run_service" "default" {
                 }
             }
         }
+        env {
+          name = "HELICONE_API_KEY"
+            value_from {
+                secret_key_ref {
+                name = format("%s-backend-env", var.project_slug)
+                key  = "HELICONE_API_KEY"
+                }
+            }
+        }
       }
     }
   }
