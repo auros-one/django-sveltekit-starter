@@ -57,8 +57,8 @@ resource "google_cloud_run_service" "default" {
           value = "production"
           value_from {
             secret_key_ref {
-              name = format("%s-env", var.project_slug)
-              key  = "ENVIRONMENT"
+              name     = format("%s-env", var.project_slug)
+              key      = "ENVIRONMENT"
               optional = true
             }
           }
@@ -68,123 +68,123 @@ resource "google_cloud_run_service" "default" {
           value = "1"
           value_from {
             secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "GUNICORN_WORKERS"
+              name     = format("%s-backend-env", var.project_slug)
+              key      = "GUNICORN_WORKERS"
               optional = true
             }
           }
         }
         env {
           name = "HOST_DOMAIN"
-            value_from {
-                secret_key_ref {
-                name = format("%s-backend-env", var.project_slug)
-                key  = "HOST_DOMAIN"
-                }
+          value_from {
+            secret_key_ref {
+              name = format("%s-backend-env", var.project_slug)
+              key  = "HOST_DOMAIN"
             }
+          }
         }
         env {
           name = "FRONTEND_DOMAINS"
-            value_from {
-                secret_key_ref {
-                name = format("%s-backend-env", var.project_slug)
-                key  = "FRONTEND_DOMAINS"
-                }
+          value_from {
+            secret_key_ref {
+              name = format("%s-backend-env", var.project_slug)
+              key  = "FRONTEND_DOMAINS"
             }
+          }
         }
         env {
-          name = "POSTGRES_HOST"
+          name  = "POSTGRES_HOST"
           value = format("/cloudsql/%s", google_sql_database_instance.default.connection_name)
-            value_from {
-                secret_key_ref {
-                name = format("%s-backend-env", var.project_slug)
-                key  = "POSTGRES_HOST"
-                optional = true
-                }
+          value_from {
+            secret_key_ref {
+              name     = format("%s-backend-env", var.project_slug)
+              key      = "POSTGRES_HOST"
+              optional = true
             }
+          }
         }
         env {
           name  = "POSTGRES_PORT"
           value = "5432"
           value_from {
             secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "POSTGRES_PORT"
+              name     = format("%s-backend-env", var.project_slug)
+              key      = "POSTGRES_PORT"
               optional = true
             }
           }
         }
         env {
-          name = "POSTGRES_DB"
+          name  = "POSTGRES_DB"
           value = google_sql_database.default.name
-            value_from {
-                secret_key_ref {
-                name = format("%s-backend-env", var.project_slug)
-                key  = "POSTGRES_DB"
+          value_from {
+            secret_key_ref {
+              name     = format("%s-backend-env", var.project_slug)
+              key      = "POSTGRES_DB"
               optional = true
-                }
             }
+          }
         }
         env {
-          name = "POSTGRES_USER"
+          name  = "POSTGRES_USER"
           value = google_sql_user.default.name
-            value_from {
-                secret_key_ref {
-                name = format("%s-backend-env", var.project_slug)
-                key  = "POSTGRES_USER"
-                default = format("%s-backend-db-user", var.project_slug)
-                }
+          value_from {
+            secret_key_ref {
+              name    = format("%s-backend-env", var.project_slug)
+              key     = "POSTGRES_USER"
+              default = format("%s-backend-db-user", var.project_slug)
             }
+          }
         }
         env {
           name = "POSTGRES_PASSWORD"
-            value_from {
-                secret_key_ref {
-                name = format("%s-backend-env", var.project_slug)
-                key  = "POSTGRES_PASSWORD"
-                default = var.db_password
-                }
+          value_from {
+            secret_key_ref {
+              name    = format("%s-backend-env", var.project_slug)
+              key     = "POSTGRES_PASSWORD"
+              default = var.db_password
             }
+          }
         }
         env {
           name  = "SENTRY_DSN"
           value = ""
           value_from {
             secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "SENTRY_DSN"
+              name     = format("%s-backend-env", var.project_slug)
+              key      = "SENTRY_DSN"
               optional = true
             }
           }
         }
         env {
           name = "OPENAI_API_KEY"
-            value_from {
-                secret_key_ref {
-                name = format("%s-backend-env", var.project_slug)
-                key  = "OPENAI_API_KEY"
-                }
+          value_from {
+            secret_key_ref {
+              name = format("%s-backend-env", var.project_slug)
+              key  = "OPENAI_API_KEY"
             }
+          }
         }
         env {
-          name = "HELICONE_API_KEY"
+          name  = "HELICONE_API_KEY"
           value = ""
-            value_from {
-                secret_key_ref {
-                name = format("%s-backend-env", var.project_slug)
-                key  = "HELICONE_API_KEY"
+          value_from {
+            secret_key_ref {
+              name     = format("%s-backend-env", var.project_slug)
+              key      = "HELICONE_API_KEY"
               optional = true
-                }
             }
+          }
         }
         env {
           name = "CLOUDRUN_SERVICE_URL"
-            value_from {
-                secret_key_ref {
-                name = format("%s-backend-env", var.project_slug)
-                key  = "CLOUDRUN_SERVICE_URL"
-                }
+          value_from {
+            secret_key_ref {
+              name = format("%s-backend-env", var.project_slug)
+              key  = "CLOUDRUN_SERVICE_URL"
             }
+          }
         }
       }
     }
