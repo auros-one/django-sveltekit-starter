@@ -64,6 +64,17 @@ resource "google_cloud_run_service" "default" {
           }
         }
         env {
+          name  = "GUNICORN_WORKERS"
+          value = "1"
+          value_from {
+            secret_key_ref {
+              name = format("%s-backend-env", var.project_slug)
+              key  = "GUNICORN_WORKERS"
+              optional = true
+            }
+          }
+        }
+        env {
           name = "HOST_DOMAIN"
             value_from {
                 secret_key_ref {
@@ -83,10 +94,12 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name = "POSTGRES_HOST"
+          value = format("/cloudsql/%s", google_sql_database_instance.default.connection_name)
             value_from {
                 secret_key_ref {
                 name = format("%s-backend-env", var.project_slug)
                 key  = "POSTGRES_HOST"
+                optional = true
                 }
             }
         }
@@ -103,16 +116,18 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name = "POSTGRES_DB"
+          value = google_sql_database.default.name
             value_from {
                 secret_key_ref {
                 name = format("%s-backend-env", var.project_slug)
                 key  = "POSTGRES_DB"
-                default = format("%s-backend-db", var.project_slug)
+              optional = true
                 }
             }
         }
         env {
           name = "POSTGRES_USER"
+          value = google_sql_user.default.name
             value_from {
                 secret_key_ref {
                 name = format("%s-backend-env", var.project_slug)
@@ -130,17 +145,6 @@ resource "google_cloud_run_service" "default" {
                 default = var.db_password
                 }
             }
-        }
-        env {
-          name  = "GUNICORN_WORKERS"
-          value = "1"
-          value_from {
-            secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "GUNICORN_WORKERS"
-              optional = true
-            }
-          }
         }
         env {
           name  = "SENTRY_DSN"
@@ -164,10 +168,21 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name = "HELICONE_API_KEY"
+          value = ""
             value_from {
                 secret_key_ref {
                 name = format("%s-backend-env", var.project_slug)
                 key  = "HELICONE_API_KEY"
+              optional = true
+                }
+            }
+        }
+        env {
+          name = "CLOUDRUN_SERVICE_URL"
+            value_from {
+                secret_key_ref {
+                name = format("%s-backend-env", var.project_slug)
+                key  = "CLOUDRUN_SERVICE_URL"
                 }
             }
         }
