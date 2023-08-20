@@ -17,19 +17,17 @@ variable "project_slug" {
 variable "env_file" {
   description = "The path to the .env.production file."
   type        = string
+  default     = ".env.production"
 }
 
 variable "image_name" {
   description = "The name of the Docker image."
   type        = string
+  default        = format("%s-image", var.project_slug)
 }
 
-variable "username" {
-  description = "The username for the database."
-  type        = string
-}
 
-variable "password" {
+variable "db_password" {
   description = "The password for the database."
   type        = string
 }

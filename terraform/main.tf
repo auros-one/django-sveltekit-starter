@@ -5,7 +5,7 @@ provider "google" {
 
 resource "google_artifact_registry_repository" "repo" {
   location      = var.region
-  repository_id = format("%s-image", var.project_slug)
+  repository_id = format("%s-artifact-repo", var.project_slug)
   format        = "DOCKER"
   description   = format("The Artifact Registry of the %s project", var.project_slug)
 }
@@ -24,7 +24,7 @@ resource "google_secret_manager_secret_version" "version" {
 
 
 resource "google_sql_database_instance" "default" {
-  name             = format("%s-instance", var.project_slug)
+  name             = format("%s-db", var.project_slug)
   database_version = "POSTGRES_15"
   region           = var.region
 
@@ -34,14 +34,14 @@ resource "google_sql_database_instance" "default" {
 }
 
 resource "google_sql_database" "default" {
-  name     = format("%s-db", var.project_slug)
+  name     = format("%s-backend-db", var.project_slug)
   instance = google_sql_database_instance.default.name
 }
 
 resource "google_sql_user" "default" {
-  name     = var.username
+  name     = format("%s-backend-db-user", var.project_slug)
   instance = google_sql_database_instance.default.name
-  password = var.password
+  password = var.db_password
 }
 
 resource "google_cloud_run_service" "default" {
@@ -51,7 +51,7 @@ resource "google_cloud_run_service" "default" {
   template {
     spec {
       containers {
-        image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-image/${var.image_name}:latest", var.project_slug)
+        image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-image/${format("%s-backend-image", var.project_slug)}:latest", var.project_slug)
         env {
           name  = "ENVIRONMENT"
           value = "production"
@@ -67,7 +67,7 @@ resource "google_cloud_run_service" "default" {
           name = "HOST_DOMAIN"
             value_from {
                 secret_key_ref {
-                name = var.gcp_env_name
+                name = format("%s-backend-env", var.project_slug)
                 key  = "HOST_DOMAIN"
                 }
             }
@@ -76,7 +76,7 @@ resource "google_cloud_run_service" "default" {
           name = "FRONTEND_DOMAINS"
             value_from {
                 secret_key_ref {
-                name = var.gcp_env_name
+                name = format("%s-backend-env", var.project_slug)
                 key  = "FRONTEND_DOMAINS"
                 }
             }
@@ -85,7 +85,7 @@ resource "google_cloud_run_service" "default" {
           name = "POSTGRES_HOST"
             value_from {
                 secret_key_ref {
-                name = var.gcp_env_name
+                name = format("%s-backend-env", var.project_slug)
                 key  = "POSTGRES_HOST"
                 }
             }
@@ -95,7 +95,7 @@ resource "google_cloud_run_service" "default" {
           value = "5432"
           value_from {
             secret_key_ref {
-              name = var.gcp_env_name
+              name = format("%s-backend-env", var.project_slug)
               key  = "POSTGRES_PORT"
               optional = true
             }
@@ -105,8 +105,9 @@ resource "google_cloud_run_service" "default" {
           name = "POSTGRES_DB"
             value_from {
                 secret_key_ref {
-                name = var.gcp_env_name
+                name = format("%s-backend-env", var.project_slug)
                 key  = "POSTGRES_DB"
+                default = format("%s-backend-db", var.project_slug)
                 }
             }
         }
@@ -114,8 +115,9 @@ resource "google_cloud_run_service" "default" {
           name = "POSTGRES_USER"
             value_from {
                 secret_key_ref {
-                name = var.gcp_env_name
+                name = format("%s-backend-env", var.project_slug)
                 key  = "POSTGRES_USER"
+                default = format("%s-backend-db-user", var.project_slug)
                 }
             }
         }
@@ -123,8 +125,9 @@ resource "google_cloud_run_service" "default" {
           name = "POSTGRES_PASSWORD"
             value_from {
                 secret_key_ref {
-                name = var.gcp_env_name
+                name = format("%s-backend-env", var.project_slug)
                 key  = "POSTGRES_PASSWORD"
+                default = var.db_password
                 }
             }
         }
@@ -133,7 +136,7 @@ resource "google_cloud_run_service" "default" {
           value = "1"
           value_from {
             secret_key_ref {
-              name = var.gcp_env_name
+              name = format("%s-backend-env", var.project_slug)
               key  = "GUNICORN_WORKERS"
               optional = true
             }
@@ -144,7 +147,7 @@ resource "google_cloud_run_service" "default" {
           value = ""
           value_from {
             secret_key_ref {
-              name = var.gcp_env_name
+              name = format("%s-backend-env", var.project_slug)
               key  = "SENTRY_DSN"
               optional = true
             }
@@ -154,7 +157,7 @@ resource "google_cloud_run_service" "default" {
           name = "OPENAI_API_KEY"
             value_from {
                 secret_key_ref {
-                name = var.gcp_env_name
+                name = format("%s-backend-env", var.project_slug)
                 key  = "OPENAI_API_KEY"
                 }
             }

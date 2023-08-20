@@ -5,7 +5,7 @@ output "artifact_registry_url" {
 
 output "secret_version" {
   description = "The version of the secret in GCP Secret Manager."
-  value       = google_secret_manager_secret_version.version.secret_version_id
+  value       = google_secret_manager_secret_version.version.name
 }
 
 output "cloud_run_url" {
