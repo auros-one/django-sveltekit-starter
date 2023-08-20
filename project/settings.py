@@ -322,7 +322,8 @@ else:
 if openai_key := os.environ.get("OPENAI_API_KEY"):
     openai.api_key = openai_key
 else:  # pragma: no cover
-    raise ValueError("OPENAI_API_KEY not set")
+    if ENVIRONMENT == "production":
+        raise ValueError("OPENAI_API_KEY not set")
 
 # Helicone (https://www.helicone.ai)
 
