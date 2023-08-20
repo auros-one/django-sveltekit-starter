@@ -12,3 +12,8 @@ output "cloud_run_url" {
   description = "The URL of the Cloud Run service."
   value       = google_cloud_run_service.default.status[0].url
 }
+
+output "sql_instance_connection_name" {
+  description = "The connection name of the Cloud SQL instance."
+  value       = google_sql_database_instance.default.connection_name
+}

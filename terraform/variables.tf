@@ -38,3 +38,23 @@ variable "image_name" {
   description = "The name of the Docker image."
   type        = string
 }
+
+variable "instance_name" {
+  description = "The name of the Cloud SQL instance."
+  type        = string
+}
+
+variable "database_name" {
+  description = "The name of the database in the Cloud SQL instance."
+  type        = string
+}
+
+variable "username" {
+  description = "The username for the database."
+  type        = string
+}
+
+variable "password" {
+  description = "The password for the database."
+  type        = string
+}

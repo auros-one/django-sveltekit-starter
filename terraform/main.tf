@@ -22,6 +22,28 @@ resource "google_secret_manager_secret_version" "version" {
   secret_data = file(var.env_file)
 }
 
+
+resource "google_sql_database_instance" "default" {
+  name             = var.instance_name
+  database_version = "POSTGRES_15"
+  region           = var.region
+
+  settings {
+    tier = "db-f1-micro"
+  }
+}
+
+resource "google_sql_database" "default" {
+  name       = var.database_name
+  instance   = google_sql_database_instance.default.name
+}
+
+resource "google_sql_user" "default" {
+  name     = var.username
+  instance = google_sql_database_instance.default.name
+  password = var.password
+}
+
 resource "google_cloud_run_service" "default" {
   name     = var.cloud_run_name
   location = var.region
