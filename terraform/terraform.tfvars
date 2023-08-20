@@ -1,5 +1,4 @@
 project_id   = ""
 region       = "europe-north1"
-project_slug = ""
-env_file     = ".env.production"
+project_slug = "my-project"
 db_password  = ""

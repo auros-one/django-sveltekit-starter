@@ -17,7 +17,7 @@ variable "project_slug" {
 variable "env_file" {
   description = "The path to the .env.production file."
   type        = string
-  default     = ".env.production"
+  default     = "../.env.production"
 }
 
 variable "db_password" {

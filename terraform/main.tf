@@ -55,13 +55,6 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "ENVIRONMENT"
           value = "production"
-          value_from {
-            secret_key_ref {
-              name     = format("%s-env", var.project_slug)
-              key      = "ENVIRONMENT"
-              optional = true
-            }
-          }
         }
         env {
           name  = "GUNICORN_WORKERS"
@@ -70,7 +63,6 @@ resource "google_cloud_run_service" "default" {
             secret_key_ref {
               name     = format("%s-backend-env", var.project_slug)
               key      = "GUNICORN_WORKERS"
-              optional = true
             }
           }
         }
@@ -95,56 +87,22 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "POSTGRES_HOST"
           value = format("/cloudsql/%s", google_sql_database_instance.default.connection_name)
-          value_from {
-            secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
-              key      = "POSTGRES_HOST"
-              optional = true
-            }
-          }
         }
         env {
           name  = "POSTGRES_PORT"
           value = "5432"
-          value_from {
-            secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
-              key      = "POSTGRES_PORT"
-              optional = true
-            }
-          }
         }
         env {
           name  = "POSTGRES_DB"
           value = google_sql_database.default.name
-          value_from {
-            secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
-              key      = "POSTGRES_DB"
-              optional = true
-            }
-          }
         }
         env {
           name  = "POSTGRES_USER"
           value = google_sql_user.default.name
-          value_from {
-            secret_key_ref {
-              name    = format("%s-backend-env", var.project_slug)
-              key     = "POSTGRES_USER"
-              default = format("%s-backend-db-user", var.project_slug)
-            }
-          }
         }
         env {
           name = "POSTGRES_PASSWORD"
-          value_from {
-            secret_key_ref {
-              name    = format("%s-backend-env", var.project_slug)
-              key     = "POSTGRES_PASSWORD"
-              default = var.db_password
-            }
-          }
+          value = var.db_password
         }
         env {
           name  = "SENTRY_DSN"
@@ -153,7 +111,6 @@ resource "google_cloud_run_service" "default" {
             secret_key_ref {
               name     = format("%s-backend-env", var.project_slug)
               key      = "SENTRY_DSN"
-              optional = true
             }
           }
         }
@@ -173,7 +130,6 @@ resource "google_cloud_run_service" "default" {
             secret_key_ref {
               name     = format("%s-backend-env", var.project_slug)
               key      = "HELICONE_API_KEY"
-              optional = true
             }
           }
         }
@@ -211,8 +167,8 @@ resource "google_cloud_run_service_iam_member" "public" {
 
 
 resource "google_service_account" "github_actions" {
-  account_id   = format("%s-backend-github-actions", var.project_slug)
-  display_name = "GitHub Actions"
+  account_id   = lower(replace(format("%s-backend-ga", var.project_slug), "_", "-"))
+  display_name = format("GitHub Actions service account for the %s backend", var.project_slug)
   description  = format("The service account used by the GitHub Actions of the %s backend to deploy from its ci.yml", var.project_slug)
 }
 
