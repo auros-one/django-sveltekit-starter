@@ -75,7 +75,7 @@ jobs:
           POSTGRES_HOST: localhost
         with:
           linters: pytest
-          run: pipenv run python -m pytest --create-db
+          run: pipenv run python -m pytest --create-db --cov-fail-under 75
 
   deploy:
     runs-on: ubuntu-latest
