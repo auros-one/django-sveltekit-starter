@@ -72,6 +72,20 @@ terraform apply
 
 
 
+# Context
+
+I'm trying to deploy the project with terraform, it seems like it has to be done in multiple stages:
+1. first resource deployments
+- create a service account for django accessing the storages
+- create a cloud SQL postgres db
+- ... create any other service that can alrlady be created
+2. terraform output -> completes required django secrets
+- pass the service account credentials to django (paste them into a file?!)
+- pass the postgres env vars to django env
+- pass the cloud run instance domain name to django env
+3. deploy the remaining resources
+- cloud run
+- store secrets in secret-manager
 
 
 # Goal: `deploy.py` & `destroy.py`
