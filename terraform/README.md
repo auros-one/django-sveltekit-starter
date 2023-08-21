@@ -69,3 +69,28 @@ terraform apply
 -   Always review the execution plan from the `terraform plan` command before running `terraform apply`.
 -   The `terraform apply` command will create resources in your GCP project and may incur costs.
 -   You can destroy the resources created by Terraform using the `terraform destroy` command.
+
+
+
+
+
+# Goal: `deploy.py` & `destroy.py`
+
+```shell
+> terraform init
+terraform init success!
+> python deploy.py
+deploying initial resources...
+running django migrations... (setting up cloud sql tunnel, running manage.py migrate)
+deploying django...
+deploy success!
+initial superuser email: stijn@auros.one
+initial superuser password:
+creating superuser... (using cloud sql tunnel to run manage.py createsuperuser with the given arguments)
+done
+```
+
+```shell
+> python destroy.py
+destroying resources... (basically just calls `terraform destroy`)
+```
