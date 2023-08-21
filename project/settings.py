@@ -28,7 +28,9 @@ FRONTEND_DOMAINS = os.environ.get("FRONTEND_DOMAINS", "localhost:5173").split(",
 
 # Security
 
-ALLOWED_HOSTS = [f"{HOST_DOMAIN}", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = (
+    [f"{HOST_DOMAIN}"] if ENVIRONMENT == "production" else ["localhost", "127.0.0.1"]
+)
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -56,12 +58,16 @@ CSRF_TRUSTED_ORIGINS = [
 DEBUG = os.environ.get("DEBUG") == "1"
 
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
-if ENVIRONMENT != "development":  # pragma: no cover
+if ENVIRONMENT == "production" and SECRET_KEY is None:  # pragma: no cover
     raise Exception("SECRET_KEY must be set in production.")
 else:
     SECRET_KEY = "django-insecure-o4_+-(&c531@xq6a5d1++n*aqt5r08$f*siuahdadskp1sq^"
 
-if ENVIRONMENT == "development":  # pragma: no cover
+
+SESSION_COOKIE_SECURE = True if ENVIRONMENT == "production" else False
+CSRF_COOKIE_SECURE = True if ENVIRONMENT == "production" else False
+
+if ENVIRONMENT == "development":
     CORS_ORIGIN_ALLOW_ALL = True
     ALLOWED_HOSTS = ["*"]
     CSRF_TRUSTED_ORIGINS.append("http://localhost:5173")
@@ -71,18 +77,14 @@ if ENVIRONMENT == "development":  # pragma: no cover
         "http://localhost:5173",
         "ws://localhost:5173",
     )
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
 
 if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: no cover
     ALLOWED_HOSTS.append(urlparse(cloud_run_service_url).netloc)
-    CSRF_COOKIE_SECURE = True
     CSRF_TRUSTED_ORIGINS.append(cloud_run_service_url)
     LANGUAGE_COOKIE_SECURE = True
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_HSTS_SECONDS = 31_536_000  # One year.
-    SESSION_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 60  # TODO: after confirming this works in production, change this to: 31_536_000  # One year.
 
 PERMISSIONS_POLICY: dict[str, list[str]] = {
     "accelerometer": [],
@@ -184,6 +186,10 @@ REST_AUTH = {
 SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
+
+if ENVIRONMENT == "production":  # pragma: no cover
+    REST_AUTH["JWT_AUTH_SAMESITE"] = "None"
+    REST_AUTH["JWT_AUTH_SECURE"] = True
 
 
 # Authentication
