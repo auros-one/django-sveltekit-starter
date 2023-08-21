@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 import openai
 import sentry_sdk
 from dotenv import load_dotenv
+from google.oauth2 import service_account
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -262,13 +263,25 @@ USE_TZ = True
 
 # Static files.
 
-STATICFILES_DIRS = [BASE_DIR / "project" / "static" / "dist"]
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 STATIC_URL = "/static/"
+
+if ENVIRONMENT == "production":
+    # Google Cloud Storage settings.
+    STORAGES = {
+        "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+        "staticfiles": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+    }
+    GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        "google_storage_credentials.json"
+    )
+    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    STATIC_ROOT = "static"
+else:
+    # Local storage settings.
+    STATICFILES_DIRS = [BASE_DIR / "project" / "static"]
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+    STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Default primary key field type.
