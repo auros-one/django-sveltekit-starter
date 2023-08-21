@@ -3,12 +3,16 @@ provider "google" {
   region  = var.region
 }
 
+# Artifact Registry
+
 resource "google_artifact_registry_repository" "repo" {
   location      = var.region
   repository_id = format("%s-artifact-repo", var.project_slug)
   format        = "DOCKER"
   description   = format("The Artifact Registry of the %s project", var.project_slug)
 }
+
+# Secret Manager
 
 resource "google_secret_manager_secret" "secret" {
   secret_id = format("%s-backend-env", var.project_slug)
@@ -22,6 +26,8 @@ resource "google_secret_manager_secret_version" "version" {
   secret_data = file(var.env_file)
 }
 
+
+# Cloud SQL
 
 resource "google_sql_database_instance" "default" {
   name             = format("%s-db", var.project_slug)
@@ -43,6 +49,31 @@ resource "google_sql_user" "default" {
   instance = google_sql_database_instance.default.name
   password = var.db_password
 }
+
+# Cloud Storage
+
+resource "google_storage_bucket" "static_files" {
+  name     = format("%s-static-files", var.project_slug)
+  location = var.region
+}
+
+resource "google_service_account" "cloud_run_storage_sa" {
+  account_id   = format("%s-backend-gcs", var.project_slug)
+  display_name = "Cloud Run service account"
+  description  = "Service account used by Cloud Run to access GCS."
+}
+
+resource "google_storage_bucket_iam_member" "backend_storage" {
+  bucket = google_storage_bucket.static_files.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.cloud_run_storage_sa.email}"
+}
+
+resource "google_service_account_key" "backend_gcs_key" {
+  service_account_id = google_service_account.cloud_run_storage_sa.name
+}
+
+# Cloud Run
 
 resource "google_cloud_run_service" "default" {
   name     = format("%s-service", var.project_slug)
@@ -167,6 +198,7 @@ resource "google_cloud_run_service_iam_member" "public" {
   member   = "allUsers"
 }
 
+# Github Actions
 
 resource "google_service_account" "github_actions" {
   account_id   = lower(replace(format("%s-backend-ga", var.project_slug), "_", "-"))
