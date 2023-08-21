@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 backoff = "*"
 django = {version = "~=4.2", extras = ["argon2"]}
+django-anymail = {version = "*", extras = ["mailgun"]}
 django-cors-headers = "*"
 django-csp = "*"
 django-debug-toolbar = "*"

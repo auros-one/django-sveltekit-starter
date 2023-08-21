@@ -241,10 +241,12 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 
 # Email
 
-if ENVIRONMENT == "development":
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+if ENVIRONMENT == "production":
+    EMAIL_BACKEND = "django_mailgun.MailgunBackend"
+    MAILGUN_ACCESS_KEY = os.environ.get("MAILGUN_ACCESS_KEY")
+    MAILGUN_SERVER_NAME = os.environ.get("MAILGUN_SERVER_NAME")
 else:  # pragma: no cover
-    raise NotImplementedError("Email backend not configured for production.")
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
 # Internationalization.
