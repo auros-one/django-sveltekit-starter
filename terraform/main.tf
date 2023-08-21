@@ -11,7 +11,7 @@ resource "google_artifact_registry_repository" "repo" {
 }
 
 resource "google_secret_manager_secret" "secret" {
-  secret_id = format("%s-env", var.project_slug)
+  secret_id = format("%s-backend-env", var.project_slug)
   replication {
     automatic = true
   }
@@ -50,8 +50,13 @@ resource "google_cloud_run_service" "default" {
 
   template {
     spec {
-      containers {
-        image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-image/${format("%s-backend-image", var.project_slug)}:latest", var.project_slug)
+      service_account_name = google_service_account.github_actions.email
+
+      containers { # europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
+        image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-artifact-repo/${format("%s-backend-image", var.project_slug)}:latest", var.project_slug)
+        ports {
+          container_port = 8081
+        }
         env {
           name  = "ENVIRONMENT"
           value = "production"
@@ -61,7 +66,7 @@ resource "google_cloud_run_service" "default" {
           value_from {
             secret_key_ref {
               name     = format("%s-backend-env", var.project_slug)
-              key      = "GUNICORN_WORKERS"
+              key      = "latest"
             }
           }
         }
@@ -70,7 +75,7 @@ resource "google_cloud_run_service" "default" {
           value_from {
             secret_key_ref {
               name = format("%s-backend-env", var.project_slug)
-              key  = "HOST_DOMAIN"
+              key  = "latest"
             }
           }
         }
@@ -79,7 +84,7 @@ resource "google_cloud_run_service" "default" {
           value_from {
             secret_key_ref {
               name = format("%s-backend-env", var.project_slug)
-              key  = "FRONTEND_DOMAINS"
+              key  = "latest"
             }
           }
         }
@@ -108,7 +113,7 @@ resource "google_cloud_run_service" "default" {
           value_from {
             secret_key_ref {
               name     = format("%s-backend-env", var.project_slug)
-              key      = "SENTRY_DSN"
+              key      = "latest"
             }
           }
         }
@@ -117,7 +122,7 @@ resource "google_cloud_run_service" "default" {
           value_from {
             secret_key_ref {
               name = format("%s-backend-env", var.project_slug)
-              key  = "OPENAI_API_KEY"
+              key  = "latest"
             }
           }
         }
@@ -126,7 +131,7 @@ resource "google_cloud_run_service" "default" {
           value_from {
             secret_key_ref {
               name     = format("%s-backend-env", var.project_slug)
-              key      = "HELICONE_API_KEY"
+              key      = "latest"
             }
           }
         }
@@ -135,7 +140,7 @@ resource "google_cloud_run_service" "default" {
           value_from {
             secret_key_ref {
               name = format("%s-backend-env", var.project_slug)
-              key  = "CLOUDRUN_SERVICE_URL"
+              key  = "latest"
             }
           }
         }
