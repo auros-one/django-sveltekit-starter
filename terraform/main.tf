@@ -55,7 +55,7 @@ resource "google_cloud_run_service" "default" {
       containers { # europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
         image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-artifact-repo/${format("%s-backend-image", var.project_slug)}:latest", var.project_slug)
         ports {
-          container_port = 8081
+          container_port = 8000
         }
         env {
           name  = "ENVIRONMENT"
