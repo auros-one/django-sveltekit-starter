@@ -58,7 +58,6 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GUNICORN_WORKERS"
-          value = "1"
           value_from {
             secret_key_ref {
               name     = format("%s-backend-env", var.project_slug)
@@ -106,7 +105,6 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "SENTRY_DSN"
-          value = ""
           value_from {
             secret_key_ref {
               name     = format("%s-backend-env", var.project_slug)
@@ -125,7 +123,6 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "HELICONE_API_KEY"
-          value = ""
           value_from {
             secret_key_ref {
               name     = format("%s-backend-env", var.project_slug)
