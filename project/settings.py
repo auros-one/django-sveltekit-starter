@@ -270,9 +270,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-if (
-    ENVIRONMENT == "production" and False
-):  # TEMPORARILY DISABLE GOOGLE CLOUD STORAGE  # pragma: no cover
+if ENVIRONMENT == "production":
     # Google Cloud Storage settings.
     STORAGES = {
         "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
