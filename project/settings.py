@@ -280,7 +280,6 @@ if ENVIRONMENT == "production":
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
         "google_storage_credentials.json"
     )
-    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATIC_ROOT = "static"
 else:
     # Local storage settings.
