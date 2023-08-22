@@ -108,3 +108,26 @@ done
 > python destroy.py
 destroying resources... (basically just calls `terraform destroy`)
 ```
+
+
+
+
+
+docker build -t europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image .
+docker push europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
+
+
+docker build \
+  --build-arg BUILDKIT_INLINE_CACHE=1 \
+  -f Dockerfile \
+  --cache-from europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image \
+  -t europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image \
+  .
+docker push europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
+gcloud run deploy bbadmin-backend \
+  --image=europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image \
+  --region=europe-north1 \
+  --platform=managed \
+  --allow-unauthenticated \
+  --add-cloudsql-instances=project-template-396517:europe-north1:project-template-db \
+  --env-vars-file=.env.production.yml

@@ -24,40 +24,31 @@ def main():
     project_id = run_command("terraform output -raw project_id")
     run_command(f"./enable_apis.sh --project {project_id}")
 
-    # First stage: Deploy initial resources
+    # First stage: Deploy all resources
     print("Deploying initial resources...")
     run_command("terraform apply -auto-approve")
 
-    # Second stage: Update Django settings
-    print("Updating Django settings...")
-
     # Fetch outputs from Terraform
-    # db_host = run_command("terraform output -raw sql_instance_connection_name")
-    service_account_key = run_command("terraform output -raw backend_gcs_key")
+    # ...
+
+    # Update Django settings (.env.production.yml)
+    # ... terraform output -> .env.production.yml
 
     # Save the service account key to a JSON file
     # TODO: is this the best way to do this?
     # TODO: -> isn't it possible to just give the cloud run resource the service account key or access?
     with open("service_account.json", "w") as f:
         f.write(service_account_key)
-    # Set the GOOGLE_APPLICATION_CREDENTIALS environment variable
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 
-    # Update secrets
-    # TODO:
-    #  1. store the generated env vars in .env.production
-    #  2. upload the env to the Secret Manager
+    # Save all secrets to the Secret Manager
+    # -> later CI deployments will fetch the secrets from the secret manager
 
     # Create tunnel to Cloud SQL
-    # ...
+    # ... we will run the required migrations
 
     # Run Django migrations
     print("Running Django migrations...")
     run_command("python manage.py migrate")
-
-    # Third stage: Deploy remaining resources (Cloud Run)
-    print("Deploying Django...")
-    run_command("terraform apply -auto-approve")
 
     # Create a Django superuser
     print("Creating Django superuser...")
@@ -70,7 +61,7 @@ def main():
         f"Superuser created. Email: {superuser_email}\nIt's recommended to change the password via the Django Admin."
     )
 
-    print("Done!")
+    print("Done! Push a commit to main to deploy from the Github Actions pipeline")
     print(
         "You can now access the Django Admin via the following URL:"
     )  # TODO: make it print the cloud run url + /admin
