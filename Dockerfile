@@ -23,7 +23,7 @@ RUN if [ "$ENVIRONMENT" = "development" ] ;\
 
 # Final runner
 
-FROM python:3.10-slim AS runtime
+FROM python:3.10-slim
 
 WORKDIR /app
 
