@@ -20,3 +20,4 @@ gcloud services enable run.googleapis.com --project $PROJECT_ID
 gcloud services enable sqladmin.googleapis.com --project $PROJECT_ID
 gcloud services enable secretmanager.googleapis.com --project $PROJECT_ID
 gcloud services enable artifactregistry.googleapis.com --project $PROJECT_ID
+gcloud services enable storage-component.googleapis.com --project $PROJECT_ID
