@@ -22,6 +22,11 @@ resource "google_secret_manager_secret_version" "version" {
   secret_data = file(var.env_file)
 }
 
+resource "google_secret_manager_secret_version" "sentrydns" {
+  secret      = "sentrydns"
+  secret_data = file(var.env_file)
+}
+
 
 resource "google_sql_database_instance" "default" {
   name             = format("%s-db", var.project_slug)
@@ -54,9 +59,6 @@ resource "google_cloud_run_service" "default" {
 
       containers { # europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
         image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-artifact-repo/${format("%s-backend-image", var.project_slug)}:latest", var.project_slug)
-        ports {
-          container_port = 8000
-        }
         env {
           name  = "ENVIRONMENT"
           value = "production"
@@ -112,7 +114,7 @@ resource "google_cloud_run_service" "default" {
           name  = "SENTRY_DSN"
           value_from {
             secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
+              name     = format("%s-backend-env/sentrydns", var.project_slug)
               key      = "latest"
             }
           }
