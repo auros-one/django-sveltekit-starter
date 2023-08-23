@@ -26,12 +26,6 @@ resource "google_secret_manager_secret_version" "version" {
   secret_data = file(var.env_file)
 }
 
-resource "google_secret_manager_secret_version" "sentrydns" {
-  secret      = "sentrydns"
-  secret_data = file(var.env_file)
-}
-
-
 # Cloud SQL
 
 resource "google_sql_database_instance" "default" {
@@ -96,12 +90,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GUNICORN_WORKERS"
-          value_from {
-            secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
-              key      = "latest"
-            }
-          }
+          value = 1
         }
         env {
           name = "HOST_DOMAIN"
@@ -145,7 +134,7 @@ resource "google_cloud_run_service" "default" {
           name  = "SENTRY_DSN"
           value_from {
             secret_key_ref {
-              name     = format("%s-backend-env/sentrydns", var.project_slug)
+              name     = format("%s-backend-env", var.project_slug)
               key      = "latest"
             }
           }
