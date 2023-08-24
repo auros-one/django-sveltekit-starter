@@ -17,6 +17,11 @@ resource "google_artifact_registry_repository" "repo" {
 resource "google_secret_manager_secret" "secret" {
   for_each = local.secrets
   secret_id = each.key
+
+  labels = {
+    project = var.project_slug
+  }
+  
   replication {
     automatic = true
   }
