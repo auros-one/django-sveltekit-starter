@@ -15,15 +15,19 @@ resource "google_artifact_registry_repository" "repo" {
 # Secret Manager
 
 resource "google_secret_manager_secret" "secret" {
-  secret_id = format("%s-backend-env", var.project_slug)
+  for_each = local.secrets
+  secret_id = each.key
   replication {
     automatic = true
   }
 }
 
 resource "google_secret_manager_secret_version" "version" {
-  secret      = google_secret_manager_secret.secret.id
-  secret_data = file(var.env_file)
+  for_each = local.secrets
+
+  secret = google_secret_manager_secret.secret[each.key].id
+
+  secret_data = each.value
 }
 
 # Cloud SQL
@@ -93,24 +97,6 @@ resource "google_cloud_run_service" "default" {
           value = 1
         }
         env {
-          name = "HOST_DOMAIN"
-          value_from {
-            secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "latest"
-            }
-          }
-        }
-        env {
-          name = "FRONTEND_DOMAINS"
-          value_from {
-            secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "latest"
-            }
-          }
-        }
-        env {
           name  = "POSTGRES_HOST"
           value = format("/cloudsql/%s", google_sql_database_instance.default.connection_name)
         }
@@ -131,11 +117,38 @@ resource "google_cloud_run_service" "default" {
           value = var.db_password
         }
         env {
-          name  = "SENTRY_DSN"
+          name = "SENTRY_DSN"
           value_from {
             secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
-              key      = "latest"
+              name = "SENTRY_DSN"
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "SECRET_KEY"
+          value_from {
+            secret_key_ref {
+              name = "SECRET_KEY"
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "HOST_DOMAIN"
+          value_from {
+            secret_key_ref {
+              name = "HOST_DOMAIN"
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "FRONTEND_DOMAINS"
+          value_from {
+            secret_key_ref {
+              name = "FRONTEND_DOMAINS"
+              key  = "latest"
             }
           }
         }
@@ -143,7 +156,7 @@ resource "google_cloud_run_service" "default" {
           name = "OPENAI_API_KEY"
           value_from {
             secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
+              name = "OPENAI_API_KEY"
               key  = "latest"
             }
           }
@@ -152,17 +165,8 @@ resource "google_cloud_run_service" "default" {
           name  = "HELICONE_API_KEY"
           value_from {
             secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
+              name     = "HELICONE_API_KEY"
               key      = "latest"
-            }
-          }
-        }
-        env {
-          name = "CLOUDRUN_SERVICE_URL"
-          value_from {
-            secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "latest"
             }
           }
         }
