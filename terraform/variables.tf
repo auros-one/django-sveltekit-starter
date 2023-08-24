@@ -26,5 +26,5 @@ variable "db_password" {
 }
 
 locals {
-  secrets = { for tuple in regexall("(.*?)=(.*)", file(var.env_file)) : tuple[0] => tuple[1] }
+  secrets = { for tuple in regexall("(.*?)=(.*)", file(var.env_file)) : tuple[0] => sensitive(tuple[1]) }
 }
