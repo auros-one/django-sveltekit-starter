@@ -15,17 +15,25 @@ resource "google_artifact_registry_repository" "repo" {
 # Secret Manager
 
 resource "google_secret_manager_secret" "secret" {
-  secret_id = format("%s-backend-env", var.project_slug)
+  for_each = local.secrets
+  secret_id = each.key
+
+  labels = {
+    project = var.project_slug
+  }
+  
   replication {
     automatic = true
   }
 }
 
 resource "google_secret_manager_secret_version" "version" {
-  secret      = google_secret_manager_secret.secret.id
-  secret_data = file(var.env_file)
-}
+  for_each = local.secrets
 
+  secret = google_secret_manager_secret.secret[each.key].id
+
+  secret_data = each.value
+}
 
 # Cloud SQL
 
@@ -85,39 +93,13 @@ resource "google_cloud_run_service" "default" {
 
       containers { # europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
         image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-artifact-repo/${format("%s-backend-image", var.project_slug)}:latest", var.project_slug)
-        ports {
-          container_port = 8000
-        }
         env {
           name  = "ENVIRONMENT"
           value = "production"
         }
         env {
           name  = "GUNICORN_WORKERS"
-          value_from {
-            secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
-              key      = "latest"
-            }
-          }
-        }
-        env {
-          name = "HOST_DOMAIN"
-          value_from {
-            secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "latest"
-            }
-          }
-        }
-        env {
-          name = "FRONTEND_DOMAINS"
-          value_from {
-            secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "latest"
-            }
-          }
+          value = 1
         }
         env {
           name  = "POSTGRES_HOST"
@@ -140,11 +122,38 @@ resource "google_cloud_run_service" "default" {
           value = var.db_password
         }
         env {
-          name  = "SENTRY_DSN"
+          name = "SENTRY_DSN"
           value_from {
             secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
-              key      = "latest"
+              name = "SENTRY_DSN"
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "SECRET_KEY"
+          value_from {
+            secret_key_ref {
+              name = "SECRET_KEY"
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "HOST_DOMAIN"
+          value_from {
+            secret_key_ref {
+              name = "HOST_DOMAIN"
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "FRONTEND_DOMAINS"
+          value_from {
+            secret_key_ref {
+              name = "FRONTEND_DOMAINS"
+              key  = "latest"
             }
           }
         }
@@ -152,7 +161,7 @@ resource "google_cloud_run_service" "default" {
           name = "OPENAI_API_KEY"
           value_from {
             secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
+              name = "OPENAI_API_KEY"
               key  = "latest"
             }
           }
@@ -161,17 +170,8 @@ resource "google_cloud_run_service" "default" {
           name  = "HELICONE_API_KEY"
           value_from {
             secret_key_ref {
-              name     = format("%s-backend-env", var.project_slug)
+              name     = "HELICONE_API_KEY"
               key      = "latest"
-            }
-          }
-        }
-        env {
-          name = "CLOUDRUN_SERVICE_URL"
-          value_from {
-            secret_key_ref {
-              name = format("%s-backend-env", var.project_slug)
-              key  = "latest"
             }
           }
         }

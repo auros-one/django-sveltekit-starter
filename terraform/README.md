@@ -65,7 +65,7 @@ terraform apply
 
 
 ## X. Notes
-
+-   Docs - https://cloud.google.com/docs/terraform/samples
 -   Always review the execution plan from the `terraform plan` command before running `terraform apply`.
 -   The `terraform apply` command will create resources in your GCP project and may incur costs.
 -   You can destroy the resources created by Terraform using the `terraform destroy` command.

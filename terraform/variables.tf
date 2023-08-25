@@ -24,3 +24,7 @@ variable "db_password" {
   description = "The password for the database."
   type        = string
 }
+
+locals {
+  secrets = { for tuple in regexall("(.*?)=(.*)", file(var.env_file)) : tuple[0] => sensitive(tuple[1]) }
+}
