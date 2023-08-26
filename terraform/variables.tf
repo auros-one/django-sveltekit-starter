@@ -20,6 +20,12 @@ variable "env_file" {
   default     = "../.env.production"
 }
 
+variable "google_storage_creds_json" {
+  description = "The path to the google_storage_creds.json"
+  type        = string
+  default     = "../google_storage_credentials.json"
+}
+
 variable "db_password" {
   description = "The password for the database."
   type        = string
