@@ -35,6 +35,26 @@ resource "google_secret_manager_secret_version" "version" {
   secret_data = each.value
 }
 
+resource "google_secret_manager_secret" "g_creds_json" {
+  
+  secret_id = "G_CREDS_JSON"
+
+  labels = {
+    project = var.project_slug
+  }
+  
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "g_creds_version" {
+
+  secret = google_secret_manager_secret.g_creds_json.id
+
+  secret_data = file(var.google_storage_creds_json)
+}
+
 # Cloud SQL
 
 resource "google_sql_database_instance" "default" {
@@ -89,10 +109,31 @@ resource "google_cloud_run_service" "default" {
 
   template {
     spec {
+
       service_account_name = google_service_account.github_actions.email
+
+      volumes {
+
+        name = "google-creds-json-volume"
+        secret {
+          secret_name= google_secret_manager_secret.g_creds_json.secret_id
+          items {
+            key = "latest"
+            path    = "google_storage_credentials.json"
+            mode    = 0 # use default 0444
+          }
+        }
+      }
+      
 
       containers { # europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
         image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-artifact-repo/${format("%s-backend-image", var.project_slug)}:latest", var.project_slug)
+        
+        volume_mounts {
+          name       = "google-creds-json-volume"
+          mount_path = "/secrets"
+        }
+        
         env {
           name  = "ENVIRONMENT"
           value = "production"

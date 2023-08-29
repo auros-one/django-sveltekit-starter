@@ -87,34 +87,43 @@ jobs:
     env:
       DOCKER_BUILDKIT: 1
     steps:
+      
       - uses: actions/checkout@v3
+      
       - name: Install sentry-cli
         run: curl -sL https://sentry.io/get-cli/ | bash
+      
       - name: Configure sentry-cli
         run: |
           echo "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}" >> .env
           echo "SENTRY_ORG=${{ secrets.SENTRY_ORG }}" >> .env
           echo "SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}" >> .env
           echo "VERSION=$(sentry-cli releases propose-version)" >> $GITHUB_ENV
+      
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GOOGLE_AUTHENTICATION_CREDENTIALS_JSON }}
+      
       - name: Get Cloud SQL Proxy
         run: |
           wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
           chmod +x cloud_sql_proxy
           ./cloud_sql_proxy ${{ secrets.GCP_PROJECT }}:${{ secrets.GCP_REGION }}:${{ secrets.DB_INSTANCE_NAME }} --gcloud-auth -dir /cloudsql
+      
       - name: Get production config
         id: secrets
         uses: google-github-actions/get-secretmanager-secrets@v1
         with:
           secrets: |-
             production_env:${{ secrets.GCP_PROJECT }}/${{ secrets.GCP_ENV_NAME }}
+      
       - name: Authorize Docker push
         run: gcloud auth configure-docker europe-north1-docker.pkg.dev
+      
       - name: Prepare Sentry release
         run: sentry-cli releases new "$VERSION"
+      
       - name: Build builder image
         run: >-
           docker build
@@ -125,6 +134,7 @@ jobs:
           -t europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ secrets.REPO_NAME }}/builder:latest
           --target builder
           .
+      
       - name: Build runtime image
         run: >-
           docker build
@@ -135,30 +145,37 @@ jobs:
           -t europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ secrets.REPO_NAME }}/runtime:${{ github.sha }}
           -t europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ secrets.REPO_NAME }}/runtime:latest
           .
+      
       - name: Set up production config
         run: |-
           echo '${{ steps.secrets.outputs.production_env }}' > production.env
+      
       - name: Run deployment system checks
         run: >-
           docker run
           --env-file production.env
           --rm europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ secrets.REPO_NAME }}/$${{ secrets.PROJECT_SLUG }}:${{ github.sha }}
           manage.py check --deploy --fail-level WARNING
+      
       - name: Push builder image to Artifact Registry
         run: docker push --all-tags europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ secrets.PROJECT_SLUG }}/${{ secrets.PROJECT_SLUG }}-builder
+      
       - name: Push runtime image to Artifact Registry
         run: docker push --all-tags europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ secrets.PROJECT_SLUG }}/${{ secrets.PROJECT_SLUG }}
+      
       - name: Run database migrations
         run: >-
           docker run
           --env-file production.env
           --rm europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ secrets.PROJECT_SLUG }}/${{ secrets.PROJECT_SLUG }}:${{ github.sha }}
           manage.py migrate --noinput
+      
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: common-data
           image: europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ secrets.PROJECT_SLUG }}/${{ secrets.PROJECT_SLUG }}:${{ github.sha }}
           region: europe-north1
+      
       - name: Finalise Sentry release
         run: sentry-cli releases finalize "$VERSION"
