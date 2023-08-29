@@ -1,15 +1,16 @@
 import pytest
 import respx
-from django.test.utils import override_settings
 from hypothesis.extra.django._fields import _for_slug, register_for
 from model_bakery import baker
 from model_bakery.random_gen import gen_slug, gen_text
 from rest_framework.test import APIClient
 
+from django.test.utils import override_settings
+from project.accounts.models import User
 from project.utils import fields
 
 
-def _gen_slug(max_length: int = 500) -> str:
+def _gen_slug(max_length: int = 500) -> str:  # pragma: no cover
     """Generate a slug."""
     # model-bakery requires a max_length, but our SlugField doesn't.
     # The only change here is to add a default to the max_length parameter.
@@ -51,14 +52,19 @@ def ensure_http_requests_handled():
         yield
 
 
-@pytest.fixture(scope="session", autouse=True)
-def test_slug():
-    """This worthless test exists to provide coverage for _gen_slug"""
-    slug = _gen_slug(120)
-    assert 120 == len(slug)
-
-
 @pytest.fixture
 def api_client() -> APIClient:
     """Return a DRF API client instance."""
     return APIClient()
+
+
+@pytest.fixture
+def user():
+    return User.objects.create_user("manager@example.com", name="Mgmt", password="x")
+
+
+@pytest.fixture
+def other_user():
+    return User.objects.create_user(
+        "other-test-user@example.com", name="Mgmt", password="x"
+    )

@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 import openai
 import sentry_sdk
 from dotenv import load_dotenv
+from google.oauth2 import service_account
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -28,7 +29,9 @@ FRONTEND_DOMAINS = os.environ.get("FRONTEND_DOMAINS", "localhost:5173").split(",
 
 # Security
 
-ALLOWED_HOSTS = [f"{HOST_DOMAIN}", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = (
+    [f"{HOST_DOMAIN}"] if ENVIRONMENT == "production" else ["localhost", "127.0.0.1"]
+)
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -56,12 +59,16 @@ CSRF_TRUSTED_ORIGINS = [
 DEBUG = os.environ.get("DEBUG") == "1"
 
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
-if ENVIRONMENT != "development":  # pragma: no cover
+if ENVIRONMENT == "production" and SECRET_KEY is None:  # pragma: no cover
     raise Exception("SECRET_KEY must be set in production.")
 else:
     SECRET_KEY = "django-insecure-o4_+-(&c531@xq6a5d1++n*aqt5r08$f*siuahdadskp1sq^"
 
-if ENVIRONMENT == "development":  # pragma: no cover
+
+SESSION_COOKIE_SECURE = True if ENVIRONMENT == "production" else False
+CSRF_COOKIE_SECURE = True if ENVIRONMENT == "production" else False
+
+if ENVIRONMENT == "development":
     CORS_ORIGIN_ALLOW_ALL = True
     ALLOWED_HOSTS = ["*"]
     CSRF_TRUSTED_ORIGINS.append("http://localhost:5173")
@@ -71,18 +78,14 @@ if ENVIRONMENT == "development":  # pragma: no cover
         "http://localhost:5173",
         "ws://localhost:5173",
     )
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
 
 if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: no cover
     ALLOWED_HOSTS.append(urlparse(cloud_run_service_url).netloc)
-    CSRF_COOKIE_SECURE = True
     CSRF_TRUSTED_ORIGINS.append(cloud_run_service_url)
     LANGUAGE_COOKIE_SECURE = True
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_HSTS_SECONDS = 31_536_000  # One year.
-    SESSION_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 60  # TODO: after confirming this works in production, change this to: 31_536_000  # One year.
 
 PERMISSIONS_POLICY: dict[str, list[str]] = {
     "accelerometer": [],
@@ -174,7 +177,12 @@ WSGI_APPLICATION = "project.wsgi.application"
 # DRF
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("dj_rest_auth.jwt_auth.JWTCookieAuthentication",)
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
 }
 REST_AUTH = {
     "USE_JWT": True,
@@ -184,6 +192,10 @@ REST_AUTH = {
 SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
+
+if ENVIRONMENT == "production":  # pragma: no cover
+    REST_AUTH["JWT_AUTH_SAMESITE"] = "None"
+    REST_AUTH["JWT_AUTH_SECURE"] = True
 
 
 # Authentication
@@ -235,10 +247,12 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 
 # Email
 
-if ENVIRONMENT == "development":
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+if ENVIRONMENT == "production":
+    EMAIL_BACKEND = "django_mailgun.MailgunBackend"
+    MAILGUN_ACCESS_KEY = os.environ.get("MAILGUN_ACCESS_KEY")
+    MAILGUN_SERVER_NAME = os.environ.get("MAILGUN_SERVER_NAME")
 else:  # pragma: no cover
-    raise NotImplementedError("Email backend not configured for production.")
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
 # Internationalization.
@@ -254,13 +268,24 @@ USE_TZ = True
 
 # Static files.
 
-STATICFILES_DIRS = [BASE_DIR / "project" / "static" / "dist"]
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 STATIC_URL = "/static/"
+
+if ENVIRONMENT == "production":
+    # Google Cloud Storage settings.
+    STORAGES = {
+        "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+        "staticfiles": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+    }
+    GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        "google_storage_credentials.json"
+    )
+    STATIC_ROOT = "static"
+else:
+    # Local storage settings.
+    STATICFILES_DIRS = [BASE_DIR / "project" / "static"]
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+    STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Default primary key field type.
@@ -322,7 +347,8 @@ else:
 if openai_key := os.environ.get("OPENAI_API_KEY"):
     openai.api_key = openai_key
 else:  # pragma: no cover
-    raise ValueError("OPENAI_API_KEY not set")
+    if ENVIRONMENT == "production":
+        raise ValueError("OPENAI_API_KEY not set")
 
 # Helicone (https://www.helicone.ai)
 
