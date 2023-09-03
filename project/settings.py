@@ -283,9 +283,13 @@ if ENVIRONMENT == "production":
     STATIC_ROOT = "static"
 else:
     # Local storage settings.
-    STATICFILES_DIRS = [BASE_DIR / "project" / "static"]
+    STATICFILES_DIRS = [
+        BASE_DIR / "project" / "static"
+    ]  # directories where Django will look for static files
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-    STATIC_ROOT = BASE_DIR / "staticfiles"
+    STATIC_ROOT = (
+        BASE_DIR / "staticfiles"
+    )  # directory where collectstatic will gather static files
 
 
 # Default primary key field type.
