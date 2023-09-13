@@ -87,6 +87,18 @@ if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: n
     SECURE_HSTS_PRELOAD = True
     SECURE_HSTS_SECONDS = 60  # TODO: after confirming this works in production, change this to: 31_536_000  # One year.
 
+
+CSP_SCRIPT_SRC = [
+    "'self'",
+    "cdn.jsdelivr.net",
+]
+
+CSP_STYLE_SRC = [
+    "'self'",
+    "cdn.jsdelivr.net",
+    "'unsafe-inline'",
+]
+
 PERMISSIONS_POLICY: dict[str, list[str]] = {
     "accelerometer": [],
     "ambient-light-sensor": [],
@@ -119,6 +131,7 @@ INSTALLED_APPS = [
     # Needs to go before other apps.
     "project.accounts.apps.AccountsConfig",
     "project.utils.apps.UtilsConfig",
+    "project.docs.apps.DocsConfig",
     "corsheaders",
     "debug_toolbar",
     "django_extensions",
@@ -132,6 +145,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
+    "drf_spectacular",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -183,6 +197,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 REST_AUTH = {
     "USE_JWT": True,
@@ -196,6 +211,17 @@ SIMPLE_JWT = {
 if ENVIRONMENT == "production":  # pragma: no cover
     REST_AUTH["JWT_AUTH_SAMESITE"] = "None"
     REST_AUTH["JWT_AUTH_SECURE"] = True
+
+
+# drf-spectacular
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Project API",
+    "VERSION": "0.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # Split request and response schemas otherwise most client-generators will fail.
+    "COMPONENT_SPLIT_REQUEST": True,
+}
 
 
 # Authentication

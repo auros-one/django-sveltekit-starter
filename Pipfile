@@ -17,6 +17,7 @@ django-storages = {version = "*", extras = ["google"]}
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 dj-rest-auth = {version = "*", extras = ["with_social"]}
+drf-spectacular = "*"
 gunicorn = "*"
 httpx = "*"
 hypothesis = "*"
