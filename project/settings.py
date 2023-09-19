@@ -221,6 +221,12 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     # Split request and response schemas otherwise most client-generators will fail.
     "COMPONENT_SPLIT_REQUEST": True,
+    "TAGS": [
+        {
+            "name": "Checks",
+            "description": "Utility endpoints for checking the usability of the API.",
+        }
+    ],
 }
 
 
