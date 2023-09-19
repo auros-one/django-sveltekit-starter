@@ -20,4 +20,4 @@ def test_api_schema(client: Client):
     assert isinstance(schema, dict)
     assert "openapi" in schema
     assert "paths" in schema
-    assert schema["info"]["title"] == "ZUoS Common Data API - Documentation"
+    assert schema["info"]["title"] == "Project API"
