@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
+		"sync-types": "node sync_openapi.js",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
@@ -20,6 +21,9 @@
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte": "^2.30.0",
+		"js-yaml": "^4.1.0",
+		"node-fetch": "^3.3.2",
+		"openapi-typescript": "^6.6.1",
 		"postcss": "^8.4.25",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.10.1",
@@ -33,6 +37,7 @@
 	"type": "module",
 	"dependencies": {
 		"@sentry/sveltekit": "^7.58.1",
-		"@tailwindcss/forms": "^0.5.4"
+		"@tailwindcss/forms": "^0.5.4",
+		"openapi-fetch": "^0.7.6"
 	}
 }
