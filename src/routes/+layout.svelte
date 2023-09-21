@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Blackbear SvelteKit template</title>
+	<title>SvelteKit x Django template</title>
 </svelte:head>
 
 <slot />

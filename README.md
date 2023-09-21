@@ -1,4 +1,4 @@
-# BlackBear SvelteKit Template
+# SvelteKit Template (integrates with Django Template)
 
 ## Installing
 
