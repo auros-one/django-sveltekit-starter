@@ -1,7 +1,8 @@
-import { PUBLIC_BASE_API_URL } from '$env/static/public';
-
 export function makeAPIPath(path: string): string {
-	return `${PUBLIC_BASE_API_URL}${path}`;
+	/**
+	 * Requests to the backend API are proxied through the SvelteKit server at `/api`.
+	 */
+	return `/api${path}`;
 }
 
 export const apiPath = {

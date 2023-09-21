@@ -12,6 +12,9 @@ export async function signup(email: string, password1: string, password2: string
 		},
 		credentials: 'include'
 	});
+	if (response.status.toString().startsWith('5')) {
+		return { non_field_errors: ['Something went wrong on our end. Please try again later.'] };
+	}
 	return await response.json();
 }
 
@@ -24,8 +27,12 @@ export async function login(email: string, password: string) {
 		},
 		credentials: 'include'
 	});
-	const data = await response.json();
+	if (response.status.toString().startsWith('5')) {
+		return { non_field_errors: ['Something went wrong on our end. Please try again later.'] };
+	}
+	let data = await response.json();
 	if (response.ok) {
+		// on success, set jwt and user
 		jwt.set(data.access);
 		user.set(data.user);
 	}
@@ -54,7 +61,7 @@ export async function logout() {
 let refreshTokenLoop: number | undefined = undefined;
 
 export async function refresh() {
-	const response = await fetch('/refresh-token', {
+	const response = await fetch('/refresh-token/', {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json'
@@ -62,7 +69,11 @@ export async function refresh() {
 		credentials: 'include'
 	});
 	const data = await response.json();
-	return { token: data.access, expiration: data.access_expiration };
+	if (!response.ok) {
+		throw new Error(data.error);
+	} else {
+		return { token: data.access, expiration: data.access_expiration };
+	}
 }
 
 export async function initJWTRefreshLoop() {
