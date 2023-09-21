@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-4 items-center justify-center h-[80%]">
+<div class="flex h-[80%] flex-col items-center justify-center gap-4">
 	<a href="/welcome"><img class="mx-auto h-10 w-auto" src="/favicon.png" alt="Company logo" /></a>
 	<h1 class="text-2xl font-bold">Welcome Page</h1>
 

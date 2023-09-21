@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { login } from '$lib/api/account/auth';
-	import { apiPath } from '$lib/api/paths';
-	import { jwt } from '$lib/stores/auth';
+	import Spinner from '$lib/components/loading/Spinner.svelte';
 
 	let loading: boolean = false;
 	let errors: { [key: string]: [] } | undefined;
@@ -13,7 +12,7 @@
 		const data = await login(formData.email as string, formData.password as string);
 		if (!data.access) errors = data;
 		loading = false;
-        goto('/');
+		goto('/');
 	}
 </script>
 
@@ -66,22 +65,28 @@
 					/>
 				</div>
 			</div>
-            <div>
-                {#if errors}
-                    {#each Object.keys(errors) as key}
-                        {#each errors[key] as error}
-                            <p class="text-sm text-red-500">{error}</p>
-                        {/each}
-                    {/each}
-                {/if}
-            </div>
+			<div>
+				{#if errors}
+					{#each Object.keys(errors) as key}
+						{#each errors[key] as error}
+							<p class="text-sm text-red-500">{error}</p>
+						{/each}
+					{/each}
+				{/if}
+			</div>
 
 			<div>
 				<button
 					type="submit"
-					class="flex w-full justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-					disabled={loading}>Log in</button
+					class="flex h-9 w-full items-center justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+					disabled={loading}
 				>
+					{#if loading}
+						<Spinner color="#FFFFFF" size={20} ringThickness={2} />
+					{:else}
+						Log in
+					{/if}
+				</button>
 			</div>
 		</form>
 

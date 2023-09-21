@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { login, signup } from '$lib/api/account/auth';
-	import { apiPath } from '$lib/api/paths';
-	import { jwt } from '$lib/stores/auth';
+	import Spinner from '$lib/components/loading/Spinner.svelte';
 
 	let loading: boolean = false;
 	let errors: { [key: string]: [string] } | undefined;
@@ -22,34 +21,29 @@
 			!password1 ||
 			!password2
 		) {
-			errors = { "message": ['Invalid email or password'] };
+			errors = { message: ['Invalid email or password'] };
 			loading = false;
 			return;
 		}
 
-        if (password1 !== password2) {
-            errors = { "message": ['Passwords do not match'] };
-            loading = false;
-            return;
-        }
+		if (password1 !== password2) {
+			errors = { message: ['Passwords do not match'] };
+			loading = false;
+			return;
+		}
 
-
-        const signupData = await signup(email, password1, password2);
-        if (!signupData.access) {
-            errors = signupData;
-            loading = false;
-            return;
-        }
+		const signupData = await signup(email, password1, password2);
+		if (!signupData.access) {
+			errors = signupData;
+			loading = false;
+			return;
+		}
 
 		await login(email, password1);
-        loading = false;
-        goto('/');
+		loading = false;
+		goto('/');
 	}
 </script>
-
-
-
-
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
 	<div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -107,30 +101,36 @@
 				</div>
 			</div>
 
-
-            <div>
-                {#if errors}
-                    {#each Object.keys(errors) as key}
-                        {#each errors[key] as error}
-                            <p class="text-sm text-red-500">{error}</p>
-                        {/each}
-                    {/each}
-                {/if}
-            </div>
+			<div>
+				{#if errors}
+					{#each Object.keys(errors) as key}
+						{#each errors[key] as error}
+							<p class="text-sm text-red-500">{error}</p>
+						{/each}
+					{/each}
+				{/if}
+			</div>
 
 			<div>
 				<button
 					type="submit"
-					class="flex w-full justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-					>Sign up</button
+					class="flex h-9 w-full items-center justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+					disabled={loading}
 				>
+					{#if loading}
+						<Spinner color="#FFFFFF" size={20} ringThickness={2} />
+					{:else}
+						Sign up
+					{/if}
+				</button>
 			</div>
 		</form>
 
 		<p class="mt-10 text-center text-sm text-gray-500">
 			Already have an account?
-			<a href="/account/login" class="font-semibold leading-6 text-primary-600 hover:text-primary-500"
-				>Log in</a
+			<a
+				href="/account/login"
+				class="font-semibold leading-6 text-primary-600 hover:text-primary-500">Log in</a
 			>
 		</p>
 	</div>

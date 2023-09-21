@@ -4,6 +4,7 @@ export type SpinnerTypes = {
 	unit: string;
 	duration: string;
 	pause: boolean;
+	ringThickness: number;
 };
 
 export type Circle2Types = {

@@ -30,7 +30,7 @@ export async function login(email: string, password: string) {
 	if (response.status.toString().startsWith('5')) {
 		return { non_field_errors: ['Something went wrong on our end. Please try again later.'] };
 	}
-	let data = await response.json();
+	const data = await response.json();
 	if (response.ok) {
 		// on success, set jwt and user
 		jwt.set(data.access);
@@ -77,7 +77,7 @@ export async function refresh() {
 }
 
 export async function initJWTRefreshLoop() {
-	let { token, expiration } = await refresh();
+	const { token, expiration } = await refresh();
 	jwt.set(token);
 
 	// start loop to refresh jwt

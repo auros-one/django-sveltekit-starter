@@ -3,9 +3,9 @@
 	import { user } from '$lib/stores/account';
 </script>
 
-<div class="flex flex-col gap-4 items-center justify-center h-[80%]">
+<div class="flex h-[80%] flex-col items-center justify-center gap-4">
 	<a href="/welcome"><img class="mx-auto h-10 w-auto" src="/favicon.png" alt="Company logo" /></a>
-	<h1 class="text-2xl my-4 font-bold">User Homepage</h1>
+	<h1 class="my-4 text-2xl font-bold">User Homepage</h1>
 	<h2 class="text-lg">Logged in as {$user?.email}</h2>
 	<button
 		on:click={logout}

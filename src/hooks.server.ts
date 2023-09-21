@@ -11,9 +11,8 @@ const handleApiProxy: Handle = async ({ event }) => {
 	 * https://sami.website/blog/sveltekit-api-reverse-proxy
 	 */
 
-	const origin = event.request.headers.get('Origin');
-
 	// reject requests that don't come from the webapp, to avoid your proxy being abused.
+	//const origin = event.request.headers.get('Origin');
 	//if (!origin || new URL(origin).origin !== event.url.origin) {
 	//	throw error(403, 'Request Forbidden.');
 	//}
@@ -44,7 +43,12 @@ const handleApiProxy: Handle = async ({ event }) => {
 
 	// The body is only passed if it's not empty
 	const body = (await event.request.text()) || '';
-	let requestData = {
+	const requestData: {
+		method: string;
+		headers: Record<string, string>;
+		duplex: string;
+		body?: string;
+	} = {
 		method: event.request.method,
 		headers: forwardedHeaders,
 		duplex: 'half' // this is required for some reason: https://github.com/nodejs/node/issues/46221
@@ -57,7 +61,7 @@ const handleApiProxy: Handle = async ({ event }) => {
 	return fetch(proxiedUrl.toString(), requestData).catch((err) => {
 		// put the keys in a string:
 		const keys = Object.keys(err);
-		const keaysString = keys.join(', ');
+		const keysString = keys.join(', ');
 		throw error(
 			500,
 			`error "${err} "(keys: ${keysString}) (${err?.cause?.code}) ${err?.cause?.reason}`

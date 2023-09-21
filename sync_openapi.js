@@ -7,29 +7,32 @@ import yaml from 'js-yaml';
 const BACKEND_URL = 'http://localhost:8000';
 
 fetch(`${BACKEND_URL}/docs/schema`)
-  .then(response => response.text())
-  .then(async schemaText => {
-    // Write the schema to a temporary file
-    await writeFile('./temp-schema.yml', schemaText);
+	.then((response) => response.text())
+	.then(async (schemaText) => {
+		// Write the schema to a temporary file
+		await writeFile('./temp-schema.yml', schemaText);
 
-    // Read and parse the schema file
-    const schema = yaml.load(await readFile('./temp-schema.yml', 'utf8'));
+		// Read and parse the schema file
+		const schema = yaml.load(await readFile('./temp-schema.yml', 'utf8'));
 
-    // Use npx to generate TypeScript types
-    exec('npx openapi-typescript ./temp-schema.yml -o ./src/lib/api/backend-api-schema.d.ts', (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-      }
+		// Use npx to generate TypeScript types
+		exec(
+			'npx openapi-typescript ./temp-schema.yml -o ./src/lib/api/backend-api-schema.d.ts',
+			(error, stdout, stderr) => {
+				if (error) {
+					console.error(`Error: ${error.message}`);
+					return;
+				}
+				if (stderr) {
+					console.error(`stderr: ${stderr}`);
+					return;
+				}
 
-      // Delete the temporary file if it exists
-      if (existsSync('./temp-schema.yml')) unlink('./temp-schema.yml');
-    });
+				// Delete the temporary file if it exists
+				if (existsSync('./temp-schema.yml')) unlink('./temp-schema.yml');
+			}
+		);
 
-    console.log(`🚀 Synced Backend: ${schema.info.title} (${schema.info.version})\n`);
-  })
-  .catch(error => console.error('Error:', error));
+		console.log(`🚀 Synced Backend: ${schema.info.title} (${schema.info.version})\n`);
+	})
+	.catch((error) => console.error('Error:', error));
