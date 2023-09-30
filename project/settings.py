@@ -123,7 +123,7 @@ PERMISSIONS_POLICY: dict[str, list[str]] = {
 
 SITE_ID = 1
 
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 AUTH_USER_MODEL = "accounts.User"
 
