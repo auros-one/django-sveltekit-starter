@@ -12,6 +12,7 @@ const handleApiProxy: Handle = async ({ event }) => {
 	 */
 
 	// reject requests that don't come from the webapp, to avoid your proxy being abused.
+	// --> This is broken on localhost and untested in production
 	//const origin = event.request.headers.get('Origin');
 	//if (!origin || new URL(origin).origin !== event.url.origin) {
 	//	throw error(403, 'Request Forbidden.');
@@ -24,38 +25,26 @@ const handleApiProxy: Handle = async ({ event }) => {
 	const urlPath = `${PUBLIC_BASE_API_URL}${strippedPath}${event.url.search}`;
 	const proxiedUrl = new URL(urlPath);
 
-	// Create a new headers object with only the headers to forward
-	const forwardedHeadersList = [
-		'content-type',
-		'authorization',
-		'user-agent',
-		'accept',
-		'accept-encoding',
-		'content-length'
-	];
+	// Forward all headers
 	const forwardedHeaders: Record<string, string> = {};
-	for (const header of forwardedHeadersList) {
-		if (event.request.headers.has(header)) {
-			forwardedHeaders[header] = event.request.headers.get(header) || '';
-		}
+	for (const [header, value] of event.request.headers) {
+		forwardedHeaders[header] = value;
 	}
-	forwardedHeaders['host'] = proxiedUrl.hostname; // Add the correct 'host' header
+	forwardedHeaders['host'] = proxiedUrl.host; // Add the correct 'host' header
 
 	// The body is only passed if it's not empty
-	const body = (await event.request.text()) || '';
+	const body = event.request.body; // get the body as a stream
 	const requestData: {
 		method: string;
 		headers: Record<string, string>;
 		duplex: string;
-		body?: string;
+		body?: ReadableStream | null;
 	} = {
 		method: event.request.method,
 		headers: forwardedHeaders,
-		duplex: 'half' // this is required for some reason: https://github.com/nodejs/node/issues/46221
+		duplex: 'half',
+		body: body
 	};
-	if (body) {
-		requestData['body'] = body;
-	}
 
 	// make the request to the backend API
 	return fetch(proxiedUrl.toString(), requestData).catch((err) => {
