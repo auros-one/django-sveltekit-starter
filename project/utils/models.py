@@ -1,5 +1,6 @@
 import datetime
 import uuid
+from datetime import timezone
 
 from django.db import models
 
@@ -27,7 +28,7 @@ class BaseModel(models.Model):
 
     def save(self, *args, **kwargs):
         if self.deleted:
-            self.deleted_at = datetime.datetime.now(datetime.UTC)
+            self.deleted_at = datetime.datetime.now(timezone.utc)
         else:
             self.deleted_at = None
         super().save(*args, **kwargs)
