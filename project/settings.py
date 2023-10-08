@@ -248,7 +248,7 @@ DATABASES = {
     "default": {
         "CONN_MAX_AGE": None,
         "ENGINE": "django.db.backends.postgresql",
-        "HOST": os.environ.get("POSTGRES_HOST", "db"),
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
         "NAME": os.environ.get("POSTGRES_DB"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
