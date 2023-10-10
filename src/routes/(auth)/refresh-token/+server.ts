@@ -16,14 +16,10 @@ export const GET = (async ({ cookies, fetch }) => {
 			},
 			body: JSON.stringify({ refresh: refreshToken })
 		});
-
-		if (response.status == 401) {
-			const data = await response.json();
-			// if the refresh token is invalid, delete it and redirect to login
-			if (data.code == 'token_not_valid') {
-				cookies.delete('refresh-token');
-				throw redirect(302, '/account/login');
-			}
+        
+		if (!response.ok) {
+            cookies.delete('refresh-token');
+            throw redirect(302, '/account/login');
 		}
 		return response;
 	} catch (err) {
