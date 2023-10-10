@@ -31,7 +31,3 @@ Add all environment variables listed in .env.example to Cloudflare Pages.
 If your IDE is complaining about missing modules, for example`Cannot find module '$lib/...' or '$app/...' from language server for .svelte files in default configuration of sveltekit`
 
 run `npm run check` might resolve the issue. ([soure](https://github.com/sveltejs/language-tools/issues/1459#issuecomment-1465270092))
-
-## Sentry
-
-A test button is provided at /sentry/test to check if raising an error results in a Sentry issue. You might want to remove this page once you have confirmed Sentry is working.
