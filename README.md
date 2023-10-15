@@ -1,4 +1,8 @@
-# Blackbear Boilerplate
+# Django Template
+
+Django template with multiple convenient features.
+
+Authentication integration with the SvelteKit Template.
 
 ## Setup
 
