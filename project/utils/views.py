@@ -15,10 +15,7 @@ class HealthCheck(APIView):
 
     @extend_schema(
         operation_id="Health Check",
-        responses={
-            "204": OpenApiResponse(description="Authenticated."),
-            "403": OpenApiResponse(description="Not authenticated."),
-        },
+        responses={204: None},
         tags=["Checks"],
     )
     def get(self, _):
@@ -32,7 +29,10 @@ class AuthCheck(APIView):
 
     @extend_schema(
         operation_id="Auth Check",
-        responses={204: None},
+        responses={
+            "204": OpenApiResponse(description="Authenticated."),
+            "403": OpenApiResponse(description="Not authenticated."),
+        },
         tags=["Checks"],
     )
     def get(self, _):
