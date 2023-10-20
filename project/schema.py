@@ -1,7 +1,7 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 
 
-class JWTScheme(OpenApiAuthenticationExtension):
+class JWTSchema(OpenApiAuthenticationExtension):
     target_class = "dj_rest_auth.jwt_auth.JWTCookieAuthentication"
     name = "jwtAuth"
 
