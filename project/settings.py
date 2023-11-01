@@ -135,10 +135,10 @@ INSTALLED_APPS = [
     "project.accounts.apps.AccountsConfig",
     "project.utils.apps.UtilsConfig",
     "project.docs.apps.DocsConfig",
+    "project.apps.CustomAdminConfig",
     "corsheaders",
     "debug_toolbar",
     "django_extensions",
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -224,7 +224,7 @@ if ENVIRONMENT == "production":  # pragma: no cover
 # drf-spectacular
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Project API",
+    "TITLE": "API Documentation",
     "VERSION": "0.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     # Split request and response schemas otherwise most client-generators will fail.

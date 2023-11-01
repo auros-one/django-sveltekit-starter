@@ -50,7 +50,12 @@ docker compose run --rm web manage.py migrate
 
 ## Deployment
 
+
+**Site Name and Domain**
+
 Don't forget to update the site domain and name at https://<your-domain>/admin/sites/site
+
+This name and domain are used in the email templates and the Django admin dashboard.
 
 # Testing
 
