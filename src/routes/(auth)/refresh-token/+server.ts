@@ -1,4 +1,4 @@
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { apiPath } from '$lib/api/paths';
 import type { RequestHandler } from './$types';
 
@@ -16,14 +16,14 @@ export const GET = (async ({ cookies, fetch }) => {
 			},
 			body: JSON.stringify({ refresh: refreshToken })
 		});
-        
+
 		if (!response.ok) {
-            cookies.delete('refresh-token');
-            throw error(401);
+			cookies.delete('refresh-token');
+			throw error(401);
 		}
 		return response;
 	} catch (err) {
-        cookies.delete('refresh-token');
+		cookies.delete('refresh-token');
 		throw error(500, `${err}`);
 	}
 }) satisfies RequestHandler;

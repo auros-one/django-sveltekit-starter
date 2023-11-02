@@ -13,14 +13,10 @@
 	 *
 	 * The 'onMount' of this component starts the JWT refresh loop, which will
 	 * refresh the JWT token when it is about to expire. If anything goes wrong
-     * during the refresh loop, the user is redirected to the login page.
+	 * during the refresh loop, the user is redirected to the login page.
 	 */
 
 	let refreshTokenLoop: number | undefined = undefined;
-
-	function handleJWTError(_: any) {
-		goto('/account/login');
-	}
 
 	async function initJWTRefreshLoop() {
 		const result = await refresh();
@@ -34,7 +30,7 @@
 				const updatedTokenInfo = await refresh();
 				jwt.set(updatedTokenInfo.token);
 			} catch (e) {
-				handleJWTError(e);
+				goto('/account/login');
 				clearInterval(refreshTokenLoop); // Clear the interval if an error occurs
 			}
 		}, refreshRateMS);
@@ -45,7 +41,7 @@
 			await initJWTRefreshLoop();
 			getUser();
 		} catch (e) {
-			handleJWTError(e);
+			goto('/account/login');
 		}
 	});
 

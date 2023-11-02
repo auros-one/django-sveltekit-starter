@@ -1,5 +1,5 @@
 import { apiPath } from '$lib/api/paths';
-import { goto, invalidateAll } from '$app/navigation';
+import { invalidateAll } from '$app/navigation';
 import { jwt } from '$lib/stores/auth';
 import { user } from '$lib/stores/account';
 
