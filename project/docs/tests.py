@@ -1,5 +1,4 @@
 import yaml
-
 from django.test import Client
 from django.urls import reverse
 

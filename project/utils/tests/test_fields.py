@@ -1,7 +1,6 @@
+from django import forms
 from hypothesis import given
 from hypothesis.extra.django import from_field
-
-from django import forms
 
 from ..fields import SlugField
 

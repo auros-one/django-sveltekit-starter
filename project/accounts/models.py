@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Upper
 from django.utils import timezone
-from project.utils.fields import EmailField, StringField
+
+from project.utils.fields import EmailField
+from project.utils.fields import StringField
 
 
 class UserManager(BaseUserManager):
@@ -63,7 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     date_joined = models.DateTimeField(default=timezone.now)
 
-    objects = UserManager()
+    objects: UserManager = UserManager()
 
     REQUIRED_FIELDS = ["name"]
     USERNAME_FIELD = "email"

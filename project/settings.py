@@ -1,7 +1,6 @@
 """
 Django settings
 """
-
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -57,6 +56,8 @@ CORS_ALLOW_HEADERS = [
 
 CORS_ALLOWED_ORIGINS = [f"https://{HOST_DOMAIN}", f"https://{FRONTEND_DOMAIN}"]
 
+CSRF_COOKIE_SECURE = True
+
 CSRF_TRUSTED_ORIGINS = [f"https://{HOST_DOMAIN}", f"https://{FRONTEND_DOMAIN}"]
 
 DEBUG = os.environ.get("DEBUG") == "1"
@@ -67,9 +68,19 @@ if ENVIRONMENT == "production" and SECRET_KEY is None:  # pragma: no cover
 else:
     SECRET_KEY = "django-insecure-o4_+-(&c531@xq6a5d1++n*aqt5r08$f*siuahdadskp1sq^"
 
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
-SESSION_COOKIE_SECURE = True if ENVIRONMENT == "production" else False
-CSRF_COOKIE_SECURE = True if ENVIRONMENT == "production" else False
+SECURE_HSTS_PRELOAD = True
+
+SECURE_HSTS_SECONDS = 60  # TODO: after confirming this works in production, change this to: 31_536_000  # One year.
+
+SESSION_COOKIE_SECURE = True
+
+LANGUAGE_COOKIE_SECURE = True
+
+if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: no cover
+    ALLOWED_HOSTS.append(urlparse(cloud_run_service_url).netloc)
+    CSRF_TRUSTED_ORIGINS.append(cloud_run_service_url)
 
 if ENVIRONMENT == "development":
     CORS_ORIGIN_ALLOW_ALL = True
@@ -81,15 +92,7 @@ if ENVIRONMENT == "development":
         "http://localhost:5173",
         "ws://localhost:5173",
     )
-
-if cloud_run_service_url := os.environ.get("CLOUDRUN_SERVICE_URL"):  # pragma: no cover
-    ALLOWED_HOSTS.append(urlparse(cloud_run_service_url).netloc)
-    CSRF_TRUSTED_ORIGINS.append(cloud_run_service_url)
-    LANGUAGE_COOKIE_SECURE = True
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_HSTS_SECONDS = 60  # TODO: after confirming this works in production, change this to: 31_536_000  # One year.
-
+    SECURE_HSTS_SECONDS = 0
 
 CSP_SCRIPT_SRC = [
     "'self'",
@@ -101,25 +104,6 @@ CSP_STYLE_SRC = [
     "cdn.jsdelivr.net",
     "'unsafe-inline'",
 ]
-
-PERMISSIONS_POLICY: dict[str, list[str]] = {
-    "accelerometer": [],
-    "ambient-light-sensor": [],
-    "autoplay": [],
-    "camera": [],
-    "display-capture": [],
-    "document-domain": [],
-    "encrypted-media": [],
-    "fullscreen": [],
-    "geolocation": [],
-    "gyroscope": [],
-    "interest-cohort": [],
-    "magnetometer": [],
-    "microphone": [],
-    "midi": [],
-    "payment": [],
-    "usb": [],
-}
 
 
 # Application definition.
@@ -164,7 +148,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "project.utils.middleware.CsrfProtectMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -292,6 +276,14 @@ if ENVIRONMENT == "production":
     MAILGUN_ACCESS_KEY = os.environ.get("MAILGUN_ACCESS_KEY")
     MAILGUN_SERVER_NAME = os.environ.get("MAILGUN_SERVER_NAME")
     MAILGUN_DOMAIN = os.environ.get("MAILGUN_DOMAIN")
+    if (
+        MAILGUN_ACCESS_KEY is None
+        or MAILGUN_SERVER_NAME is None
+        or MAILGUN_DOMAIN is None
+    ):  # pragma: no cover
+        raise ValueError(
+            "MAILGUN_ACCESS_KEY, MAILGUN_SERVER_NAME, and MAILGUN_DOMAIN must be set in production."
+        )
     DEFAULT_FROM_EMAIL = (
         "no-reply@" + MAILGUN_DOMAIN
     )  # used by django-allauth when sending emails
@@ -352,6 +344,14 @@ SILENCED_SYSTEM_CHECKS = [
     # SECURE_SSL_REDIRECT -- seems to break Cloud Run and is handled there.
     "security.W008",
 ]
+if ENVIRONMENT == "development":  # pragma: no cover
+    SILENCED_SYSTEM_CHECKS.extend(
+        [
+            "security.W004",  # SECURE_HSTS_SECONDS
+            "security.W009",  # SECRET_KEY
+            "security.W018",  # DEBUG
+        ]
+    )
 
 
 # Logging & reporting.
@@ -381,16 +381,6 @@ def show_toolbar(request):  # pragma: no cover
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": show_toolbar,
 }
-
-
-# Typing.
-
-try:
-    import django_stubs_ext
-except ImportError:  # pragma: no cover
-    pass
-else:
-    django_stubs_ext.monkeypatch()
 
 
 # OpenAI

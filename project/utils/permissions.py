@@ -1,7 +1,7 @@
-from rest_framework.permissions import SAFE_METHODS, BasePermission
-from rest_framework.request import Request
-
 from django.views import View
+from rest_framework.permissions import BasePermission
+from rest_framework.permissions import SAFE_METHODS
+from rest_framework.request import Request
 
 
 class PublicReadOnly(BasePermission):

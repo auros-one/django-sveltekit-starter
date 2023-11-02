@@ -20,7 +20,7 @@ class BaseModel(models.Model):
     deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
-    objects = BaseModelManager()
+    objects: BaseModelManager = BaseModelManager()
 
     class Meta:
         ordering = ["-created"]

@@ -1,6 +1,9 @@
 from django.contrib import admin
-from django.urls import include, path
-from project.utils.views import AuthCheck, HealthCheck
+from django.urls import include
+from django.urls import path
+
+from project.utils.views import AuthCheck
+from project.utils.views import HealthCheck
 
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),

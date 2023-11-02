@@ -1,6 +1,6 @@
 import pytest
-
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError
+from django.db import transaction
 
 from ..models import User
 

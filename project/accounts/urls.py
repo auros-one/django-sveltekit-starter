@@ -1,4 +1,6 @@
-from django.urls import include, path
+from django.urls import include
+from django.urls import path
+
 from project.accounts.views import ChangeEmailView
 
 urlpatterns = [

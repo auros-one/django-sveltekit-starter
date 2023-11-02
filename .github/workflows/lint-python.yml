@@ -22,17 +22,12 @@ on:
         required: false
         type: boolean
       isort:
-        default: true
+        default: false
         description: Run isort
         required: false
         type: boolean
-      mypy:
-        default: true
-        description: Run mypy
-        required: false
-        type: boolean
       pyright:
-        default: false
+        default: true
         description: Run pyright
         required: false
         type: boolean
@@ -42,24 +37,18 @@ on:
         required: false
         type: boolean
       reorder-python-imports:
-        default: false
+        default: true
         description: Run reorder-python-imports
         required: false
         type: boolean
       ruff:
-        default: false
+        default: true
         description: Run ruff
         required: false
         type: boolean
 
       django-version:
         default: "4.2"
-        required: false
-        type: string
-      mypy-dot-env:
-        required: false
-        type: string
-      mypy-system-dependencies:
         required: false
         type: string
       package-manager:
@@ -144,67 +133,10 @@ jobs:
           linters: isort
           run: pipenv run python -m isort --check-only --diff .
 
-  mypy:
-    if: inputs.mypy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install system dependencies
-        if: ${{ inputs.mypy-system-dependencies }}
-        run: |
-          sudo apt-get -y update
-          sudo apt-get -y install --no-install-recommends ${{ inputs.mypy-system-dependencies }}
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          cache: ${{ inputs.package-manager }}
-          python-version: ${{ inputs.python-version }}
-      - name: Set up environment
-        if: ${{ inputs.mypy-dot-env }}
-        run: cp ${{ inputs.mypy-dot-env }} .env
-      # Make sure there is some version of mypy in case it's not a listed dependency.
-      - name: Install mypy
-        run: pip install mypy
-      - name: Set pipenv SSH key from secrets
-        env:
-          DEPENDENCY_SSH_KEY: ${{ secrets.DEPENDENCY_SSH_KEY }}
-        if: ${{ env.DEPENDENCY_SSH_KEY != null }}
-        uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.DEPENDENCY_SSH_KEY }}
-      - name: Install pipenv requirements
-        if: inputs.package-manager == 'pipenv'
-        run: pip install pipenv && pipenv install --dev
-      - name: Install pip requirements
-        if: inputs.package-manager == 'pip'
-        run: pip install -r ${{ inputs.requirements-files }}
-      - name: Load mypy cache
-        id: mypy-cache
-        uses: actions/cache@v2
-        with:
-          path: .mypy_cache
-          key: mypy-${{ runner.os }}
-      - name: Run mypy (pip)
-        if: inputs.package-manager == 'pip'
-        uses: liskin/gh-problem-matcher-wrap@v1
-        with:
-          linters: mypy
-          run: python -m mypy --show-column-numbers
-      - name: Run mypy (pipenv)
-        if: inputs.package-manager == 'pipenv'
-        uses: liskin/gh-problem-matcher-wrap@v1
-        with:
-          linters: mypy
-          run: pipenv run python -m mypy --show-column-numbers
-
   pyright:
     if: inputs.pyright
     runs-on: ubuntu-latest
     steps:
-      - name: Install system dependencies
-        if: ${{ inputs.mypy-system-dependencies }}
-        run: |
-          sudo apt-get -y update
-          sudo apt-get -y install --no-install-recommends ${{ inputs.mypy-system-dependencies }}
       - uses: actions/checkout@v3
       - name: Ensure virtualenv is not created in the project
         run: rm -rf .venv

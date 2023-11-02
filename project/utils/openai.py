@@ -4,9 +4,8 @@ import time
 from dataclasses import dataclass
 
 import openai
-from openai.error import InvalidRequestError
-
 from django.conf import settings
+from openai.error import InvalidRequestError
 
 MODEL_PRICINGS = {
     "gpt-3.5-turbo": {
@@ -69,9 +68,9 @@ async def aquery_openai(
             completion = await openai.ChatCompletion.acreate(
                 **openai_completion_request
             )
-            prompt_tokens = completion.usage.prompt_tokens
-            completion_tokens = completion.usage.completion_tokens
-            completion = completion.choices[0].message.content
+            prompt_tokens = completion.usage.prompt_tokens  # type: ignore
+            completion_tokens = completion.usage.completion_tokens  # type: ignore
+            completion = completion.choices[0].message.content  # type: ignore
             return PromptResult(
                 model=model,
                 prompt_tokens=prompt_tokens,
@@ -131,9 +130,9 @@ def query_openai(
                     "Helicone-Auth": f"Bearer {HELICONE_API_KEY}",
                 }
             completion = openai.ChatCompletion.create(**openai_completion_request)
-            prompt_tokens = completion.usage.prompt_tokens
-            completion_tokens = completion.usage.completion_tokens
-            completion = completion.choices[0].message.content
+            prompt_tokens = completion.usage.prompt_tokens  # type: ignore
+            completion_tokens = completion.usage.completion_tokens  # type: ignore
+            completion = completion.choices[0].message.content  # type: ignore
             return PromptResult(
                 model=model,
                 prompt_tokens=prompt_tokens,

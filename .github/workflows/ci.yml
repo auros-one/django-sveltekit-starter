@@ -28,9 +28,6 @@ jobs:
     # Dependencies are required for some linters.
     needs: [dependencies]
     uses: ./.github/workflows/lint-python.yml
-    with:
-      mypy-dot-env: .env.example
-      mypy-system-dependencies: libproj-dev gdal-bin
 
   test:
     needs: [dependencies]

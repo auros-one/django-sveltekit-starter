@@ -3,9 +3,8 @@ from allauth.account.utils import user_pk_to_url_str
 from dj_rest_auth.serializers import (
     PasswordResetSerializer as RestAuthPasswordResetSerializer,
 )
-from rest_framework import serializers
-
 from django.conf import settings
+from rest_framework import serializers
 
 from .models import User
 
@@ -51,7 +50,7 @@ class PasswordResetSerializer(RestAuthPasswordResetSerializer):
         request = self.context.get("request")
         # Set some values to trigger the send_email method.
         opts = {
-            "use_https": request.is_secure(),
+            "use_https": request.is_secure(),  # type: ignore[attr-defined]
             "from_email": getattr(settings, "DEFAULT_FROM_EMAIL"),
             "request": request,
             "token_generator": default_token_generator,
@@ -59,7 +58,7 @@ class PasswordResetSerializer(RestAuthPasswordResetSerializer):
         }
 
         opts.update(self.get_email_options())
-        self.reset_form.save(**opts)
+        self.reset_form.save(**opts)  # type: ignore[attr-defined]
 
 
 class EmailChangeSerializer(serializers.Serializer):

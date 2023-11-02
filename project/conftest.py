@@ -1,11 +1,13 @@
 import pytest
 import respx
-from hypothesis.extra.django._fields import _for_slug, register_for
+from django.test.utils import override_settings
+from hypothesis.extra.django._fields import _for_slug
+from hypothesis.extra.django._fields import register_for
 from model_bakery import baker
-from model_bakery.random_gen import gen_slug, gen_text
+from model_bakery.random_gen import gen_slug
+from model_bakery.random_gen import gen_text
 from rest_framework.test import APIClient
 
-from django.test.utils import override_settings
 from project.accounts.models import User
 from project.utils import fields
 

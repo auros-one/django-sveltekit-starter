@@ -18,27 +18,28 @@ Search the project files (CTRL+SHIFT+F) and replace all instances of `project_na
 
 ### Installation
 
-**using pipenv**
-
 ```console
 cp .env.example .env
 pipenv install --dev
-pipenv run pre-commit install
+pipenv shell
+pre-commit install
 ```
 
 ## Running
 
-**setup**
+**start DB and run migrations**
 
 ```console
 docker compose up db -d
-pipenv run python manage.py migrate
+pipenv shell
+python manage.py migrate
 ```
 
-**run**
+**run development server**
 
 ```console
-pipenv run python manage.py runserver
+pipenv shell
+python manage.py runserver
 ```
 
 ### Running in docker compose
@@ -50,7 +51,6 @@ docker compose run --rm web manage.py migrate
 
 ## Deployment
 
-
 **Site Name and Domain**
 
 Don't forget to update the site domain and name at https://<your-domain>/admin/sites/site
@@ -59,40 +59,49 @@ This name and domain are used in the email templates and the Django admin dashbo
 
 # Testing
 
-```console
-docker compose run --rm web -m pytest --dist=no -n 0 --no-cov
-```
-
-**Running a single file**
+**in Pipenv**
 
 ```console
-docker compose run --rm web -m manage shell_plus pytest project/app_name/tests.py --dist=no -n 0 --no-cov
+pipenv shell
+pytest --dist=no -n 0 --cov-report=html
 ```
 
-**generating coverage**
+**in Docker**
 
 ```console
 docker compose run --rm web -m pytest --dist=no -n 0 --cov-report=html
 ```
 
+**Running a specific file**
+
+```console
+docker compose run --rm web -m manage shell_plus pytest project/app_name/tests.py --dist=no -n 0 --cov-report=html
+```
+
+## Coverage
+
+By running the tests with `--cov-report=html` a coverage report will be generated in `htmlcov/index.html`.
+
 **Type Checking**
 
 ```console
-docker compose run --rm web -m mypy
+pipenv shell
+pyright .
 ```
 
-# Django
+## Django Commands
 
-## Migrations
+**Migrations**
 
 ```console
-docker compose run --rm web manage.py makemigrations
+python manage.py makemigrations
+python manage.py migrate
 ```
 
-## Running management commands
+**Running management commands**
 
 ```console
-docker compose run --rm web manage.py <command>
+python manage.py <command>
 ```
 
 ## Accounts Verification and Other Emails

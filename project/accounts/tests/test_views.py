@@ -3,11 +3,10 @@ from http import HTTPStatus
 
 import pytest
 from allauth.account.admin import EmailAddress
-from rest_framework.test import APIClient
-
 from django.contrib.auth import authenticate
 from django.core import mail
 from django.urls import reverse
+from rest_framework.test import APIClient
 
 from ..models import User
 
@@ -32,14 +31,17 @@ class TestAuth:
 
         # check results
         assert response.status_code == HTTPStatus.CREATED
-        assert "access" in response.data
-        assert "refresh" in response.data
-        assert "user" in response.data
-        assert response.data["user"]["email"] == "test@example.com"
+        result = response.json()
+        assert "access" in result
+        assert "refresh" in result
+        assert "user" in result
+        assert result["user"]["email"] == "test@example.com"
 
         assert User.objects.count() == 1
         assert EmailAddress.objects.count() == 1
-        assert not EmailAddress.objects.first().verified
+        email_address = EmailAddress.objects.first()
+        assert email_address is not None
+        assert not email_address.verified
         assert len(mail.outbox) == 1
 
         # get the verify key from the verification url
@@ -51,7 +53,9 @@ class TestAuth:
 
         # check results
         assert response.status_code == HTTPStatus.OK
-        assert EmailAddress.objects.first().verified
+        email_address = EmailAddress.objects.first()
+        assert email_address is not None
+        assert email_address.verified
 
     def test_login(self, api_client: APIClient):
         User.objects.create_user(
@@ -70,10 +74,11 @@ class TestAuth:
 
         assert response.status_code == HTTPStatus.OK
         assert response.cookies.get("refresh-token") is not None
-        assert "access" in response.data
-        assert "refresh" in response.data
-        assert "user" in response.data
-        assert response.data["user"]["email"] == "test@example.com"
+        result = response.json()
+        assert "access" in result
+        assert "refresh" in result
+        assert "user" in result
+        assert result["user"]["email"] == "test@example.com"
 
 
 @pytest.mark.django_db
