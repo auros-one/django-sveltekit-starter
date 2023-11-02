@@ -8,7 +8,7 @@ Authentication integration with the SvelteKit Template.
 
 ### Requirements
 
--   Python 3.10+
+-   Python 3.11+
 -   Pipenv
 -   Docker & Docker Compose
 

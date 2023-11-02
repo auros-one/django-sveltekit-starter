@@ -1,4 +1,4 @@
-FROM python:3.10-slim AS builder
+FROM python:3.11-slim AS builder
 
 WORKDIR /build
 
@@ -23,7 +23,7 @@ RUN if [ "$ENVIRONMENT" = "development" ] ;\
 
 # Final runner
 
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
