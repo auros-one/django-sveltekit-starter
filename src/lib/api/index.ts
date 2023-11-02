@@ -1,5 +1,5 @@
 /**
- * We using openapi-fetch to generate typescript client for our backend API.
+ * We are using openapi-fetch to generate typescript client for our backend API.
  * https://openapi-ts.pages.dev/openapi-fetch/
  *
  * Update the types by syncing the schema from backend:

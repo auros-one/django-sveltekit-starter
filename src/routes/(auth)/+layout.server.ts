@@ -1,3 +1,7 @@
+/**
+ * Server-side check for the refresh-token cookie.
+ * If it is not present, redirect to the login page.
+ */
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 

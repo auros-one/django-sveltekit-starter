@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { login } from '$lib/api/account/auth';
+	import { requestPasswordReset } from '$lib/api/account/auth';
 	import Spinner from '$lib/components/loading/Spinner.svelte';
 
 	let loading: boolean = false;
+	let sent: boolean = false;
 	let errors: { [key: string]: [] } | undefined;
 
-	async function onLogin(e: Event) {
+	async function onReset(e: Event) {
 		loading = true;
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-		const data = await login(formData.email as string, formData.password as string);
-		if (!data.access) errors = data;
+		const data = await requestPasswordReset(formData.email as string);
+		if (data.non_field_errors) errors = data;
+		else sent = true;
 		loading = false;
-		goto('/');
 	}
 </script>
 
@@ -20,12 +20,12 @@
 	<div class="sm:mx-auto sm:w-full sm:max-w-sm">
 		<a href="/welcome"><img class="mx-auto h-10 w-auto" src="/favicon.png" alt="Company logo" /></a>
 		<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-			Log in to your account
+			Reset your password
 		</h2>
 	</div>
 
 	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-		<form class="space-y-6" method="POST" on:submit|preventDefault={onLogin}>
+		<form class="space-y-6" method="POST" on:submit|preventDefault={onReset}>
 			<div>
 				<label for="email" class="block text-sm font-medium leading-6 text-gray-900"
 					>Email address</label
@@ -36,30 +36,6 @@
 						name="email"
 						type="email"
 						autocomplete="email"
-						required
-						class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
-					/>
-				</div>
-			</div>
-
-			<div>
-				<div class="flex items-center justify-between">
-					<label for="password" class="block text-sm font-medium leading-6 text-gray-900"
-						>Password</label
-					>
-					<div class="text-sm">
-						<a
-							href="/account/reset-password"
-							class="font-semibold text-primary-600 hover:text-primary-500">Forgot password?</a
-						>
-					</div>
-				</div>
-				<div class="mt-2">
-					<input
-						id="password"
-						name="password"
-						type="password"
-						autocomplete="current-password"
 						required
 						class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
 					/>
@@ -79,12 +55,25 @@
 				<button
 					type="submit"
 					class="flex h-9 w-full items-center justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-					disabled={loading}
+					disabled={loading || sent}
 				>
 					{#if loading}
 						<Spinner color="#FFFFFF" size={20} ringThickness={2} />
+					{:else if sent}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="1.5"
+							stroke="currentColor"
+							class="mr-2 h-5 w-5"
+						>
+							<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+						</svg>
+
+						Reset link sent! Check your email
 					{:else}
-						Log in
+						Send reset link
 					{/if}
 				</button>
 			</div>

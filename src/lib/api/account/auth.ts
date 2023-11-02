@@ -1,5 +1,5 @@
 import { apiPath } from '$lib/api/paths';
-import { invalidateAll } from '$app/navigation';
+import { goto, invalidateAll } from '$app/navigation';
 import { jwt } from '$lib/stores/auth';
 import { user } from '$lib/stores/account';
 
@@ -48,19 +48,80 @@ export async function logout() {
 		credentials: 'include'
 	});
 
-	if (refreshTokenLoop) {
-		clearInterval(refreshTokenLoop);
-		refreshTokenLoop = undefined;
-	}
-
+	// Cause all load functions belonging to the currently active page to re-run.
+	// This will trigger auth protection which will redirct the user to the login page.
 	invalidateAll();
+}
+
+export async function requestPasswordReset(email: string) {
+	const response = await fetch(apiPath.accounts.password_reset, {
+		method: 'POST',
+		body: JSON.stringify({ email }),
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		credentials: 'include'
+	});
+	if (response.status.toString().startsWith('5')) {
+		return { non_field_errors: ['Something went wrong on our end. Please try again later.'] };
+	}
+	const data = await response.json();
+	return data;
+}
+
+export async function confirmPasswordReset(
+	password1: string,
+	password2: string,
+	uid: string,
+	token: string
+): Promise<Response> {
+	const response = await fetch(apiPath.accounts.password_reset_confirm, {
+		method: 'POST',
+		body: JSON.stringify({
+			new_password1: password1,
+			new_password2: password2,
+			uid: uid,
+			token: token
+		}),
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		credentials: 'include'
+	});
+	return response;
+}
+
+export async function verifyEmail(key: string) {
+	const response = await fetch(apiPath.accounts.verify_email, {
+		method: 'POST',
+		body: JSON.stringify({ key }),
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		credentials: 'include'
+	});
+	return response;
+}
+
+export async function ressendVerifyEmail(email: string) {
+	const response = await fetch(apiPath.accounts.resend_email, {
+		method: 'POST',
+		body: JSON.stringify({ email }),
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		credentials: 'include'
+	});
+	if (response.status.toString().startsWith('5')) {
+		return { non_field_errors: ['Something went wrong on our end. Please try again later.'] };
+	}
+	const data = await response.json();
+	return data;
 }
 
 // JWT Refresh
 
-let refreshTokenLoop: number | undefined = undefined;
-
-export async function refresh() {
+export async function refresh(): Promise<{ token: string; expiration: string }> {
 	const response = await fetch('/refresh-token/', {
 		method: 'GET',
 		headers: {
@@ -68,28 +129,10 @@ export async function refresh() {
 		},
 		credentials: 'include'
 	});
-	const data = await response.json();
-	if (!response.ok) {
-		throw new Error(data.error);
-	} else {
+	if (response.status === 200) {
+		const data = await response.json();
 		return { token: data.access, expiration: data.access_expiration };
+	} else {
+		throw new Error('Could not refresh JWT');
 	}
-}
-
-export async function initJWTRefreshLoop() {
-	const { token, expiration } = await refresh();
-	jwt.set(token);
-
-	// start loop to refresh jwt
-	const expirationDate = new Date(expiration);
-	const refreshRateMS = expirationDate.valueOf() - Date.now() - 5000;
-
-	// stop existing loop if it exists
-	if (typeof refreshTokenLoop === 'number') clearInterval(refreshTokenLoop);
-
-	// start new loop
-	refreshTokenLoop = setInterval(async () => {
-		const updatedTokenInfo = await refresh();
-		jwt.set(updatedTokenInfo.token);
-	}, refreshRateMS);
 }

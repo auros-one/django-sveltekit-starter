@@ -3,203 +3,231 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
-	'/accounts/login/': {
-		/**
-		 * @description Check the credentials and return the REST Token
-		 * if the credentials are valid and authenticated.
-		 * Calls Django Auth login method to register User ID
-		 * in Django session framework
-		 *
-		 * Accept the following POST parameters: username, password
-		 * Return the REST Framework Token Object's key.
-		 */
-		post: operations['accounts_login_create'];
-	};
-	'/accounts/logout/': {
-		/**
-		 * @description Calls Django logout method and delete the Token object
-		 * assigned to the current User object.
-		 *
-		 * Accepts/Returns nothing.
-		 */
-		post: operations['accounts_logout_create'];
-	};
-	'/accounts/password/change/': {
-		/**
-		 * @description Calls Django Auth SetPasswordForm save method.
-		 *
-		 * Accepts the following POST parameters: new_password1, new_password2
-		 * Returns the success/fail message.
-		 */
-		post: operations['accounts_password_change_create'];
-	};
-	'/accounts/password/reset/': {
-		/**
-		 * @description Calls Django Auth PasswordResetForm save method.
-		 *
-		 * Accepts the following POST parameters: email
-		 * Returns the success/fail message.
-		 */
-		post: operations['accounts_password_reset_create'];
-	};
-	'/accounts/password/reset/confirm/': {
-		/**
-		 * @description Password reset e-mail link is confirmed, therefore
-		 * this resets the user's password.
-		 *
-		 * Accepts the following POST parameters: token, uid,
-		 *     new_password1, new_password2
-		 * Returns the success/fail message.
-		 */
-		post: operations['accounts_password_reset_confirm_create'];
-	};
-	'/accounts/signup/': {
-		post: operations['accounts_signup_create'];
-	};
-	'/accounts/signup/resend-email/': {
-		post: operations['accounts_signup_resend_email_create'];
-	};
-	'/accounts/signup/verify-email/': {
-		post: operations['accounts_signup_verify_email_create'];
-	};
-	'/accounts/token/refresh/': {
-		/**
-		 * @description Takes a refresh type JSON web token and returns an access type JSON web
-		 * token if the refresh token is valid.
-		 */
-		post: operations['accounts_token_refresh_create'];
-	};
-	'/accounts/token/verify/': {
-		/**
-		 * @description Takes a token and indicates if it is valid.  This view provides no
-		 * information about a token's fitness for a particular use.
-		 */
-		post: operations['accounts_token_verify_create'];
-	};
-	'/accounts/user/': {
-		/**
-		 * @description Reads and updates UserModel fields
-		 * Accepts GET, PUT, PATCH methods.
-		 *
-		 * Default accepted fields: username, first_name, last_name
-		 * Default display fields: pk, username, email, first_name, last_name
-		 * Read-only fields: pk, email
-		 *
-		 * Returns UserModel fields.
-		 */
-		get: operations['accounts_user_retrieve'];
-		/**
-		 * @description Reads and updates UserModel fields
-		 * Accepts GET, PUT, PATCH methods.
-		 *
-		 * Default accepted fields: username, first_name, last_name
-		 * Default display fields: pk, username, email, first_name, last_name
-		 * Read-only fields: pk, email
-		 *
-		 * Returns UserModel fields.
-		 */
-		put: operations['accounts_user_update'];
-		/**
-		 * @description Reads and updates UserModel fields
-		 * Accepts GET, PUT, PATCH methods.
-		 *
-		 * Default accepted fields: username, first_name, last_name
-		 * Default display fields: pk, username, email, first_name, last_name
-		 * Read-only fields: pk, email
-		 *
-		 * Returns UserModel fields.
-		 */
-		patch: operations['accounts_user_partial_update'];
-	};
-	'/authcheck/': {
-		/** @description A private Healthcheck endpoint used for testing API key permissions. */
-		get: operations['authcheck_retrieve'];
-	};
-	'/healthcheck/': {
-		/** @description Healthcheck endpoint. */
-		get: operations['healthcheck_retrieve'];
-	};
+  "/accounts/change-email/": {
+    post: operations["accounts_change_email_create"];
+  };
+  "/accounts/login/": {
+    /**
+     * @description Check the credentials and return the REST Token
+     * if the credentials are valid and authenticated.
+     * Calls Django Auth login method to register User ID
+     * in Django session framework
+     *
+     * Accept the following POST parameters: username, password
+     * Return the REST Framework Token Object's key.
+     */
+    post: operations["accounts_login_create"];
+  };
+  "/accounts/logout/": {
+    /**
+     * @description Calls Django logout method and delete the Token object
+     * assigned to the current User object.
+     *
+     * Accepts/Returns nothing.
+     */
+    post: operations["accounts_logout_create"];
+  };
+  "/accounts/password/change/": {
+    /**
+     * @description Calls Django Auth SetPasswordForm save method.
+     *
+     * Accepts the following POST parameters: new_password1, new_password2
+     * Returns the success/fail message.
+     */
+    post: operations["accounts_password_change_create"];
+  };
+  "/accounts/password/reset/": {
+    /**
+     * @description Calls Django Auth PasswordResetForm save method.
+     *
+     * Accepts the following POST parameters: email
+     * Returns the success/fail message.
+     */
+    post: operations["accounts_password_reset_create"];
+  };
+  "/accounts/password/reset/confirm/": {
+    /**
+     * @description Password reset e-mail link is confirmed, therefore
+     * this resets the user's password.
+     *
+     * Accepts the following POST parameters: token, uid,
+     *     new_password1, new_password2
+     * Returns the success/fail message.
+     */
+    post: operations["accounts_password_reset_confirm_create"];
+  };
+  "/accounts/signup/": {
+    post: operations["accounts_signup_create"];
+  };
+  "/accounts/signup/resend-email/": {
+    post: operations["accounts_signup_resend_email_create"];
+  };
+  "/accounts/signup/verify-email/": {
+    post: operations["accounts_signup_verify_email_create"];
+  };
+  "/accounts/token/refresh/": {
+    /**
+     * @description Takes a refresh type JSON web token and returns an access type JSON web
+     * token if the refresh token is valid.
+     */
+    post: operations["accounts_token_refresh_create"];
+  };
+  "/accounts/token/verify/": {
+    /**
+     * @description Takes a token and indicates if it is valid.  This view provides no
+     * information about a token's fitness for a particular use.
+     */
+    post: operations["accounts_token_verify_create"];
+  };
+  "/accounts/user/": {
+    /**
+     * @description Reads and updates UserModel fields
+     * Accepts GET, PUT, PATCH methods.
+     *
+     * Default accepted fields: username, first_name, last_name
+     * Default display fields: pk, username, email, first_name, last_name
+     * Read-only fields: pk, email
+     *
+     * Returns UserModel fields.
+     */
+    get: operations["accounts_user_retrieve"];
+    /**
+     * @description Reads and updates UserModel fields
+     * Accepts GET, PUT, PATCH methods.
+     *
+     * Default accepted fields: username, first_name, last_name
+     * Default display fields: pk, username, email, first_name, last_name
+     * Read-only fields: pk, email
+     *
+     * Returns UserModel fields.
+     */
+    put: operations["accounts_user_update"];
+    /**
+     * @description Reads and updates UserModel fields
+     * Accepts GET, PUT, PATCH methods.
+     *
+     * Default accepted fields: username, first_name, last_name
+     * Default display fields: pk, username, email, first_name, last_name
+     * Read-only fields: pk, email
+     *
+     * Returns UserModel fields.
+     */
+    patch: operations["accounts_user_partial_update"];
+  };
+  "/authcheck/": {
+    /** @description A private Healthcheck endpoint used for testing API key permissions. */
+    get: operations["Auth Check"];
+  };
+  "/healthcheck/": {
+    /** @description Healthcheck endpoint. */
+    get: operations["Health Check"];
+  };
 }
 
 export type webhooks = Record<string, never>;
 
 export interface components {
-	schemas: {
-		/** @description Serializer for JWT authentication. */
-		JWT: {
-			access: string;
-			refresh: string;
-			user: components['schemas']['UserDetails'];
-		};
-		Login: {
-			username?: string;
-			/** Format: email */
-			email?: string;
-			password: string;
-		};
-		PasswordChange: {
-			new_password1: string;
-			new_password2: string;
-		};
-		/** @description Serializer for requesting a password reset e-mail. */
-		PasswordReset: {
-			/** Format: email */
-			email: string;
-		};
-		/** @description Serializer for confirming a password reset attempt. */
-		PasswordResetConfirm: {
-			new_password1: string;
-			new_password2: string;
-			uid: string;
-			token: string;
-		};
-		PatchedUserDetails: {
-			/**
-			 * Email address
-			 * Format: email
-			 */
-			email?: string;
-			verified?: string;
-		};
-		Register: {
-			username?: string;
-			/** Format: email */
-			email: string;
-			password1: string;
-			password2: string;
-		};
-		ResendEmailVerification: {
-			/** Format: email */
-			email: string;
-		};
-		RestAuthDetail: {
-			detail: string;
-		};
-		TokenRefresh: {
-			access: string;
-			refresh: string;
-		};
-		TokenVerify: {
-			token: string;
-		};
-		UserDetails: {
-			/**
-			 * Email address
-			 * Format: email
-			 */
-			email: string;
-			verified: string;
-		};
-		VerifyEmail: {
-			key: string;
-		};
-	};
-	responses: never;
-	parameters: never;
-	requestBodies: never;
-	headers: never;
-	pathItems: never;
+  schemas: {
+    EmailChange: {
+      /** Format: email */
+      new_email: string;
+      password: string;
+    };
+    EmailChangeRequest: {
+      /** Format: email */
+      new_email: string;
+      password: string;
+    };
+    /** @description Serializer for JWT authentication. */
+    JWT: {
+      access: string;
+      refresh: string;
+      user: components["schemas"]["UserDetails"];
+    };
+    LoginRequest: {
+      username?: string;
+      /** Format: email */
+      email?: string;
+      password: string;
+    };
+    PasswordChangeRequest: {
+      old_password: string;
+      new_password1: string;
+      new_password2: string;
+    };
+    /** @description Serializer for confirming a password reset attempt. */
+    PasswordResetConfirmRequest: {
+      new_password1: string;
+      new_password2: string;
+      uid: string;
+      token: string;
+    };
+    /**
+     * @description Overwrite dj-rest-auths PasswordResetSerializer to accept a custom password reset link.
+     *
+     * It does so by adding the a custom url_generator to the AllAuthPasswordResetForm.save()
+     * options.
+     */
+    PasswordResetRequest: {
+      /** Format: email */
+      email: string;
+    };
+    PatchedUserDetailsRequest: {
+      /**
+       * Email address
+       * Format: email
+       */
+      email?: string;
+    };
+    RegisterRequest: {
+      username?: string;
+      /** Format: email */
+      email: string;
+      password1: string;
+      password2: string;
+    };
+    ResendEmailVerificationRequest: {
+      /** Format: email */
+      email: string;
+    };
+    RestAuthDetail: {
+      detail: string;
+    };
+    TokenRefresh: {
+      access: string;
+    };
+    TokenRefreshRequest: {
+      refresh: string;
+    };
+    TokenVerifyRequest: {
+      token: string;
+    };
+    UserDetails: {
+      /**
+       * Email address
+       * Format: email
+       */
+      email: string;
+      verified: boolean;
+    };
+    UserDetailsRequest: {
+      /**
+       * Email address
+       * Format: email
+       */
+      email: string;
+    };
+    VerifyEmailRequest: {
+      key: string;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 
 export type $defs = Record<string, never>;
@@ -207,289 +235,309 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
-	/**
-	 * @description Check the credentials and return the REST Token
-	 * if the credentials are valid and authenticated.
-	 * Calls Django Auth login method to register User ID
-	 * in Django session framework
-	 *
-	 * Accept the following POST parameters: username, password
-	 * Return the REST Framework Token Object's key.
-	 */
-	accounts_login_create: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['Login'];
-				'application/x-www-form-urlencoded': components['schemas']['Login'];
-				'multipart/form-data': components['schemas']['Login'];
-			};
-		};
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['JWT'];
-				};
-			};
-		};
-	};
-	/**
-	 * @description Calls Django logout method and delete the Token object
-	 * assigned to the current User object.
-	 *
-	 * Accepts/Returns nothing.
-	 */
-	accounts_logout_create: {
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['RestAuthDetail'];
-				};
-			};
-		};
-	};
-	/**
-	 * @description Calls Django Auth SetPasswordForm save method.
-	 *
-	 * Accepts the following POST parameters: new_password1, new_password2
-	 * Returns the success/fail message.
-	 */
-	accounts_password_change_create: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['PasswordChange'];
-				'application/x-www-form-urlencoded': components['schemas']['PasswordChange'];
-				'multipart/form-data': components['schemas']['PasswordChange'];
-			};
-		};
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['RestAuthDetail'];
-				};
-			};
-		};
-	};
-	/**
-	 * @description Calls Django Auth PasswordResetForm save method.
-	 *
-	 * Accepts the following POST parameters: email
-	 * Returns the success/fail message.
-	 */
-	accounts_password_reset_create: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['PasswordReset'];
-				'application/x-www-form-urlencoded': components['schemas']['PasswordReset'];
-				'multipart/form-data': components['schemas']['PasswordReset'];
-			};
-		};
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['RestAuthDetail'];
-				};
-			};
-		};
-	};
-	/**
-	 * @description Password reset e-mail link is confirmed, therefore
-	 * this resets the user's password.
-	 *
-	 * Accepts the following POST parameters: token, uid,
-	 *     new_password1, new_password2
-	 * Returns the success/fail message.
-	 */
-	accounts_password_reset_confirm_create: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['PasswordResetConfirm'];
-				'application/x-www-form-urlencoded': components['schemas']['PasswordResetConfirm'];
-				'multipart/form-data': components['schemas']['PasswordResetConfirm'];
-			};
-		};
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['RestAuthDetail'];
-				};
-			};
-		};
-	};
-	accounts_signup_create: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['Register'];
-				'application/x-www-form-urlencoded': components['schemas']['Register'];
-				'multipart/form-data': components['schemas']['Register'];
-			};
-		};
-		responses: {
-			201: {
-				content: {
-					'application/json': components['schemas']['JWT'];
-				};
-			};
-		};
-	};
-	accounts_signup_resend_email_create: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['ResendEmailVerification'];
-				'application/x-www-form-urlencoded': components['schemas']['ResendEmailVerification'];
-				'multipart/form-data': components['schemas']['ResendEmailVerification'];
-			};
-		};
-		responses: {
-			201: {
-				content: {
-					'application/json': components['schemas']['RestAuthDetail'];
-				};
-			};
-		};
-	};
-	accounts_signup_verify_email_create: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['VerifyEmail'];
-				'application/x-www-form-urlencoded': components['schemas']['VerifyEmail'];
-				'multipart/form-data': components['schemas']['VerifyEmail'];
-			};
-		};
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['RestAuthDetail'];
-				};
-			};
-		};
-	};
-	/**
-	 * @description Takes a refresh type JSON web token and returns an access type JSON web
-	 * token if the refresh token is valid.
-	 */
-	accounts_token_refresh_create: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['TokenRefresh'];
-				'application/x-www-form-urlencoded': components['schemas']['TokenRefresh'];
-				'multipart/form-data': components['schemas']['TokenRefresh'];
-			};
-		};
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['TokenRefresh'];
-				};
-			};
-		};
-	};
-	/**
-	 * @description Takes a token and indicates if it is valid.  This view provides no
-	 * information about a token's fitness for a particular use.
-	 */
-	accounts_token_verify_create: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['TokenVerify'];
-				'application/x-www-form-urlencoded': components['schemas']['TokenVerify'];
-				'multipart/form-data': components['schemas']['TokenVerify'];
-			};
-		};
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['TokenVerify'];
-				};
-			};
-		};
-	};
-	/**
-	 * @description Reads and updates UserModel fields
-	 * Accepts GET, PUT, PATCH methods.
-	 *
-	 * Default accepted fields: username, first_name, last_name
-	 * Default display fields: pk, username, email, first_name, last_name
-	 * Read-only fields: pk, email
-	 *
-	 * Returns UserModel fields.
-	 */
-	accounts_user_retrieve: {
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['UserDetails'];
-				};
-			};
-		};
-	};
-	/**
-	 * @description Reads and updates UserModel fields
-	 * Accepts GET, PUT, PATCH methods.
-	 *
-	 * Default accepted fields: username, first_name, last_name
-	 * Default display fields: pk, username, email, first_name, last_name
-	 * Read-only fields: pk, email
-	 *
-	 * Returns UserModel fields.
-	 */
-	accounts_user_update: {
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['UserDetails'];
-				'application/x-www-form-urlencoded': components['schemas']['UserDetails'];
-				'multipart/form-data': components['schemas']['UserDetails'];
-			};
-		};
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['UserDetails'];
-				};
-			};
-		};
-	};
-	/**
-	 * @description Reads and updates UserModel fields
-	 * Accepts GET, PUT, PATCH methods.
-	 *
-	 * Default accepted fields: username, first_name, last_name
-	 * Default display fields: pk, username, email, first_name, last_name
-	 * Read-only fields: pk, email
-	 *
-	 * Returns UserModel fields.
-	 */
-	accounts_user_partial_update: {
-		requestBody?: {
-			content: {
-				'application/json': components['schemas']['PatchedUserDetails'];
-				'application/x-www-form-urlencoded': components['schemas']['PatchedUserDetails'];
-				'multipart/form-data': components['schemas']['PatchedUserDetails'];
-			};
-		};
-		responses: {
-			200: {
-				content: {
-					'application/json': components['schemas']['UserDetails'];
-				};
-			};
-		};
-	};
-	/** @description A private Healthcheck endpoint used for testing API key permissions. */
-	authcheck_retrieve: {
-		responses: {
-			/** @description No response body */
-			200: {
-				content: never;
-			};
-		};
-	};
-	/** @description Healthcheck endpoint. */
-	healthcheck_retrieve: {
-		responses: {
-			/** @description No response body */
-			200: {
-				content: never;
-			};
-		};
-	};
+
+  accounts_change_email_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmailChangeRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["EmailChangeRequest"];
+        "multipart/form-data": components["schemas"]["EmailChangeRequest"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["EmailChange"];
+        };
+      };
+    };
+  };
+  /**
+   * @description Check the credentials and return the REST Token
+   * if the credentials are valid and authenticated.
+   * Calls Django Auth login method to register User ID
+   * in Django session framework
+   *
+   * Accept the following POST parameters: username, password
+   * Return the REST Framework Token Object's key.
+   */
+  accounts_login_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LoginRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["LoginRequest"];
+        "multipart/form-data": components["schemas"]["LoginRequest"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["JWT"];
+        };
+      };
+    };
+  };
+  /**
+   * @description Calls Django logout method and delete the Token object
+   * assigned to the current User object.
+   *
+   * Accepts/Returns nothing.
+   */
+  accounts_logout_create: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["RestAuthDetail"];
+        };
+      };
+    };
+  };
+  /**
+   * @description Calls Django Auth SetPasswordForm save method.
+   *
+   * Accepts the following POST parameters: new_password1, new_password2
+   * Returns the success/fail message.
+   */
+  accounts_password_change_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordChangeRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["PasswordChangeRequest"];
+        "multipart/form-data": components["schemas"]["PasswordChangeRequest"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["RestAuthDetail"];
+        };
+      };
+    };
+  };
+  /**
+   * @description Calls Django Auth PasswordResetForm save method.
+   *
+   * Accepts the following POST parameters: email
+   * Returns the success/fail message.
+   */
+  accounts_password_reset_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordResetRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["PasswordResetRequest"];
+        "multipart/form-data": components["schemas"]["PasswordResetRequest"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["RestAuthDetail"];
+        };
+      };
+    };
+  };
+  /**
+   * @description Password reset e-mail link is confirmed, therefore
+   * this resets the user's password.
+   *
+   * Accepts the following POST parameters: token, uid,
+   *     new_password1, new_password2
+   * Returns the success/fail message.
+   */
+  accounts_password_reset_confirm_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordResetConfirmRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["PasswordResetConfirmRequest"];
+        "multipart/form-data": components["schemas"]["PasswordResetConfirmRequest"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["RestAuthDetail"];
+        };
+      };
+    };
+  };
+  accounts_signup_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RegisterRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["RegisterRequest"];
+        "multipart/form-data": components["schemas"]["RegisterRequest"];
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["JWT"];
+        };
+      };
+    };
+  };
+  accounts_signup_resend_email_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ResendEmailVerificationRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["ResendEmailVerificationRequest"];
+        "multipart/form-data": components["schemas"]["ResendEmailVerificationRequest"];
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["RestAuthDetail"];
+        };
+      };
+    };
+  };
+  accounts_signup_verify_email_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VerifyEmailRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["VerifyEmailRequest"];
+        "multipart/form-data": components["schemas"]["VerifyEmailRequest"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["RestAuthDetail"];
+        };
+      };
+    };
+  };
+  /**
+   * @description Takes a refresh type JSON web token and returns an access type JSON web
+   * token if the refresh token is valid.
+   */
+  accounts_token_refresh_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TokenRefreshRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["TokenRefreshRequest"];
+        "multipart/form-data": components["schemas"]["TokenRefreshRequest"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["TokenRefresh"];
+        };
+      };
+    };
+  };
+  /**
+   * @description Takes a token and indicates if it is valid.  This view provides no
+   * information about a token's fitness for a particular use.
+   */
+  accounts_token_verify_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TokenVerifyRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["TokenVerifyRequest"];
+        "multipart/form-data": components["schemas"]["TokenVerifyRequest"];
+      };
+    };
+    responses: {
+      /** @description No response body */
+      200: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * @description Reads and updates UserModel fields
+   * Accepts GET, PUT, PATCH methods.
+   *
+   * Default accepted fields: username, first_name, last_name
+   * Default display fields: pk, username, email, first_name, last_name
+   * Read-only fields: pk, email
+   *
+   * Returns UserModel fields.
+   */
+  accounts_user_retrieve: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserDetails"];
+        };
+      };
+    };
+  };
+  /**
+   * @description Reads and updates UserModel fields
+   * Accepts GET, PUT, PATCH methods.
+   *
+   * Default accepted fields: username, first_name, last_name
+   * Default display fields: pk, username, email, first_name, last_name
+   * Read-only fields: pk, email
+   *
+   * Returns UserModel fields.
+   */
+  accounts_user_update: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserDetailsRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["UserDetailsRequest"];
+        "multipart/form-data": components["schemas"]["UserDetailsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserDetails"];
+        };
+      };
+    };
+  };
+  /**
+   * @description Reads and updates UserModel fields
+   * Accepts GET, PUT, PATCH methods.
+   *
+   * Default accepted fields: username, first_name, last_name
+   * Default display fields: pk, username, email, first_name, last_name
+   * Read-only fields: pk, email
+   *
+   * Returns UserModel fields.
+   */
+  accounts_user_partial_update: {
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedUserDetailsRequest"];
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedUserDetailsRequest"];
+        "multipart/form-data": components["schemas"]["PatchedUserDetailsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserDetails"];
+        };
+      };
+    };
+  };
+  /** @description A private Healthcheck endpoint used for testing API key permissions. */
+  "Auth Check": {
+    responses: {
+      /** @description Authenticated. */
+      204: {
+        content: never;
+      };
+      /** @description Not authenticated. */
+      403: {
+        content: never;
+      };
+    };
+  };
+  /** @description Healthcheck endpoint. */
+  "Health Check": {
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never;
+      };
+    };
+  };
 }
