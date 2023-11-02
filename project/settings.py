@@ -24,7 +24,14 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
 # Domains
 
 HOST_DOMAIN = os.environ.get("HOST_DOMAIN", "localhost:8000")
-FRONTEND_DOMAINS = os.environ.get("FRONTEND_DOMAINS", "localhost:5173").split(",")
+
+FRONTEND_DOMAIN = os.environ.get("FRONTEND_DOMAIN", "localhost:5173")
+PASSWORD_CONFIRM_RESET_PATH = os.environ.get(
+    "PASSWORD_RESET_PATH", "/account/reset-password/confirm"
+)
+EMAIL_VERIFICATION_PATH = os.environ.get(
+    "EMAIL_VERIFICATION_PATH", "/account/verify-email"
+)
 
 
 # Security
@@ -48,13 +55,9 @@ CORS_ALLOW_HEADERS = [
     "sentry-trace",
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    f"https://{HOST_DOMAIN}",
-] + [f"https://{frontend_domain}" for frontend_domain in FRONTEND_DOMAINS]
+CORS_ALLOWED_ORIGINS = [f"https://{HOST_DOMAIN}", f"https://{FRONTEND_DOMAIN}"]
 
-CSRF_TRUSTED_ORIGINS = [
-    f"https://{HOST_DOMAIN}",
-] + [f"https://{frontend_domain}" for frontend_domain in FRONTEND_DOMAINS]
+CSRF_TRUSTED_ORIGINS = [f"https://{HOST_DOMAIN}", f"https://{FRONTEND_DOMAIN}"]
 
 DEBUG = os.environ.get("DEBUG") == "1"
 
@@ -203,7 +206,12 @@ REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_REFRESH_COOKIE": "refresh-token",
     "USER_DETAILS_SERIALIZER": "project.accounts.serializers.UserDetailsSerializer",
+    "PASSWORD_RESET_SERIALIZER": "project.accounts.serializers.PasswordResetSerializer",
+    "OLD_PASSWORD_FIELD_ENABLED": True,
 }
+# dj-rest-auth uses django-allauth under the hood.
+ACCOUNT_ADAPTER = "project.accounts.adapters.CustomAccountAdapter"
+
 SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
@@ -283,8 +291,15 @@ if ENVIRONMENT == "production":
     EMAIL_BACKEND = "django_mailgun.MailgunBackend"
     MAILGUN_ACCESS_KEY = os.environ.get("MAILGUN_ACCESS_KEY")
     MAILGUN_SERVER_NAME = os.environ.get("MAILGUN_SERVER_NAME")
+    MAILGUN_DOMAIN = os.environ.get("MAILGUN_DOMAIN")
+    DEFAULT_FROM_EMAIL = (
+        "no-reply@" + MAILGUN_DOMAIN
+    )  # used by django-allauth when sending emails
 else:  # pragma: no cover
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    DEFAULT_FROM_EMAIL = (
+        "no-reply@localhost"  # used by django-allauth when sending emails
+    )
 
 
 # Internationalization.
@@ -319,7 +334,7 @@ else:
         BASE_DIR / "project" / "static"
     ]  # directories where Django will look for static files
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-    STATIC_ROOT = (
+    STATIC_ROOT = str(
         BASE_DIR / "staticfiles"
     )  # directory where collectstatic will gather static files
 

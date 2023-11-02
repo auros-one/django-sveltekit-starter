@@ -21,7 +21,7 @@ resource "google_secret_manager_secret" "secret" {
   labels = {
     project = var.project_slug
   }
-  
+
   replication {
     automatic = true
   }
@@ -36,13 +36,13 @@ resource "google_secret_manager_secret_version" "version" {
 }
 
 resource "google_secret_manager_secret" "g_creds_json" {
-  
+
   secret_id = "G_CREDS_JSON"
 
   labels = {
     project = var.project_slug
   }
-  
+
   replication {
     automatic = true
   }
@@ -124,16 +124,16 @@ resource "google_cloud_run_service" "default" {
           }
         }
       }
-      
+
 
       containers { # europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
         image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-artifact-repo/${format("%s-backend-image", var.project_slug)}:latest", var.project_slug)
-        
+
         volume_mounts {
           name       = "google-creds-json-volume"
           mount_path = "/secrets"
         }
-        
+
         env {
           name  = "ENVIRONMENT"
           value = "production"
@@ -190,10 +190,10 @@ resource "google_cloud_run_service" "default" {
           }
         }
         env {
-          name = "FRONTEND_DOMAINS"
+          name = "FRONTEND_DOMAIN"
           value_from {
             secret_key_ref {
-              name = "FRONTEND_DOMAINS"
+              name = "FRONTEND_DOMAIN"
               key  = "latest"
             }
           }

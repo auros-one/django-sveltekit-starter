@@ -26,16 +26,6 @@ pipenv install --dev
 pipenv run pre-commit install
 ```
 
-**using venv**
-
-```console
-cp .env.example .env
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-pip pre-commit install
-```
-
 ## Running
 
 **setup**
@@ -57,6 +47,10 @@ pipenv run python manage.py runserver
 docker compose up -d
 docker compose run --rm web manage.py migrate
 ```
+
+## Deployment
+
+Don't forget to update the site domain and name at https://<your-domain>/admin/sites/site
 
 # Testing
 
