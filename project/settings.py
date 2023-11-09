@@ -135,6 +135,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "anymail",
     "dj_rest_auth.registration",
 ]
 
@@ -271,26 +272,23 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 # Email
 
 if ENVIRONMENT == "production":
-    EMAIL_BACKEND = "django_mailgun.MailgunBackend"
-    MAILGUN_ACCESS_KEY = os.environ.get("MAILGUN_ACCESS_KEY")
-    MAILGUN_SERVER_NAME = os.environ.get("MAILGUN_SERVER_NAME")
-    MAILGUN_DOMAIN = os.environ.get("MAILGUN_DOMAIN")
-    if (
-        MAILGUN_ACCESS_KEY is None
-        or MAILGUN_SERVER_NAME is None
-        or MAILGUN_DOMAIN is None
-    ):  # pragma: no cover
+    EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+    MAILGUN_API_KEY = os.environ.get("MAILGUN_API_KEY")
+    MAILGUN_SENDER_DOMAIN = os.environ.get("MAILGUN_SENDER_DOMAIN")
+    if MAILGUN_API_KEY is None or MAILGUN_SENDER_DOMAIN is None:  # pragma: no cover
         raise ValueError(
-            "MAILGUN_ACCESS_KEY, MAILGUN_SERVER_NAME, and MAILGUN_DOMAIN must be set in production."
+            "MAILGUN_API_KEY, MAILGUN_SENDER_DOMAIN, and MAILGUN_DOMAIN must be set in production."
         )
     DEFAULT_FROM_EMAIL = (
-        "no-reply@" + MAILGUN_DOMAIN
-    )  # used by django-allauth when sending emails
+        "no-reply@"
+        + MAILGUN_SENDER_DOMAIN  # used by django-allauth when sending emails
+    )
 else:  # pragma: no cover
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     DEFAULT_FROM_EMAIL = (
         "no-reply@localhost"  # used by django-allauth when sending emails
     )
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 
 # Internationalization.
