@@ -9,7 +9,6 @@ from urllib.parse import urlparse
 import openai
 import sentry_sdk
 from dotenv import load_dotenv
-from google.oauth2 import service_account
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -307,28 +306,39 @@ USE_TZ = True
 
 # Static files.
 
+STATICFILES_DIRS = [BASE_DIR / "project" / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
 
-if ENVIRONMENT == "production":
+if ENVIRONMENT == "production":  # pragma: no cover
+    if GS_BUCKET_NAME := os.environ.get("GS_BUCKET_NAME") is None:
+        raise ValueError("GS_BUCKET_NAME must be set in production.")
     # Google Cloud Storage settings.
-    STORAGES = {
-        "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
-        "staticfiles": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+    default_storage_settings = {
+        "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+        "OPTIONS": {
+            "bucket_name": GS_BUCKET_NAME,
+        },
     }
-    GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        "google_storage_credentials.json"
-    )
-    STATIC_ROOT = "static"
 else:
     # Local storage settings.
-    STATICFILES_DIRS = [
-        BASE_DIR / "project" / "static"
-    ]  # directories where Django will look for static files
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-    STATIC_ROOT = str(
-        BASE_DIR / "staticfiles"
-    )  # directory where collectstatic will gather static files
+    default_storage_path = BASE_DIR / "storage/"
+    if not default_storage_path.exists():  # pragma: no cover
+        default_storage_path.mkdir(mode=0o700)  # TODO is this necessary ??
+    default_storage_settings = {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": str(default_storage_path),
+        },
+    }
+
+# Storages settings
+STORAGES = {
+    "cache": default_storage_settings,
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
+}
 
 
 # Default primary key field type.
