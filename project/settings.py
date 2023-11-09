@@ -193,8 +193,10 @@ REST_AUTH = {
     "PASSWORD_RESET_SERIALIZER": "project.accounts.serializers.PasswordResetSerializer",
     "OLD_PASSWORD_FIELD_ENABLED": True,
 }
-# dj-rest-auth uses django-allauth under the hood.
+
+# django-allauth (dj-rest-auth uses django-allauth under the hood.)
 ACCOUNT_ADAPTER = "project.accounts.adapters.CustomAccountAdapter"
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ""
 
 SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
