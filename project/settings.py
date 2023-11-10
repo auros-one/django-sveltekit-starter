@@ -311,7 +311,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
 
 if ENVIRONMENT == "production":  # pragma: no cover
-    if GS_BUCKET_NAME := os.environ.get("GS_BUCKET_NAME") is None:
+    if (GS_BUCKET_NAME := os.environ.get("GS_BUCKET_NAME")) is None:
         raise ValueError("GS_BUCKET_NAME must be set in production.")
     # Google Cloud Storage settings.
     default_storage_settings = {
@@ -334,7 +334,7 @@ else:
 
 # Storages settings
 STORAGES = {
-    "cache": default_storage_settings,
+    "default": default_storage_settings,
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
     },
