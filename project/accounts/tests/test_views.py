@@ -6,6 +6,7 @@ from allauth.account.admin import EmailAddress
 from django.contrib.auth import authenticate
 from django.core import mail
 from django.urls import reverse
+from model_bakery import baker
 from rest_framework.test import APIClient
 
 from ..models import User
@@ -26,7 +27,32 @@ class TestAuth:
                 "email": "test@example.com",
                 "password1": "a-super-strong-password-145338-@!#&",
                 "password2": "a-super-strong-password-145338-@!#&",
+                "company_data": {
+                    "name": "TechGuru",
+                    "industry": "Technology",
+                    "countries": "Global",
+                    "we_sell": "Both",
+                    "sell_to": "Businesses",
+                    "customers_connect_through": "Through our website",
+                    "standout_product_or_service": "AI Consulting",
+                    "languages": "English, Spanish",
+                    "gender": "50/50",
+                    "age": "20 - 40",
+                    "website": "www.techguru.com",
+                    "social_media_channels": "LinkedIn, Twitter",
+                    "any_other_channels": "Blog",
+                    "social_media_handles": "@techguru",
+                    "social_media_channels_in_the_future": "Instagram, Facebook",
+                    "social_media_dreams": "Become the talk of the town, More pals",
+                    "successfull_social_media_efforts": "LinkedIn posts",
+                    "no_go_zones": "Politics",
+                    "special_events": "Annual Tech Conference",
+                    "competitors": "TechMasters, AI Innovators",
+                    "superpower": "Cutting-edge AI solutions",
+                    "toneofvoice": "Professional",
+                },
             },
+            format="json",
         )
 
         # check results
@@ -45,8 +71,9 @@ class TestAuth:
         assert len(mail.outbox) == 1
 
         # get the verify key from the verification url
-        key_match = re.search(r"key=([a-zA-Z0-9-_:]+)", mail.outbox[0].body)  # type: ignore
-        key = key_match.group(1)  # type: ignore
+        key_match = re.search(r"key=([a-zA-Z0-9-_:]+)", mail.outbox[0].body)
+        assert key_match is not None
+        key = key_match.group(1)
 
         # verify email
         response = api_client.post("/accounts/signup/verify-email/", {"key": key})
@@ -57,17 +84,11 @@ class TestAuth:
         assert email_address is not None
         assert email_address.verified
 
-    def test_login(self, api_client: APIClient):
-        User.objects.create_user(
-            name="Test User",
-            email="test@example.com",
-            password="a-super-strong-password-145338-@!#&",
-        )
-
+    def test_login(self, api_client: APIClient, user: User):
         response = api_client.post(
             "/accounts/login/",
             {
-                "email": "test@example.com",
+                "email": user.email,
                 "password": "a-super-strong-password-145338-@!#&",
             },
         )
@@ -78,18 +99,29 @@ class TestAuth:
         assert "access" in result
         assert "refresh" in result
         assert "user" in result
-        assert result["user"]["email"] == "test@example.com"
+        assert result["user"]["email"] == user.email
 
 
 @pytest.mark.django_db
 class TestEmailChangeView:
-    def test_change_email(self, api_client: APIClient):
-        user = User.objects.create_user(
-            name="Test User",
-            email="test@example.com",
-            password="a-super-strong-password-145338-@!#&",
+    def assert_user_email_didnt_change(self, user: User):
+        user.refresh_from_db()
+
+        assert user.email == "test@example.com"
+
+        assert EmailAddress.objects.filter(user=user).count() == 1
+        new_email = EmailAddress.objects.filter(user=user).first()
+        assert new_email is not None
+        assert new_email.email == "test@example.com"
+        assert new_email.verified
+
+        assert len(mail.outbox) == 0
+
+        assert authenticate(
+            username="test@example.com", password="a-super-strong-password-145338-@!#&"
         )
 
+    def test_change_email(self, api_client: APIClient, user: User):
         api_client.force_authenticate(user=user)
         response = api_client.post(
             reverse("change-email"),
@@ -103,6 +135,14 @@ class TestEmailChangeView:
         user.refresh_from_db()
         assert user.email == "new_email@example.com"
 
+        assert EmailAddress.objects.filter(user=user).count() == 1
+        new_email = EmailAddress.objects.filter(user=user).first()
+        assert new_email is not None
+        assert new_email.email == "new_email@example.com"
+        assert not new_email.verified
+
+        assert len(mail.outbox) == 1  # Email confirmation was sent
+
         assert (
             authenticate(
                 username="test@example.com",
@@ -115,13 +155,7 @@ class TestEmailChangeView:
             password="a-super-strong-password-145338-@!#&",
         )
 
-    def test_invalid_password(self, api_client: APIClient):
-        user = User.objects.create_user(
-            name="Test User",
-            email="test@example.com",
-            password="a-super-strong-password-145338-@!#&",
-        )
-
+    def test_invalid_password(self, api_client: APIClient, user: User):
         api_client.force_authenticate(user=user)
         response = api_client.post(
             reverse("change-email"),
@@ -132,40 +166,40 @@ class TestEmailChangeView:
         )
 
         assert response.status_code == HTTPStatus.BAD_REQUEST
-        user.refresh_from_db()
-        assert user.email == "test@example.com"
+        assert response.json() == {"detail": "Incorrect password."}
+        self.assert_user_email_didnt_change(user)
 
-        assert authenticate(
-            username="test@example.com", password="a-super-strong-password-145338-@!#&"
-        )
-        assert (
-            authenticate(
-                username="new_email@example.com",
-                password="a-super-strong-password-145338-@!#&",
-            )
-            is None
+    def test_identical_email(self, api_client: APIClient, user: User):
+        api_client.force_authenticate(user=user)
+        response = api_client.post(
+            reverse("change-email"),
+            {
+                "new_email": "test@example.com",
+                "password": "a-super-strong-password-145338-@!#&",
+            },
         )
 
-    def test_identical_email(self, api_client: APIClient):
-        user = User.objects.create_user(
-            name="Test User",
-            email="test@example.com",
-            password="a-super-strong-password-145338-@!#&",
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.json() == {"detail": "This email is already in use."}
+        self.assert_user_email_didnt_change(user)
+
+    def test_email_already_exists(self, api_client: APIClient, user: User):
+        other_user = User.objects.create_user(
+            "new_email@example.com",
+            name="Another Test User",
+            password="another-super-strong-password-145338-@!#&",
         )
+        baker.make(EmailAddress, user=other_user, email=other_user.email, verified=True)
 
         api_client.force_authenticate(user=user)
         response = api_client.post(
             reverse("change-email"),
             {
                 "new_email": "test@example.com",
-                "password": "wrong-password",
+                "password": "a-super-strong-password-145338-@!#&",
             },
         )
 
         assert response.status_code == HTTPStatus.BAD_REQUEST
-        user.refresh_from_db()
-        assert user.email == "test@example.com"
-
-        assert authenticate(
-            username="test@example.com", password="a-super-strong-password-145338-@!#&"
-        )
+        assert response.json() == {"detail": "This email is already in use."}
+        self.assert_user_email_didnt_change(user)

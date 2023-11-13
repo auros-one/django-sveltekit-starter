@@ -1,5 +1,6 @@
 import pytest
 import respx
+from allauth.account.admin import EmailAddress
 from django.test.utils import override_settings
 from hypothesis.extra.django._fields import _for_slug
 from hypothesis.extra.django._fields import register_for
@@ -62,7 +63,13 @@ def api_client() -> APIClient:
 
 @pytest.fixture
 def user():
-    return User.objects.create_user("manager@example.com", name="Mgmt", password="x")
+    user = User.objects.create_user(
+        "test@example.com",
+        name="Test User",
+        password="a-super-strong-password-145338-@!#&",
+    )
+    baker.make(EmailAddress, user=user, email=user.email, verified=True)
+    return user
 
 
 @pytest.fixture
