@@ -240,7 +240,7 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 DATABASES = {
     "default": {
-        "CONN_MAX_AGE": None,
+        "CONN_MAX_AGE": 0,
         "ENGINE": "django.db.backends.postgresql",
         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
         "NAME": os.environ.get("POSTGRES_DB"),
