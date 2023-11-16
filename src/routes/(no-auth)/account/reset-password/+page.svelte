@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { requestPasswordReset } from '$lib/api/account/auth';
-	import Spinner from '$lib/components/loading/Spinner.svelte';
+	import Button from '$lib/components/Button.svelte';
 
 	let loading: boolean = false;
 	let sent: boolean = false;
@@ -52,14 +52,8 @@
 			</div>
 
 			<div>
-				<button
-					type="submit"
-					class="flex h-9 w-full items-center justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-					disabled={loading || sent}
-				>
-					{#if loading}
-						<Spinner color="#FFFFFF" size={20} ringThickness={2} />
-					{:else if sent}
+				<Button type="submit" bind:loading disabled={sent} class="w-full">
+					{#if sent}
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -75,7 +69,7 @@
 					{:else}
 						Send reset link
 					{/if}
-				</button>
+				</Button>
 			</div>
 		</form>
 

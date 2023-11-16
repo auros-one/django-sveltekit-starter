@@ -1,16 +1,16 @@
 <script lang="ts">
-	import Spinner from '$lib/components/loading/Spinner.svelte';
 	import { apiClient } from '$lib/api/index';
 	import { jwt } from '$lib/stores/auth';
+	import Button from '$lib/components/Button.svelte';
 
-	let loadingPasswordChange: boolean = false;
+	let loading: boolean = false;
 	let errorPasswordChange: string | undefined = undefined;
 	let messagePasswordChange: string | undefined = undefined;
 	async function onChangePassword(e: Event) {
 		errorPasswordChange = undefined;
 		messagePasswordChange = undefined;
 		if (jwt === undefined) throw new Error('No jwt token');
-		loadingPasswordChange = true;
+		loading = true;
 
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
 		let old_password = formData.password as string;
@@ -36,7 +36,7 @@
 		} else {
 			messagePasswordChange = 'Password changed successfully.';
 		}
-		loadingPasswordChange = false;
+		loading = false;
 	}
 </script>
 
@@ -52,7 +52,7 @@
 			type="password"
 			autocomplete="current-password"
 			required
-			disabled={loadingPasswordChange}
+			disabled={loading}
 			class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
 		/>
 	</div>
@@ -64,7 +64,7 @@
 			type="password"
 			autocomplete="new-password"
 			required
-			disabled={loadingPasswordChange}
+			disabled={loading}
 			class="mb-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
 		/>
 		{#if errorPasswordChange}
@@ -73,16 +73,5 @@
 			<p class="text-sm text-green-500">{messagePasswordChange}</p>
 		{/if}
 	</div>
-
-	<button
-		type="submit"
-		disabled={loadingPasswordChange}
-		class="inline-flex w-36 items-center justify-center gap-2 rounded-md bg-primary-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-	>
-		{#if loadingPasswordChange}
-			<Spinner size={16} duration="0.3s" color="#FFFFFF" />
-		{:else}
-			Update Password
-		{/if}
-	</button>
+	<Button bind:loading type="submit">Update Password</Button>
 </form>

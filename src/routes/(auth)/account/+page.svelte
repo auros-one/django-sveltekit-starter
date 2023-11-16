@@ -1,5 +1,6 @@
 <script>
 	import { logout } from '$lib/api/account/auth';
+	import Button from '$lib/components/Button.svelte';
 	import SendVerificationEmail from '$lib/components/SendVerificationEmail.svelte';
 	import ChangeEmailForm from '$lib/components/forms/accounts/ChangeEmailForm.svelte';
 	import ChangePasswordForm from '$lib/components/forms/accounts/ChangePasswordForm.svelte';
@@ -39,9 +40,5 @@
 	{/if}
 	<ChangePasswordForm />
 	<ChangeEmailForm />
-	<button
-		on:click={logout}
-		class="flex justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-		>Log out</button
-	>
+	<Button class="bg-red-600 hover:bg-red-500" on:click={logout}>Log out</Button>
 </div>

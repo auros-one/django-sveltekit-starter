@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Spinner from '$lib/components/loading/Spinner.svelte';
 	import { apiClient } from '$lib/api/index';
 	import { jwt } from '$lib/stores/auth';
+	import Button from '$lib/components/Button.svelte';
 
 	let loading: boolean = false;
 	let error: string | undefined = undefined;
@@ -68,16 +68,5 @@
 			<p class="text-sm text-green-500">Email changed successfully.</p>
 		{/if}
 	</div>
-
-	<button
-		type="submit"
-		disabled={loading}
-		class="inline-flex w-36 items-center justify-center gap-2 rounded-md bg-primary-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-	>
-		{#if loading}
-			<Spinner size={16} duration="0.3s" color="#FFFFFF" />
-		{:else}
-			Update Email
-		{/if}
-	</button>
+	<Button type="submit" bind:loading>Update Email</Button>
 </form>

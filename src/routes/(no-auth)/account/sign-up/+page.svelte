@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { login, signup } from '$lib/api/account/auth';
-	import Spinner from '$lib/components/loading/Spinner.svelte';
+	import Button from '$lib/components/Button.svelte';
 
 	let loading: boolean = false;
 	let errors: { [key: string]: [string] } | undefined;
@@ -40,8 +40,8 @@
 		}
 
 		await login(email, password1);
-		loading = false;
-		goto('/');
+		await goto('/');
+        loading = false;
 	}
 </script>
 
@@ -112,17 +112,7 @@
 			</div>
 
 			<div>
-				<button
-					type="submit"
-					class="flex h-9 w-full items-center justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-					disabled={loading}
-				>
-					{#if loading}
-						<Spinner color="#FFFFFF" size={20} ringThickness={2} />
-					{:else}
-						Sign up
-					{/if}
-				</button>
+				<Button bind:loading type="submit" class="w-full">Sign up</Button>
 			</div>
 		</form>
 

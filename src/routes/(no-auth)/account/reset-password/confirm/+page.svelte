@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-
 	import { confirmPasswordReset } from '$lib/api/account/auth';
+	import Button from '$lib/components/Button.svelte';
 	import Spinner from '$lib/components/loading/Spinner.svelte';
 
 	let token: string | null = $page.data.token;
@@ -137,17 +137,7 @@
 				</div>
 
 				<div>
-					<button
-						type="submit"
-						class="flex h-9 w-full items-center justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-						disabled={loading}
-					>
-						{#if loading}
-							<Spinner color="#FFFFFF" size={20} ringThickness={2} />
-						{:else}
-							Update password
-						{/if}
-					</button>
+					<Button bind:loading type="submit" class="w-full">Update password</Button>
 				</div>
 			</form>
 
