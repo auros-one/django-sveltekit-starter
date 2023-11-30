@@ -2,7 +2,7 @@
 // We use GCS as a backend for storing the state of our infrastructure.
 terraform {
   backend "gcs" {
-    bucket = "test-deployment-5-terraform-state"
+    bucket = ""
     prefix = "terraform/state"
   }
   required_providers {
@@ -24,10 +24,10 @@ terraform {
 
 module "django_deployment" {
   source          = "./modules/django_deployment"
-  project_id      = "test-deployment-5"
+  project_id      = ""
   region          = "europe-north1"
-  project_slug    = "deployment-vijf"
-  sentry_dsn      = "https://ed9289e685b24fb48a6bb7e3b6016f94@o4505739031740416.ingest.sentry.io/4505739034492928"
+  project_slug    = ""
+  sentry_dsn      = ""
   frontend_domain = ""
   mailgun_api_key = ""
   mailgun_sender_domain = ""

@@ -5,7 +5,7 @@
 Store the project ID and preferred region in an environment variable for later use:
 
 ```shell
-export PROJECT_ID=test-deployment-5
+export PROJECT_ID=
 export GCP_ZONE=europe-north1
 ```
 
