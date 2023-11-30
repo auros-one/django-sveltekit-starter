@@ -19,31 +19,6 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 load_dotenv("/app/secrets/.env", override=True)  # .env is here in production
 
-# print whether "/app/secrets/.env" exists
-print(f"/app/secrets/.env exists: {Path('/app/secrets/.env').exists()}")
-logger.info(f"/app/secrets/.env exists: {Path('/app/secrets/.env').exists()}")
-
-# print an ls of "/app/secrets"
-try:
-    print(f"ls /app/secrets: {os.listdir('/app/secrets')}")
-    logger.info(f"ls /app/secrets: {os.listdir('/app/secrets')}")
-except FileNotFoundError:
-    print("ls /app/secrets: FileNotFoundError")
-    logger.info("ls /app/secrets: FileNotFoundError")
-
-# print POSTGRES_HOST etc
-print(f"POSTGRES_HOST: {os.environ.get('POSTGRES_HOST')}")
-print(f"POSTGRES_DB: {os.environ.get('POSTGRES_DB')}")
-print(f"POSTGRES_PASSWORD: {os.environ.get('POSTGRES_PASSWORD')}")
-print(f"POSTGRES_PORT: {os.environ.get('POSTGRES_PORT')}")
-print(f"POSTGRES_USER: {os.environ.get('POSTGRES_USER')}")
-logger.info(f"POSTGRES_HOST: {os.environ.get('POSTGRES_HOST')}")
-logger.info(f"POSTGRES_DB: {os.environ.get('POSTGRES_DB')}")
-logger.info(f"POSTGRES_PASSWORD: {os.environ.get('POSTGRES_PASSWORD')}")
-logger.info(f"POSTGRES_PORT: {os.environ.get('POSTGRES_PORT')}")
-logger.info(f"POSTGRES_USER: {os.environ.get('POSTGRES_USER')}")
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
