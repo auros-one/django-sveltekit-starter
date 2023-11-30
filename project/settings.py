@@ -13,6 +13,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 load_dotenv()
+load_dotenv("/app/secrets/.env")  # .env is here in production
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -279,7 +280,7 @@ if ENVIRONMENT == "production":
     MAILGUN_SENDER_DOMAIN = os.environ.get("MAILGUN_SENDER_DOMAIN")
     if MAILGUN_API_KEY is None or MAILGUN_SENDER_DOMAIN is None:  # pragma: no cover
         raise ValueError(
-            "MAILGUN_API_KEY, MAILGUN_SENDER_DOMAIN, and MAILGUN_DOMAIN must be set in production."
+            "MAILGUN_API_KEY and MAILGUN_SENDER_DOMAIN must be set in production."
         )
     DEFAULT_FROM_EMAIL = (
         "no-reply@"
@@ -353,6 +354,10 @@ SILENCED_SYSTEM_CHECKS = [
     "auth.E003",
     # SECURE_SSL_REDIRECT -- seems to break Cloud Run and is handled there.
     "security.W008",
+    # we don't use django.middleware.csrf.CsrfViewMiddleware, instead we
+    # use our custom project.utils.middleware.CsrfProtectMiddleware that
+    # only applies to the admin and debug toolbar.
+    "security.W003",
 ]
 if ENVIRONMENT == "development":  # pragma: no cover
     SILENCED_SYSTEM_CHECKS.extend(

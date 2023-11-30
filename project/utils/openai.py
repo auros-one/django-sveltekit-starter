@@ -62,7 +62,7 @@ async def aquery_openai(
                 "temperature": temperature,
             }
             if HELICONE_API_KEY := settings.HELICONE_API_KEY:
-                openai_completion_request["headers"] = {
+                openai_completion_request["headers"] = {  # type: ignore
                     "Helicone-Auth": f"Bearer {HELICONE_API_KEY}",
                 }
             completion = await openai.ChatCompletion.acreate(
@@ -126,7 +126,7 @@ def query_openai(
                 "temperature": temperature,
             }
             if HELICONE_API_KEY := settings.HELICONE_API_KEY:
-                openai_completion_request["headers"] = {
+                openai_completion_request["headers"] = {  # type: ignore
                     "Helicone-Auth": f"Bearer {HELICONE_API_KEY}",
                 }
             completion = openai.ChatCompletion.create(**openai_completion_request)

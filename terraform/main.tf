@@ -1,266 +1,62 @@
-provider "google" {
-  project = var.project_id
-  region  = var.region
-}
 
-# Artifact Registry
-
-resource "google_artifact_registry_repository" "repo" {
-  location      = var.region
-  repository_id = format("%s-artifact-repo", var.project_slug)
-  format        = "DOCKER"
-  description   = format("The Artifact Registry of the %s project", var.project_slug)
-}
-
-# Secret Manager
-
-resource "google_secret_manager_secret" "secret" {
-  for_each = local.secrets
-  secret_id = each.key
-
-  labels = {
-    project = var.project_slug
+// We use GCS as a backend for storing the state of our infrastructure.
+terraform {
+  backend "gcs" {
+    bucket = "test-deployment-5-terraform-state"
+    prefix = "terraform/state"
   }
-
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret_version" "version" {
-  for_each = local.secrets
-
-  secret = google_secret_manager_secret.secret[each.key].id
-
-  secret_data = each.value
-}
-
-resource "google_secret_manager_secret" "g_creds_json" {
-
-  secret_id = "G_CREDS_JSON"
-
-  labels = {
-    project = var.project_slug
-  }
-
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret_version" "g_creds_version" {
-
-  secret = google_secret_manager_secret.g_creds_json.id
-
-  secret_data = file(var.google_storage_creds_json)
-}
-
-# Cloud SQL
-
-resource "google_sql_database_instance" "default" {
-  name             = format("%s-db", var.project_slug)
-  database_version = "POSTGRES_15"
-  region           = var.region
-
-  settings {
-    tier = "db-f1-micro"
-  }
-}
-
-resource "google_sql_database" "default" {
-  name     = format("%s-backend-db", var.project_slug)
-  instance = google_sql_database_instance.default.name
-}
-
-resource "google_sql_user" "default" {
-  name     = format("%s-backend-db-user", var.project_slug)
-  instance = google_sql_database_instance.default.name
-  password = var.db_password
-}
-
-# Cloud Storage
-
-resource "google_storage_bucket" "static_files" {
-  name     = format("%s-static-files", var.project_slug)
-  location = var.region
-}
-
-resource "google_service_account" "cloud_run_storage_sa" {
-  account_id   = format("%s-backend-gcs", var.project_slug)
-  display_name = "Cloud Run service account"
-  description  = "Service account used by Cloud Run to access GCS."
-}
-
-resource "google_storage_bucket_iam_member" "backend_storage" {
-  bucket = google_storage_bucket.static_files.name
-  role   = "roles/storage.objectAdmin"
-  member = "serviceAccount:${google_service_account.cloud_run_storage_sa.email}"
-}
-
-resource "google_service_account_key" "backend_gcs_key" {
-  service_account_id = google_service_account.cloud_run_storage_sa.name
-}
-
-# Cloud Run
-
-resource "google_cloud_run_service" "default" {
-  name     = format("%s-service", var.project_slug)
-  location = var.region
-
-  template {
-    spec {
-
-      service_account_name = google_service_account.github_actions.email
-
-      volumes {
-
-        name = "google-creds-json-volume"
-        secret {
-          secret_name= google_secret_manager_secret.g_creds_json.secret_id
-          items {
-            key = "latest"
-            path    = "google_storage_credentials.json"
-            mode    = 0 # use default 0444
-          }
-        }
-      }
-
-
-      containers { # europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
-        image = format("europe-north1-docker.pkg.dev/${var.project_id}/%s-artifact-repo/${format("%s-backend-image", var.project_slug)}:latest", var.project_slug)
-
-        volume_mounts {
-          name       = "google-creds-json-volume"
-          mount_path = "/secrets"
-        }
-
-        env {
-          name  = "ENVIRONMENT"
-          value = "production"
-        }
-        env {
-          name  = "GUNICORN_WORKERS"
-          value = 1
-        }
-        env {
-          name  = "POSTGRES_HOST"
-          value = format("/cloudsql/%s", google_sql_database_instance.default.connection_name)
-        }
-        env {
-          name  = "POSTGRES_PORT"
-          value = "5432"
-        }
-        env {
-          name  = "POSTGRES_DB"
-          value = google_sql_database.default.name
-        }
-        env {
-          name  = "POSTGRES_USER"
-          value = google_sql_user.default.name
-        }
-        env {
-          name = "POSTGRES_PASSWORD"
-          value = var.db_password
-        }
-        env {
-          name = "SENTRY_DSN"
-          value_from {
-            secret_key_ref {
-              name = "SENTRY_DSN"
-              key  = "latest"
-            }
-          }
-        }
-        env {
-          name = "SECRET_KEY"
-          value_from {
-            secret_key_ref {
-              name = "SECRET_KEY"
-              key  = "latest"
-            }
-          }
-        }
-        env {
-          name = "HOST_DOMAIN"
-          value_from {
-            secret_key_ref {
-              name = "HOST_DOMAIN"
-              key  = "latest"
-            }
-          }
-        }
-        env {
-          name = "FRONTEND_DOMAIN"
-          value_from {
-            secret_key_ref {
-              name = "FRONTEND_DOMAIN"
-              key  = "latest"
-            }
-          }
-        }
-        env {
-          name = "OPENAI_API_KEY"
-          value_from {
-            secret_key_ref {
-              name = "OPENAI_API_KEY"
-              key  = "latest"
-            }
-          }
-        }
-        env {
-          name  = "HELICONE_API_KEY"
-          value_from {
-            secret_key_ref {
-              name     = "HELICONE_API_KEY"
-              key      = "latest"
-            }
-          }
-        }
-      }
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">=5.1.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = ">=3.5.1"
     }
   }
 
-  traffic {
-    percent         = 100
-    latest_revision = true
-  }
+  required_version = ">= 1.4.6"
 }
 
 
-/*
-This resource grants public access to the Cloud Run service by assigning the 'roles/run.invoker' role to 'allUsers'.
--> This means any authenticated or unauthenticated user can invoke (access) the service.
-This configuration is equivalent to using the --allow-unauthenticated option in the gcloud run deploy command
-*/
-resource "google_cloud_run_service_iam_member" "public" {
-  service  = google_cloud_run_service.default.name
-  location = google_cloud_run_service.default.location
-  role     = "roles/run.invoker"
-  member   = "allUsers"
+// Django deployment module
+
+module "django_deployment" {
+  source          = "./modules/django_deployment"
+  project_id      = "test-deployment-5"
+  region          = "europe-north1"
+  project_slug    = "deployment-vijf"
+  sentry_dsn      = "https://ed9289e685b24fb48a6bb7e3b6016f94@o4505739031740416.ingest.sentry.io/4505739034492928"
+  frontend_domain = ""
+  mailgun_api_key = ""
+  mailgun_sender_domain = ""
 }
 
-# Github Actions
+// Output the values of the outputs from the Django deployment module
 
-resource "google_service_account" "github_actions" {
-  account_id   = lower(replace(format("%s-backend-ga", var.project_slug), "_", "-"))
-  display_name = format("GitHub Actions service account for the %s backend", var.project_slug)
-  description  = format("The service account used by the GitHub Actions of the %s backend to deploy from its ci.yml", var.project_slug)
+output "cloud_run_url" {
+  value       = module.django_deployment.cloud_run_url
+  description = "The URL of the Cloud Run service."
 }
 
-resource "google_project_iam_member" "github_actions_roles" {
-  for_each = toset([
-    "roles/artifactregistry.writer",
-    "roles/cloudsql.admin",
-    "roles/cloudsql.client",
-    "roles/secretmanager.secretAccessor",
-    "roles/storage.admin"
-  ])
-
-  project = var.project_id
-  role    = each.key
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
+output "cloud_run_name" {
+  value       = module.django_deployment.cloud_run_name
+  description = "The name of the Cloud Run service."
 }
 
-resource "google_service_account_key" "github_actions_key" {
-  service_account_id = google_service_account.github_actions.name
+output "runtime_dockerimage_url" {
+  value       = module.django_deployment.runtime_dockerimage_url
+  description = "The URL of the Django Dockerimage."
+}
+
+output "sql_instance_connection_name" {
+  value       = module.django_deployment.sql_instance_connection_name
+  description = "The connection name of the Cloud SQL instance."
+}
+
+output "github_actions_sa_key" {
+  value       = module.django_deployment.github_actions_sa_key
+  description = "The private key of the GitHub Actions service account."
+  sensitive   = true
 }

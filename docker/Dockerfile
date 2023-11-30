@@ -43,5 +43,5 @@ COPY . .
 
 RUN python manage.py collectstatic --no-input
 
-ENTRYPOINT ["python"]
-CMD ["-m", "gunicorn"]
+ENTRYPOINT ["./docker/entrypoint.sh"]
+CMD ["python", "-m", "gunicorn"]

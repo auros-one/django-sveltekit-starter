@@ -1,133 +1,81 @@
-# Using Terraform Files to Host Django Backends
+# Terraform Deployment Instructions
 
-# 0. Pre-requisites
+## 1. Create a GCP Project
 
-## System Requirements
+Store the project ID and preferred region in an environment variable for later use:
 
--  Terraform
--  Google Cloud SDK
+```shell
+export PROJECT_ID=test-deployment-5
+export GCP_ZONE=europe-north1
+```
 
-## API Keys
+**note:** don't forget to setup billing for your project
 
-Get API keys for:
+## 2. Authenticate to GCP
 
-- OpenAI
-- Helicone
-- Sentry
-
-# 1. Create a GCP project
-
-outputs: PROJECT_ID = project-template-396517
-
-# 2. Authenticate to GCP
-
+```shell
 gcloud auth login
-gcloud config set project PROJECT_ID
-
-# 3. Enable Required APIs
-
-```
-chmod +x terraform/enable_apis.sh
-./terraform/enable_apis.sh --project PROJECT_ID
+gcloud auth application-default login
+gcloud config set project $PROJECT_ID
 ```
 
-Running the script enables the following APIs in your GCP project:
+## 3. Fill Out terraform Variables
 
--   Cloud Run API
--   Cloud SQL Admin API
--   Secret Manager API
--   Artifact Registry API
+If you're using the django deployment module, you have to fill out it's variables in [`main.tf`](/terraform/main.tf):
 
-
-# 4. Prepare Environment Variables
-
+```hcl
+module "django_deployment" {
+  source          = "./modules/django_deployment"
+  project_id      = "$PROJECT_ID"
+  region          = "$GCP_ZONE"
+  project_slug    = "my-project-slug"
+  sentry_dsn      = ""
+  frontend_domain = ""
+}
 ```
-cp .env.production.example .env.production
-cp /terraform/variables.tfvars.example /terraform/variables.tfvars
+
+## 3. Create and Reference a GCS Bucket for Terraform State
+
+Terraform keeps track of the state of your infrastructure. We store this state in a GCS bucket so that it can be shared between developers.
+
+Note that the bucket namespace is shared by all users of the system so we choose a globally unique name by using the project ID as a prefix.
+
+```shell
+./create_state_bucket.sh
 ```
 
-Fill out all variables in `.env.production` and `terraform/variables.tfvars`
+It's not possible to use variables in the terraform backend specification so you have to set it manually in the `main.tf` code:
 
-# 5. Running Terraform
+```hcl
+terraform {
+  backend "gcs" {
+    bucket = "$PROJECT_ID-terraform-state"
+    prefix = "terraform/state"
+  }
 
+  ...
+
+}
 ```
-cd terraform/
+
+## 4. Initialize Terraform
+
+```shell
 terraform init
-terraform plan
 ```
 
-# 6. Deploying the Django Backend
+## 5. Deploy the Infrastructure
 
-```
-cd terraform/
+```shell
 terraform apply
 ```
 
-
-## X. Notes
--   Docs - https://cloud.google.com/docs/terraform/samples
--   Always review the execution plan from the `terraform plan` command before running `terraform apply`.
--   The `terraform apply` command will create resources in your GCP project and may incur costs.
--   You can destroy the resources created by Terraform using the `terraform destroy` command.
-
-
-
-# Context
-
-I'm trying to deploy the project with terraform, it seems like it has to be done in multiple stages:
-1. first resource deployments
-- create a service account for django accessing the storages
-- create a cloud SQL postgres db
-- ... create any other service that can alrlady be created
-2. terraform output -> completes required django secrets
-- pass the service account credentials to django (paste them into a file?!)
-- pass the postgres env vars to django env
-- pass the cloud run instance domain name to django env
-3. deploy the remaining resources
-- cloud run
-- store secrets in secret-manager
-
-
-# Goal: `deploy.py` & `destroy.py`
+## 6. View Outputs
 
 ```shell
-> terraform init
-terraform init success!
-> python deploy.py
-deploying initial resources...
-running django migrations... (setting up cloud sql tunnel, running manage.py migrate)
-deploying django...
-deploy success!
-initial superuser email: stijn@auros.one
-initial superuser password:
-creating superuser... (using cloud sql tunnel to run manage.py createsuperuser with the given arguments)
-done
+terraform output
 ```
 
-```shell
-> python destroy.py
-destroying resources... (basically just calls `terraform destroy`)
-```
+## DEBUGGING
 
-
-
-
-
-docker build -t europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image .
-docker push europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
-
-
-docker build \
-  --build-arg BUILDKIT_INLINE_CACHE=1 \
-  -f Dockerfile \
-  --cache-from europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image \
-  -t europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image \
-  .
-docker push europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image
-gcloud run deploy bbadmin-backend \
-  --image=europe-north1-docker.pkg.dev/project-template-396517/project-template-artifact-repo/project-template-backend-image \
-  --region=europe-north1 \
-  --platform=managed \
-  --allow-unauthenticated \
-  --add-cloudsql-instances=project-template-396517:europe-north1:project-template-db \
-  --env-vars-file=.env.production.yml
+-   If there's a `403 permission denied error`, make sure the project ID and other details are correct
