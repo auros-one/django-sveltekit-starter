@@ -113,73 +113,33 @@ View a Terraform secret with:
 terraform output <secret_name>
 ```
 
-### Deploying manually
+### Post-Deployment Settings
 
-**Set required env vars**
+Don't forget to:
 
-1. Setup the Cloud SQL Proxy connection to connect to the production database. See [Connecting from a local machine](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy#connect) for information on setting up the proxy.
-    ```console
-    ./cloud-sql-proxy $CLOUD_SQL_CONNECTION_NAME
-    // Example:
-    ./cloud-sql-proxy "test-deployment-2-405517:europe-north1:deployment-twee-db-instance"
-    ```
-2. Create a superuser using the Django command.
-    ```console
-    python manage.py createsuperuser
-    ```
+-   create a superuser
+-   set the site name and domain
 
-**Setting Site Name and Domain**
+The 'Managing the Django deployment' section below has instructions on how to do this.
 
-Don't forget to update the site domain and name in the Django backend at https://<your-domain>/admin/sites/site
+## Managing the Django deployment
 
-This name and domain are used in the email templates and the admin dashboard.
-
-### Editing .env.gcp
-
-**Required project details:**
+**ALWAYS FIRST SET THE ENV VARS AND AUTHENTICATE TO GCP**
 
 ```console
-export PROJECT_ID= ... # GCP project ID
+export PROJECT_ID= ... # GCP Project ID
+export PROJECT_SLUG= ... # GCP Project slug (this is one of the Terraform module inputs)
+export CLOUD_SQL_CONNECTION_NAME = ... # GCP Cloud SQL connection name (this is one of the Terraform module outputs)
 export RUNTIME_DOCKERIMAGE_URL= ... # Terraform output `runtime_dockerimage_url`
 ```
 
-**Authenticate to GCP**
-
 ```console
 gcloud auth login
 gcloud auth application-default login
 gcloud config set project $PROJECT_ID
 ```
 
-**Build and deploy the Docker image**
-
-```console
-docker build \
-  --build-arg BUILDKIT_INLINE_CACHE=1 \
-  -f docker/Dockerfile \
-  --cache-from $RUNTIME_DOCKERIMAGE_URL:latest \
-  -t $RUNTIME_DOCKERIMAGE_URL:latest \
-  .
-docker push $RUNTIME_DOCKERIMAGE_URL:latest
-gcloud run deploy agent-lunar-backend \
-  --image=$RUNTIME_DOCKERIMAGE_URL:latest \
-  --region=europe-north1 \
-  --platform=managed \
-  --allow-unauthenticated \
-  --set-secrets=/app/secrets/.env=secretName:version
-```
-
-### Managing the Django deployment
-
-**ALWAYS FIRST AUTHENTICATE TO GCP**
-
-```console
-gcloud auth login
-gcloud auth application-default login
-gcloud config set project $PROJECT_ID
-```
-
-**Creating a Superuser**
+### Creating a Superuser
 
 1. Set the database connection details in your `.env` (see below how to get the GCP .env.gcp file to get the DB connection details).
 
@@ -206,20 +166,16 @@ POSTGRES_PASSWORD=
 python manage.py createsuperuser
 ```
 
-**Setting Site Name and Domain**
+### Setting Site Name and Domain
 
-Don't forget to update the site domain and name in the Django backend at https://<your-domain>/admin/sites/site
+Don't forget to update the site domain and name in the Django backend at:
+
+-   url: <terraform output `cloud_run_url`>/admin/sites/site
 
 This name and domain are used in the email templates and the admin dashboard.
+cloud_run_url
 
 ### Editing .env.gcp
-
-**Required project details:**
-
-```console
-export PROJECT_ID= ... # GCP Project ID
-export PROJECT_SLUG= ... # GCP Project slug (this is one of the Terraform module inputs)
-```
 
 **Get the current .env.gcp file**:
 
@@ -237,4 +193,37 @@ gcloud secrets versions add "$PROJECT_SLUG-config" --data-file=".env.gcp"
 
 ```console
 gcloud secrets versions list "$PROJECT_SLUG-config"
+```
+
+**Required project details:**
+
+```console
+export PROJECT_ID= ... # GCP project ID
+export RUNTIME_DOCKERIMAGE_URL= ... # Terraform output `runtime_dockerimage_url`
+```
+
+**Authenticate to GCP**
+
+```console
+gcloud auth login
+gcloud auth application-default login
+gcloud config set project $PROJECT_ID
+```
+
+### Deploying manually
+
+```console
+docker build \
+  --build-arg BUILDKIT_INLINE_CACHE=1 \
+  -f docker/Dockerfile \
+  --cache-from $RUNTIME_DOCKERIMAGE_URL:latest \
+  -t $RUNTIME_DOCKERIMAGE_URL:latest \
+  .
+docker push $RUNTIME_DOCKERIMAGE_URL:latest
+gcloud run deploy agent-lunar-backend \
+  --image=$RUNTIME_DOCKERIMAGE_URL:latest \
+  --region=europe-north1 \
+  --platform=managed \
+  --allow-unauthenticated \
+  --set-secrets=/app/secrets/.env=secretName:version
 ```
