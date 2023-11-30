@@ -1,6 +1,7 @@
 """
 Django settings
 """
+import logging
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -12,8 +13,36 @@ from dotenv import load_dotenv
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
+logger = logging.getLogger(__name__)
+
+
 load_dotenv()
-load_dotenv("/app/secrets/.env")  # .env is here in production
+load_dotenv("/app/secrets/.env", override=True)  # .env is here in production
+
+# print whether "/app/secrets/.env" exists
+print(f"/app/secrets/.env exists: {Path('/app/secrets/.env').exists()}")
+logger.info(f"/app/secrets/.env exists: {Path('/app/secrets/.env').exists()}")
+
+# print an ls of "/app/secrets"
+try:
+    print(f"ls /app/secrets: {os.listdir('/app/secrets')}")
+    logger.info(f"ls /app/secrets: {os.listdir('/app/secrets')}")
+except FileNotFoundError:
+    print("ls /app/secrets: FileNotFoundError")
+    logger.info("ls /app/secrets: FileNotFoundError")
+
+# print POSTGRES_HOST etc
+print(f"POSTGRES_HOST: {os.environ.get('POSTGRES_HOST')}")
+print(f"POSTGRES_DB: {os.environ.get('POSTGRES_DB')}")
+print(f"POSTGRES_PASSWORD: {os.environ.get('POSTGRES_PASSWORD')}")
+print(f"POSTGRES_PORT: {os.environ.get('POSTGRES_PORT')}")
+print(f"POSTGRES_USER: {os.environ.get('POSTGRES_USER')}")
+logger.info(f"POSTGRES_HOST: {os.environ.get('POSTGRES_HOST')}")
+logger.info(f"POSTGRES_DB: {os.environ.get('POSTGRES_DB')}")
+logger.info(f"POSTGRES_PASSWORD: {os.environ.get('POSTGRES_PASSWORD')}")
+logger.info(f"POSTGRES_PORT: {os.environ.get('POSTGRES_PORT')}")
+logger.info(f"POSTGRES_USER: {os.environ.get('POSTGRES_USER')}")
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,11 +83,13 @@ CORS_ALLOW_HEADERS = [
     "sentry-trace",
 ]
 
-CORS_ALLOWED_ORIGINS = [f"https://{HOST_DOMAIN}", f"https://{FRONTEND_DOMAIN}"]
+CORS_ALLOWED_ORIGINS = [
+    f"https://{domain}" for domain in [HOST_DOMAIN, FRONTEND_DOMAIN] if domain
+]
 
 CSRF_COOKIE_SECURE = True
 
-CSRF_TRUSTED_ORIGINS = [f"https://{HOST_DOMAIN}", f"https://{FRONTEND_DOMAIN}"]
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 DEBUG = os.environ.get("DEBUG") == "1"
 
@@ -272,25 +303,44 @@ AUTH_PASSWORD_VALIDATORS = [
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 
 
+# Logging & reporting.
+
+if sentry_dsn := os.environ.get("SENTRY_DSN"):  # pragma: no cover
+    sentry_sdk.init(
+        dsn=sentry_dsn,
+        environment=ENVIRONMENT,
+        integrations=[DjangoIntegration(), LoggingIntegration()],
+        request_bodies="medium",  # type: ignore
+        send_default_pii=True,
+    )
+
+
 # Email
 
-if ENVIRONMENT == "production":
-    EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+# default email settings
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "no-reply@localhost"  # used by django-allauth when sending emails
+
+# in production, try to use Mailgun.
+if ENVIRONMENT == "production":  # pragma: no cover
     MAILGUN_API_KEY = os.environ.get("MAILGUN_API_KEY")
     MAILGUN_SENDER_DOMAIN = os.environ.get("MAILGUN_SENDER_DOMAIN")
-    if MAILGUN_API_KEY is None or MAILGUN_SENDER_DOMAIN is None:  # pragma: no cover
-        raise ValueError(
-            "MAILGUN_API_KEY and MAILGUN_SENDER_DOMAIN must be set in production."
+    if (
+        MAILGUN_API_KEY is None
+        or MAILGUN_API_KEY == ""
+        or MAILGUN_SENDER_DOMAIN is None
+        or MAILGUN_SENDER_DOMAIN == ""
+    ):
+        logger.error(
+            "MAILGUN_API_KEY and MAILGUN_SENDER_DOMAIN must be set in production. Falling back to console EmailBackend."
         )
-    DEFAULT_FROM_EMAIL = (
-        "no-reply@"
-        + MAILGUN_SENDER_DOMAIN  # used by django-allauth when sending emails
-    )
-else:  # pragma: no cover
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    DEFAULT_FROM_EMAIL = (
-        "no-reply@localhost"  # used by django-allauth when sending emails
-    )
+    else:
+        EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+        DEFAULT_FROM_EMAIL = (
+            "no-reply@"
+            + MAILGUN_SENDER_DOMAIN  # used by django-allauth when sending emails
+        )
+
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 
@@ -366,18 +416,6 @@ if ENVIRONMENT == "development":  # pragma: no cover
             "security.W009",  # SECRET_KEY
             "security.W018",  # DEBUG
         ]
-    )
-
-
-# Logging & reporting.
-
-if sentry_dsn := os.environ.get("SENTRY_DSN"):  # pragma: no cover
-    sentry_sdk.init(
-        dsn=sentry_dsn,
-        environment=ENVIRONMENT,
-        integrations=[DjangoIntegration(), LoggingIntegration()],
-        request_bodies="medium",  # type: ignore
-        send_default_pii=True,
     )
 
 

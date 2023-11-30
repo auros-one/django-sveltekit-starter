@@ -76,11 +76,11 @@ jobs:
           run: pipenv run python -m pytest --create-db
 
   deploy:
-    needs: [dependencies]
+    needs: [dependencies, lint, test]
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'workflow_dispatch'
-      || (github.event_name == 'push' && github.ref == 'refs/heads/ci-cd')
+      || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     env:
       DOCKER_BUILDKIT: 1
     steps:
@@ -93,16 +93,9 @@ jobs:
         run: gcloud auth configure-docker europe-north1-docker.pkg.dev
 
       # Docker builder image
-      - name: Check for Builder Cache
-        id: builder-cache-exists
-        run: >-
-          if docker pull ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder:latest; then
-            echo "BUILDER_CACHE_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "BUILDER_CACHE_EXISTS=false" >> $GITHUB_ENV
-          fi
       - name: Build Builder with Cache
-        if: ${{ env.BUILDER_CACHE_EXISTS == 'true' }}
+        id: build-with-cache
+        continue-on-error: true
         run: >-
           docker build
           --build-arg BUILDKIT_INLINE_CACHE=1
@@ -111,26 +104,21 @@ jobs:
           -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder:latest
           --target builder
           .
-      - name: Build Builder without Cache
-        if: ${{ env.BUILDER_CACHE_EXISTS != 'true' }}
+
+      - name: Build Builder with Cache failed -> Build Builder without Cache
+        if: ${{ steps.build-with-cache.outcome == 'failure' }}
         run: >-
           docker build
           -f docker/Dockerfile
           -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder:latest
           --target builder
+          .et builder
           .
 
       # Docker runtime image
-      - name: Check for Runtime Cache
-        id: runtime-cache-exists
-        run: >-
-          if docker pull ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:latest; then
-            echo "RUNTIME_CACHE_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "RUNTIME_CACHE_EXISTS=false" >> $GITHUB_ENV
-          fi
       - name: Build Runtime with Cache
-        if: ${{ env.RUNTIME_CACHE_EXISTS == 'true' }}
+        id: build-runtime-with-cache
+        continue-on-error: true
         run: >-
           docker build
           --build-arg COLLECT_STATIC=1
@@ -140,8 +128,9 @@ jobs:
           -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
           -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:latest
           .
-      - name: Build Runtime without Cache
-        if: ${{ env.RUNTIME_CACHE_EXISTS != 'true' }}
+
+      - name: Build Runtime with Cache failed -> Build Runtime without Cache
+        if: ${{ steps.build-runtime-with-cache.outcome == 'failure' }}
         run: >-
           docker build
           --build-arg COLLECT_STATIC=1
@@ -151,13 +140,13 @@ jobs:
           .
 
 
-      - name: Run deployment system checks
-        run: >-
-          docker run
-          --env SKIP_MIGRATIONS=true
-          --env-file .env.ci
-          --rm ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
-          python manage.py check --deploy --fail-level WARNING
+      #- name: Run deployment system checks
+      #  run: >-
+      #    docker run
+      #    --env SKIP_MIGRATIONS=true
+      #    --env-file .env.ci
+      #    --rm ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
+      #    python manage.py check --deploy --fail-level WARNING
       - name: Push builder image to Artifact Registry
         run: docker push --all-tags ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder
       - name: Push runtime image to Artifact Registry

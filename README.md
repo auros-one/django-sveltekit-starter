@@ -95,7 +95,7 @@ We're using dj-rest-auth for authentication which in turn uses django-allauth fo
 
 ## Deployment
 
-### Deploying with Terraform is recommended
+### Deploy with Terraform
 
 [Terraform Deployment Instructions](/terraform/README.md) - After deploying the infrastructure with Terraform, let the CI/CD pipeline deploy the Django application to this infrastracture (Cloud Run).
 
@@ -113,9 +113,9 @@ View a Terraform secret with:
 terraform output <secret_name>
 ```
 
-### Managing the Django deployment
+### Deploying manually
 
-**Creating a Superuser**
+**Set required env vars**
 
 1. Setup the Cloud SQL Proxy connection to connect to the production database. See [Connecting from a local machine](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy#connect) for information on setting up the proxy.
     ```console
@@ -139,8 +139,8 @@ This name and domain are used in the email templates and the admin dashboard.
 **Required project details:**
 
 ```console
-export PROJECT_ID= ... # GCP Project ID
-export PROJECT_SLUG= ... # GCP Project slug (this is one of the Terraform module inputs)
+export PROJECT_ID= ... # GCP project ID
+export RUNTIME_DOCKERIMAGE_URL= ... # Terraform output `runtime_dockerimage_url`
 ```
 
 **Authenticate to GCP**
@@ -149,6 +149,76 @@ export PROJECT_SLUG= ... # GCP Project slug (this is one of the Terraform module
 gcloud auth login
 gcloud auth application-default login
 gcloud config set project $PROJECT_ID
+```
+
+**Build and deploy the Docker image**
+
+```console
+docker build \
+  --build-arg BUILDKIT_INLINE_CACHE=1 \
+  -f docker/Dockerfile \
+  --cache-from $RUNTIME_DOCKERIMAGE_URL:latest \
+  -t $RUNTIME_DOCKERIMAGE_URL:latest \
+  .
+docker push $RUNTIME_DOCKERIMAGE_URL:latest
+gcloud run deploy agent-lunar-backend \
+  --image=$RUNTIME_DOCKERIMAGE_URL:latest \
+  --region=europe-north1 \
+  --platform=managed \
+  --allow-unauthenticated \
+  --set-secrets=/app/secrets/.env=secretName:version
+```
+
+### Managing the Django deployment
+
+**ALWAYS FIRST AUTHENTICATE TO GCP**
+
+```console
+gcloud auth login
+gcloud auth application-default login
+gcloud config set project $PROJECT_ID
+```
+
+**Creating a Superuser**
+
+1. Set the database connection details in your `.env` (see below how to get the GCP .env.gcp file to get the DB connection details).
+
+```
+POSTGRES_HOST=localhost
+POSTGRES_DB=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+```
+
+2. Connect to the Cloud SQL using the Cloud SQL Proxy.
+    - See [Connecting from a local machine](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy#connect) for information on setting up the proxy.
+    - See `terraform output` to get the `sql_instance_connection_name`
+
+```console
+./cloud-sql-proxy $CLOUD_SQL_CONNECTION_NAME
+// Example:
+./cloud-sql-proxy "test-deployment-2-405517:europe-north1:deployment-twee-db-instance"
+```
+
+3. Create a superuser using the Django command.
+
+```console
+python manage.py createsuperuser
+```
+
+**Setting Site Name and Domain**
+
+Don't forget to update the site domain and name in the Django backend at https://<your-domain>/admin/sites/site
+
+This name and domain are used in the email templates and the admin dashboard.
+
+### Editing .env.gcp
+
+**Required project details:**
+
+```console
+export PROJECT_ID= ... # GCP Project ID
+export PROJECT_SLUG= ... # GCP Project slug (this is one of the Terraform module inputs)
 ```
 
 **Get the current .env.gcp file**:
