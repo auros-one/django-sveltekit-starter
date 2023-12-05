@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - ci-cd
   pull_request:
   workflow_dispatch:
 
@@ -140,13 +139,13 @@ jobs:
           .
 
 
-      #- name: Run deployment system checks
-      #  run: >-
-      #    docker run
-      #    --env SKIP_MIGRATIONS=true
-      #    --env-file .env.ci
-      #    --rm ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
-      #    python manage.py check --deploy --fail-level WARNING
+      - name: Run deployment system checks
+        run: >-
+          docker run
+          --env SKIP_MIGRATIONS=true
+          --env-file .env.ci
+          --rm ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
+          python manage.py check --deploy --fail-level WARNING
       - name: Push builder image to Artifact Registry
         run: docker push --all-tags ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder
       - name: Push runtime image to Artifact Registry
