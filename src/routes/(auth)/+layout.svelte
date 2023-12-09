@@ -54,7 +54,7 @@
 {#if $jwt && $user}
 	<slot />
 {:else}
-	<div class="flex h-[95%] flex-col items-center justify-center">
+	<div class="flex h-[95vh] flex-col items-center justify-center">
 		<Spinner size={50} color={colors.slate[600]} />
 	</div>
 {/if}

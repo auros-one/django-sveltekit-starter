@@ -6,4 +6,6 @@
 	<title>SvelteKit x Django template</title>
 </svelte:head>
 
-<slot />
+<div class="overflow-y-scroll">
+    <slot />
+</div>
