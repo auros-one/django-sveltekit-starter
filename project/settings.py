@@ -7,7 +7,6 @@ from datetime import timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
-import openai
 import sentry_sdk
 from dotenv import load_dotenv
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -410,16 +409,3 @@ def show_toolbar(request):  # pragma: no cover
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": show_toolbar,
 }
-
-
-# OpenAI
-
-if openai_key := os.environ.get("OPENAI_API_KEY"):
-    openai.api_key = openai_key
-
-# Helicone (https://www.helicone.ai)
-
-HELICONE_API_KEY = os.environ.get("HELICONE_API_KEY", None)
-
-if HELICONE_API_KEY:
-    openai.api_base = "https://oai.hconeai.com/v1"
