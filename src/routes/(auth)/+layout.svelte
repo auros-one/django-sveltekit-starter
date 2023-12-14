@@ -7,6 +7,7 @@
 	import colors from 'tailwindcss/colors';
 	import { goto } from '$app/navigation';
 	import { refresh } from '$lib/api/account/auth';
+	import { fade } from 'svelte/transition';
 
 	/**
 	 * This is a layout component that is used to wrap all authenticated routes.
@@ -36,8 +37,13 @@
 		}, refreshRateMS);
 	}
 
+	let showLoadingMessage = false;
+
 	onMount(async () => {
 		try {
+			setTimeout(() => {
+				showLoadingMessage = true;
+			}, 2000);
 			await initJWTRefreshLoop();
 			getUser();
 		} catch (e) {
@@ -54,7 +60,17 @@
 {#if $jwt && $user}
 	<slot />
 {:else}
-	<div class="flex h-[95vh] flex-col items-center justify-center">
-		<Spinner size={50} color={colors.slate[600]} />
+	<div class="h-[95%] flex flex-col items-center justify-center gap-6">
+		<div class="relative flex flex-col items-center justify-center">
+			<Spinner size={50} />
+			{#if showLoadingMessage}
+				<p
+					in:fade={{ delay: 200, duration: 200 }}
+					class="absolute bottom-0 translate-y-[50px] w-max"
+				>
+					Hold on, we are logging you in
+				</p>
+			{/if}
+		</div>
 	</div>
 {/if}
