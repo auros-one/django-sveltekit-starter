@@ -22,9 +22,8 @@ class ChangeEmailView(APIView):
             user=request.user
         ).first()
 
-        if (
-            not current_email
-        ):  # This should never occur: a user should always have an email
+        if not current_email:  # pragma: no cover
+            # This should never occur: a user should always have an email
             raise APIException("No email found for this user.")
 
         # Verify if the provided password is correct

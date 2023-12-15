@@ -7,7 +7,7 @@ try:
     from django.contrib.sites.models import Site
 
     site_name = Site.objects.get_current().name
-except Exception:
+except Exception:  # pragma: no cover
     site_name = "Project Backend"
 
 
@@ -24,5 +24,5 @@ class CustomAdminSite(admin.AdminSite):
     # The URL for the “View site” link at the top of each admin page.
     if settings.ENVIRONMENT == "development":
         site_url = f"http://{settings.FRONTEND_DOMAIN}/"
-    else:
+    else:  # pragma: no cover
         site_url = f"https://{settings.FRONTEND_DOMAIN}/"

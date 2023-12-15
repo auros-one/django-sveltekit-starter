@@ -11,7 +11,7 @@ try:
 
     site_name = Site.objects.get_current().name
     docs_title += f" | {site_name} admin"
-except Exception:
+except Exception:  # pragma: no cover
     pass
 
 

@@ -12,7 +12,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
             base_url = (
                 f"http://{settings.FRONTEND_DOMAIN}{settings.EMAIL_VERIFICATION_PATH}"
             )
-        else:
+        else:  # pragma: no cover
             base_url = (
                 f"https://{settings.FRONTEND_DOMAIN}{settings.EMAIL_VERIFICATION_PATH}"
             )
