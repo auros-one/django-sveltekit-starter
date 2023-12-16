@@ -9,7 +9,7 @@
 	async function onChangePassword(e: Event) {
 		errorPasswordChange = undefined;
 		messagePasswordChange = undefined;
-		if (jwt === undefined) throw new Error('No jwt token');
+		if ($jwt === undefined) throw new Error('No jwt token');
 		loading = true;
 
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));

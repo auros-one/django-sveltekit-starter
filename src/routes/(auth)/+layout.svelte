@@ -4,7 +4,6 @@
 	import { user } from '$lib/stores/account';
 	import { jwt } from '$lib/stores/auth';
 	import Spinner from '$lib/components/loading/Spinner.svelte';
-	import colors from 'tailwindcss/colors';
 	import { goto } from '$app/navigation';
 	import { refresh } from '$lib/api/account/auth';
 	import { fade } from 'svelte/transition';
@@ -21,7 +20,7 @@
 
 	async function initJWTRefreshLoop() {
 		const result = await refresh();
-		jwt.set(result.token);
+		$jwt = result.token;
 
 		const expirationDate = new Date(result.expiration);
 		const refreshRateMS = expirationDate.valueOf() - Date.now() - 5000;
@@ -29,7 +28,7 @@
 		refreshTokenLoop = setInterval(async () => {
 			try {
 				const updatedTokenInfo = await refresh();
-				jwt.set(updatedTokenInfo.token);
+				$jwt = updatedTokenInfo.token;
 			} catch (e) {
 				goto('/account/login');
 				clearInterval(refreshTokenLoop); // Clear the interval if an error occurs
