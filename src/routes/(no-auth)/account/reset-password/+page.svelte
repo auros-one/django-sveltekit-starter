@@ -25,7 +25,7 @@
 	</div>
 
 	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-		<form class="space-y-6" method="POST" on:submit|preventDefault={onReset}>
+		<form class="space-y-6" on:submit|preventDefault={onReset}>
 			<div>
 				<label for="email" class="block text-sm font-medium leading-6 text-gray-900"
 					>Email address</label

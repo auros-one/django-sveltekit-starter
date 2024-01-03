@@ -59,13 +59,13 @@
 {#if $jwt && $user}
 	<slot />
 {:else}
-	<div class="h-[95%] flex flex-col items-center justify-center gap-6">
+	<div class="flex h-[95%] flex-col items-center justify-center gap-6">
 		<div class="relative flex flex-col items-center justify-center">
 			<Spinner size={50} />
 			{#if showLoadingMessage}
 				<p
 					in:fade={{ delay: 200, duration: 200 }}
-					class="absolute bottom-0 translate-y-[50px] w-max"
+					class="absolute bottom-0 w-max translate-y-[50px]"
 				>
 					Hold on, we are logging you in
 				</p>

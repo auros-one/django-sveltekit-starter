@@ -99,7 +99,7 @@
 		</div>
 
 		<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-			<form class="space-y-6" method="POST" on:submit|preventDefault={onUpdatePassword}>
+			<form class="space-y-6" on:submit|preventDefault={onUpdatePassword}>
 				<div>
 					<div class="flex items-center justify-between">
 						<label for="password1" class="block text-sm font-medium leading-6 text-gray-900"
