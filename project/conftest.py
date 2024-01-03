@@ -68,12 +68,20 @@ def user():
         name="Test User",
         password="a-super-strong-password-145338-@!#&",
     )
-    baker.make(EmailAddress, user=user, email=user.email, verified=True)
+    baker.make(EmailAddress, user=user, email=user.email, verified=True, primary=True)
     return user
 
 
 @pytest.fixture
 def other_user():
-    return User.objects.create_user(
+    other_user = User.objects.create_user(
         "other-test-user@example.com", name="Mgmt", password="x"
     )
+    baker.make(
+        EmailAddress,
+        user=other_user,
+        email=other_user.email,
+        verified=True,
+        primary=True,
+    )
+    return other_user
