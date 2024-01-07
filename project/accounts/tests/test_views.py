@@ -76,6 +76,12 @@ class TestAuth:
         assert "user" in result
         assert result["user"]["email"] == user.email
 
+        # Use the jwt token to make a request to the /authcheck/ view
+        response = api_client.get(
+            "/authcheck/", HTTP_AUTHORIZATION="Bearer " + result["access"]
+        )
+        assert response.status_code == HTTPStatus.NO_CONTENT
+
 
 @pytest.mark.django_db
 class TestEmailChangeView:
