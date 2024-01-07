@@ -12,12 +12,12 @@ def test_healthcheck(api_client: APIClient) -> None:
 
 
 @pytest.mark.django_db
-def test_api_key_permission(api_client: APIClient, user: User):
-    # Test view without API key
+def test_authcheck(api_client: APIClient, user: User):
+    # Test view without authentication
     response = api_client.get("/authcheck/")
     assert response.status_code == HTTP_401_UNAUTHORIZED
 
-    # Test view with API key
+    # Test view with authentication
     api_client.force_authenticate(user=user)
     response = api_client.get("/authcheck/")
     assert response.status_code == HTTP_204_NO_CONTENT
