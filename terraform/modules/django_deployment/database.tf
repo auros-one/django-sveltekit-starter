@@ -13,6 +13,10 @@ resource "google_sql_database_instance" "default" {
     ip_configuration {
       private_network = "projects/${var.project_id}/global/networks/default"
     }
+
+    backup_configuration {
+        enabled = true
+    }
   }
 
   depends_on = [google_project_service.enable_project_services, google_service_networking_connection.private_vpc_connection]
