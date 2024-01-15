@@ -65,6 +65,11 @@ resource "google_cloud_run_v2_service" "default" {
         name       = "secret-config"
         mount_path = "/app/secrets" // Django will look for the .env file in this directory (see settings.py)
       }
+      resources {
+        limits = {
+          memory = "800Mi"
+        }
+      }
     }
     max_instance_request_concurrency = 1
   }
