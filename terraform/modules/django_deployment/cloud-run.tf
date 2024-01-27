@@ -43,12 +43,6 @@ resource "google_cloud_run_v2_service" "default" {
   template {
     service_account = google_service_account.cloud_run_sa.email
     volumes {
-      name = "cloudsql"
-      cloud_sql_instance {
-        instances = [google_sql_database_instance.default.connection_name]
-      }
-    }
-    volumes {
       name = "secret-config"
       secret {
         secret       = google_secret_manager_secret.config.secret_id
@@ -59,14 +53,25 @@ resource "google_cloud_run_v2_service" "default" {
         }
       }
     }
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.default.connection_name]
+      }
+    }
     containers {
       image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.django_repo.name}/${var.project_slug}:latest"
       volume_mounts {
         name       = "secret-config"
         mount_path = "/app/secrets" // Django will look for the .env file in this directory (see settings.py)
       }
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
+      }
       resources {
         limits = {
+          cpu    = "1000m"
           memory = "800Mi"
         }
       }
