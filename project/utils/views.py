@@ -1,5 +1,5 @@
-from drf_spectacular.utils import extend_schema  # type: ignore
 from drf_spectacular.utils import OpenApiResponse  # type: ignore
+from drf_spectacular.utils import extend_schema  # type: ignore
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView

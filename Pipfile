@@ -48,6 +48,7 @@ reorder-python-imports = "*"
 requests-mock = "*"
 respx = "*"
 ruff = "*"
+isort = "*"
 
 [requires]
 python_version = "3.11"

@@ -1,6 +1,5 @@
 import pytest
-from rest_framework.status import HTTP_204_NO_CONTENT
-from rest_framework.status import HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
 from rest_framework.test import APIClient
 
 from project.accounts.models import User

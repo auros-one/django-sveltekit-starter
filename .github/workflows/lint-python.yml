@@ -22,7 +22,7 @@ on:
         required: false
         type: boolean
       isort:
-        default: false
+        default: true
         description: Run isort
         required: false
         type: boolean
@@ -37,7 +37,7 @@ on:
         required: false
         type: boolean
       reorder-python-imports:
-        default: true
+        default: false
         description: Run reorder-python-imports
         required: false
         type: boolean
@@ -116,22 +116,22 @@ jobs:
         run: pip install -r ${{ inputs.requirements-files }}
       - name: Run isort (pip)
         if: inputs.package-manager == 'pip'
-        run: python -m isort --check-only --diff .
+        run: python -m isort --check-only --profile black --diff .
       - name: Run isort (pipenv)
         if: inputs.package-manager == 'pipenv'
-        run: pipenv run isort --check-only --diff .
+        run: pipenv run isort --check-only --profile black --diff .
       - name: Run isort (pip)
         if: inputs.package-manager == 'pip'
         uses: liskin/gh-problem-matcher-wrap@v1
         with:
           linters: isort
-          run: python -m isort --check-only --diff .
+          run: python -m isort --check-only --profile black --diff .
       - name: Run isort (pipenv)
         if: inputs.package-manager == 'pipenv'
         uses: liskin/gh-problem-matcher-wrap@v1
         with:
           linters: isort
-          run: pipenv run python -m isort --check-only --diff .
+          run: pipenv run python -m isort --check-only --profile black --diff .
 
   pyright:
     if: inputs.pyright

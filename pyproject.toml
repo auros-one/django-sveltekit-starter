@@ -32,3 +32,6 @@ python_files = ["tests.py", "**/tests/test_*.py", "**/tests/**/test_*.py"]
 [tool.ruff]
 # Ignore max line length - black will handle this and it's okay to go over sometimes.
 ignore = ["E501"]
+
+[tool.isort]
+profile = "black"

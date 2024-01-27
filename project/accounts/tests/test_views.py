@@ -3,11 +3,12 @@ from http import HTTPStatus
 
 import pytest
 from allauth.account.admin import EmailAddress
+from model_bakery import baker
+from rest_framework.test import APIClient
+
 from django.contrib.auth import authenticate
 from django.core import mail
 from django.urls import reverse
-from model_bakery import baker
-from rest_framework.test import APIClient
 
 from ..models import User
 

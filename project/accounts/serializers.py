@@ -3,8 +3,9 @@ from allauth.account.utils import user_pk_to_url_str
 from dj_rest_auth.serializers import (
     PasswordResetSerializer as RestAuthPasswordResetSerializer,
 )
-from django.conf import settings
 from rest_framework import serializers
+
+from django.conf import settings
 
 from .models import User
 

@@ -1,12 +1,9 @@
 from allauth.account.models import EmailAddress
-from allauth.socialaccount.models import SocialAccount
-from allauth.socialaccount.models import SocialApp
-from allauth.socialaccount.models import SocialToken
-from django.contrib import admin
-from django.urls import include
-from django.urls import path
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from rest_framework.authtoken.models import TokenProxy
 
+from django.contrib import admin
+from django.urls import include, path
 from project.accounts.views import ChangeEmailView
 
 urlpatterns = [
