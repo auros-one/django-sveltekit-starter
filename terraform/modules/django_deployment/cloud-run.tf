@@ -76,7 +76,7 @@ resource "google_cloud_run_v2_service" "default" {
         }
       }
     }
-    max_instance_request_concurrency = 1
+    max_instance_request_concurrency = 50
   }
 
   depends_on = [google_project_service.enable_project_services, google_secret_manager_secret_version.placeholder_config]
