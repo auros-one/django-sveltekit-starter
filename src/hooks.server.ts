@@ -11,13 +11,6 @@ const handleApiProxy: Handle = async ({ event }) => {
 	 * https://sami.website/blog/sveltekit-api-reverse-proxy
 	 */
 
-	// reject requests that don't come from the webapp, to avoid your proxy being abused.
-	// --> This is broken on localhost and untested in production
-	//const origin = event.request.headers.get('Origin');
-	//if (!origin || new URL(origin).origin !== event.url.origin) {
-	//	throw error(403, 'Request Forbidden.');
-	//}
-
 	// strip `/api` from the request path
 	const strippedPath = event.url.pathname.substring(PROXY_PATH.length);
 

@@ -1,5 +1,11 @@
 # SvelteKit Template (integrates with Django Template)
 
+## Backend Integration
+
+All calls to the /api path are forwarded to the backend. See `src/hooks.server.ts` for more info.
+
+![Proxy Sketch](proxy-sketch.png)
+
 ## Installing
 
 ```bash
