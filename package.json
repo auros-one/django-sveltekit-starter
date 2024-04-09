@@ -13,6 +13,7 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
+		"@sentry/vite-plugin": "^2.16.1",
 		"@sveltejs/adapter-cloudflare": "^2.3.1",
 		"@sveltejs/kit": "^1.20.4",
 		"@typescript-eslint/eslint-plugin": "^6.7.2",
@@ -37,6 +38,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@jill64/sentry-sveltekit-cloudflare": "^1.7.9",
 		"@tailwindcss/forms": "^0.5.4",
 		"openapi-fetch": "^0.7.6"
 	}
