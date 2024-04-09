@@ -128,6 +128,7 @@ venv.bak/
 
 node_modules/
 
+
 # Summarize
 **/summary.txt
 
@@ -135,3 +136,7 @@ node_modules/
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+
+.idea/
+
+.DS_Store
