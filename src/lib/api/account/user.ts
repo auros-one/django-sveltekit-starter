@@ -1,21 +1,17 @@
 import { apiPath } from '$lib/api/paths';
-import { jwt } from '$lib/stores/auth';
-import { user } from '$lib/stores/account';
-import { get } from 'svelte/store';
+import { waitForJWT } from '$lib/stores/auth';
+import { user, type User } from '$lib/stores/account';
 
 export async function getUser() {
-	const jwtToken = get(jwt);
-	if (jwtToken === undefined) throw new Error('No jwt token');
-
 	const response = await fetch(apiPath.accounts.user, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
-			Authorization: 'Bearer ' + jwtToken
+			Authorization: 'Bearer ' + (await waitForJWT())
 		},
 		credentials: 'include'
 	});
 	const data = await response.json();
 
-	user.set(data);
+	user.set(data as User);
 }

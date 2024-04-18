@@ -1,4 +1,4 @@
-import { persisted } from '$lib/stores/cookieStore';
+import { persisted } from '$lib/stores/utils/cookieStore';
 
 export interface User {
 	email: string;

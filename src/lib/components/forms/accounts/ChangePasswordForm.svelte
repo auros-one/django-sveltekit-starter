@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { apiClient } from '$lib/api/index';
-	import { jwt } from '$lib/stores/auth';
 	import Button from '$lib/components/Button.svelte';
+	import { waitForJWT } from '$lib/stores/auth';
 
 	let loading: boolean = false;
 	let errorPasswordChange: string | undefined = undefined;
@@ -9,7 +9,6 @@
 	async function onChangePassword(e: Event) {
 		errorPasswordChange = undefined;
 		messagePasswordChange = undefined;
-		if ($jwt === undefined) throw new Error('No jwt token');
 		loading = true;
 
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
@@ -23,7 +22,7 @@
 			},
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${$jwt}`
+				Authorization: 'Bearer ' + (await waitForJWT())
 			},
 			credentials: 'include'
 		});

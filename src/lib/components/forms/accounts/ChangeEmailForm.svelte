@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { apiClient } from '$lib/api/index';
-	import { jwt } from '$lib/stores/auth';
+	import { waitForJWT } from '$lib/stores/auth';
 	import Button from '$lib/components/Button.svelte';
 
 	let loading: boolean = false;
@@ -9,7 +9,6 @@
 	async function onChangeEmail(e: Event) {
 		error = undefined;
 		success = false;
-		if ($jwt === undefined) throw new Error('No jwt token');
 		loading = true;
 
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
@@ -20,7 +19,7 @@
 			},
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${$jwt}`
+				Authorization: 'Bearer ' + (await waitForJWT())
 			},
 			credentials: 'include'
 		});
