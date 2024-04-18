@@ -9,7 +9,9 @@
 	async function onReset(e: Event) {
 		loading = true;
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-		const data = await requestPasswordReset(formData.email as string);
+		const data = (await requestPasswordReset(formData.email as string)) as
+			| { [key: string]: [] }
+			| { non_field_errors: [] };
 		if (data.non_field_errors) errors = data;
 		else sent = true;
 		loading = false;

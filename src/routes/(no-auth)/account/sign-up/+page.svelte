@@ -32,9 +32,11 @@
 			return;
 		}
 
-		const signupData = await signup(email, password1, password2);
+		const signupData = (await signup(email, password1, password2)) as
+			| { [key: string]: [string] }
+			| { access: string };
 		if (!signupData.access) {
-			errors = signupData;
+			errors = signupData as { [key: string]: [string] };
 			loading = false;
 			return;
 		}

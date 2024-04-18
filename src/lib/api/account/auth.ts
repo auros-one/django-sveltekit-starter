@@ -1,7 +1,7 @@
 import { apiPath } from '$lib/api/paths';
 import { invalidateAll } from '$app/navigation';
 import { jwt } from '$lib/stores/auth';
-import { user } from '$lib/stores/account';
+import { user, type User } from '$lib/stores/account';
 
 export async function signup(email: string, password1: string, password2: string) {
 	const response = await fetch(apiPath.accounts.signup, {
@@ -30,7 +30,7 @@ export async function login(email: string, password: string) {
 	if (response.status.toString().startsWith('5')) {
 		return { non_field_errors: ['Something went wrong on our end. Please try again later.'] };
 	}
-	const data = await response.json();
+	const data = (await response.json()) as { access: string; user: User };
 	if (response.ok) {
 		// on success, set jwt and user
 		jwt.set(data.access);
@@ -130,7 +130,7 @@ export async function refresh(): Promise<{ token: string; expiration: string }> 
 		credentials: 'include'
 	});
 	if (response.status === 200) {
-		const data = await response.json();
+		const data = (await response.json()) as { access: string; access_expiration: string };
 		return { token: data.access, expiration: data.access_expiration };
 	} else {
 		throw new Error('Could not refresh JWT');

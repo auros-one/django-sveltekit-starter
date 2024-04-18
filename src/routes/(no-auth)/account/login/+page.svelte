@@ -9,9 +9,11 @@
 	async function onLogin(e: Event) {
 		loading = true;
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-		const data = await login(formData.email as string, formData.password as string);
-		if (!data.access) errors = data;
-		else await goto('/');
+		const data = (await login(formData.email as string, formData.password as string)) as
+			| { [key: string]: [] }
+			| { access: string };
+		if (data.access) await goto('/');
+		else errors = data as { [key: string]: [] };
 		loading = false;
 	}
 </script>
