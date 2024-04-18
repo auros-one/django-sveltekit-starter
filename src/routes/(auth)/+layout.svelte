@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { refresh } from '$lib/api/account/auth';
 	import { fade } from 'svelte/transition';
+	import type { LayoutData } from './$types';
 
 	/**
 	 * This is a layout component that is used to wrap all authenticated routes.
@@ -15,6 +16,9 @@
 	 * refresh the JWT token when it is about to expire. If anything goes wrong
 	 * during the refresh loop, the user is redirected to the login page.
 	 */
+
+	export let data: LayoutData;
+	$user = data.user;
 
 	let refreshTokenLoop: number | undefined = undefined;
 
@@ -56,7 +60,7 @@
 	});
 </script>
 
-{#if $jwt && $user}
+{#if $user}
 	<slot />
 {:else}
 	<div class="flex h-[95%] flex-col items-center justify-center gap-6">
