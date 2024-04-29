@@ -131,6 +131,7 @@ export PROJECT_ID= ... # GCP Project ID
 export PROJECT_SLUG= ... # GCP Project slug (this is one of the Terraform module inputs)
 export CLOUD_SQL_CONNECTION_NAME = ... # GCP Cloud SQL connection name (this is one of the Terraform module outputs)
 export RUNTIME_DOCKERIMAGE_URL= ... # Terraform output `runtime_dockerimage_url`
+CLOUD_RUN_NAME= ... # Terraform output `cloud_run_name`
 ```
 
 ```console
@@ -213,17 +214,19 @@ gcloud config set project $PROJECT_ID
 ### Deploying manually
 
 ```console
-docker build \
+export DOCKER_IMG="${RUNTIME_DOCKERIMAGE_URL}:latest"
+docker buildx build \
+  --platform linux/amd64 \
   --build-arg BUILDKIT_INLINE_CACHE=1 \
-  -f docker/Dockerfile \
-  --cache-from $RUNTIME_DOCKERIMAGE_URL:latest \
-  -t $RUNTIME_DOCKERIMAGE_URL:latest \
+  -f Dockerfile \
+  --no-cache \
+  -t $DOCKER_IMG \
   .
-docker push $RUNTIME_DOCKERIMAGE_URL:latest
-gcloud run deploy agent-lunar-backend \
-  --image=$RUNTIME_DOCKERIMAGE_URL:latest \
+docker push $DOCKER_IMG
+gcloud run deploy $CLOUD_RUN_NAME \
+  --image=$DOCKER_IMG \
   --region=europe-north1 \
   --platform=managed \
   --allow-unauthenticated \
-  --set-secrets=/app/secrets/.env=secretName:version
+  --set-secrets=/app/secrets/.env=$PROJECT_SLUG-config:latest
 ```
