@@ -38,9 +38,6 @@ resource "google_secret_manager_secret_version" "config" {
     SENTRY_DSN=${var.sentry_dsn}
     HOST_DOMAIN=${replace(google_cloud_run_v2_service.default.uri, "https://", "")}
     FRONTEND_DOMAIN=${var.frontend_domain}
-
-    MAILGUN_API_KEY=${var.mailgun_api_key}
-    MAILGUN_SENDER_DOMAIN=${var.mailgun_sender_domain}
 EOF
 }
 

@@ -33,15 +33,3 @@ variable "placeholder_image" {
   type        = string
   default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
-
-variable "mailgun_api_key" {
-  description = "The Mailgun API key for the project"
-  type        = string
-  nullable    = false
-}
-
-variable "mailgun_sender_domain" {
-  description = "The Mailgun sender domain for the project"
-  type        = string
-  nullable    = false
-}

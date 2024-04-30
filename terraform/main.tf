@@ -29,8 +29,6 @@ module "django_deployment" {
   project_slug    = ""
   sentry_dsn      = ""
   frontend_domain = ""
-  mailgun_api_key = ""
-  mailgun_sender_domain = ""
 }
 
 // Output the values of the outputs from the Django deployment module
