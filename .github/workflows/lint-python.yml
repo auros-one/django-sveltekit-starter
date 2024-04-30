@@ -22,7 +22,7 @@ on:
         required: false
         type: boolean
       isort:
-        default: true
+        default: false
         description: Run isort
         required: false
         type: boolean
