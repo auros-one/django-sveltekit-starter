@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import Title from '$lib/components/Title.svelte';
 
 	let errorMessage: string = $page.error?.message || 'An error ocurred';
 </script>
 
-<svelte:head>
-	<title>{$page.status} - {errorMessage}</title>
-</svelte:head>
+<Title title="{$page.status} - {errorMessage}" />
 
 <main class="bg-lunar_white relative min-h-full">
 	<div class="mx-auto max-w-7xl px-6 py-32 text-center sm:py-40 lg:px-8">

@@ -1,10 +1,10 @@
 <script>
+	import Title from '$lib/components/Title.svelte';
+	import { DEFAULT_TITLE } from '$lib/utils/title';
 	import '../app.css';
 </script>
 
-<svelte:head>
-	<title>SvelteKit x Django template</title>
-</svelte:head>
+<Title title={DEFAULT_TITLE} />
 
 <div class="overflow-y-scroll">
 	<slot />
