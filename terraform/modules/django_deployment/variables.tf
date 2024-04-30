@@ -7,7 +7,7 @@ variable "project_id" {
 variable "region" {
   description = "The region in which resources will be managed."
   type        = string
-  default     = "europe-north1"
+  default     = "us-east4"
 }
 
 variable "project_slug" {

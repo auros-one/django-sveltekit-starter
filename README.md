@@ -158,7 +158,7 @@ POSTGRES_PASSWORD=
 ```console
 ./cloud-sql-proxy $CLOUD_SQL_CONNECTION_NAME
 // Example:
-./cloud-sql-proxy "test-deployment-2-405517:europe-north1:deployment-twee-db-instance"
+./cloud-sql-proxy "test-deployment-2-405517:us-east4:deployment-twee-db-instance"
 ```
 
 3. Create a superuser using the Django command.
@@ -225,7 +225,7 @@ docker buildx build \
 docker push $DOCKER_IMG
 gcloud run deploy $CLOUD_RUN_NAME \
   --image=$DOCKER_IMG \
-  --region=europe-north1 \
+  --region=us-east4 \
   --platform=managed \
   --allow-unauthenticated \
   --set-secrets=/app/secrets/.env=$PROJECT_SLUG-config:latest

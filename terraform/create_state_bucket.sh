@@ -10,7 +10,7 @@ fi
 # Check if GCP_ZONE is set
 if [ -z "$GCP_ZONE" ]; then
     echo "ERROR: GCP_ZONE environment variable is not set."
-    echo "Please set the GCP_ZONE environment variable with your preferred GCP zone (e.g. europe-north1)."
+    echo "Please set the GCP_ZONE environment variable with your preferred GCP zone (e.g. us-east4)."
     exit 1
 fi
 

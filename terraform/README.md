@@ -6,7 +6,7 @@ Store the project ID and preferred region in an environment variable for later u
 
 ```shell
 export PROJECT_ID=
-export GCP_ZONE=europe-north1
+export GCP_ZONE=us-east4
 ```
 
 **note:** don't forget to setup billing for your project

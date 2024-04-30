@@ -25,7 +25,7 @@ terraform {
 module "django_deployment" {
   source          = "./modules/django_deployment"
   project_id      = ""
-  region          = "europe-north1"
+  region          = "us-east4"
   project_slug    = ""
   sentry_dsn      = ""
   frontend_domain = ""
