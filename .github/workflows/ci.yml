@@ -74,85 +74,84 @@ jobs:
           linters: pytest
           run: pipenv run python -m pytest --create-db
 
-  deploy:
-    needs: [dependencies, lint, test]
-    runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_dispatch'
-      || (github.event_name == 'push' && github.ref == 'refs/heads/main')
-    env:
-      DOCKER_BUILDKIT: 1
-    steps:
-      - uses: actions/checkout@v4
-      - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GOOGLE_AUTHENTICATION_CREDENTIALS_JSON }}
-      - name: Authorize Docker push
-        run: gcloud auth configure-docker europe-north1-docker.pkg.dev
+# deploy:
+#   needs: [dependencies, lint, test]
+#   runs-on: ubuntu-latest
+#   if: |
+#     github.event_name == 'workflow_dispatch'
+#     || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+#   env:
+#     DOCKER_BUILDKIT: 1
+#   steps:
+#     - uses: actions/checkout@v4
+#     - name: Authenticate with Google Cloud
+#       uses: google-github-actions/auth@v1
+#       with:
+#         credentials_json: ${{ secrets.GOOGLE_AUTHENTICATION_CREDENTIALS_JSON }}
+#     - name: Authorize Docker push
+#       run: gcloud auth configure-docker europe-north1-docker.pkg.dev
 
-      # Docker builder image
-      - name: Build Builder with Cache
-        id: build-with-cache
-        continue-on-error: true
-        run: >-
-          docker build
-          --build-arg BUILDKIT_INLINE_CACHE=1
-          -f docker/Dockerfile
-          --cache-from ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder:latest
-          -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder:latest
-          --target builder
-          .
+#     # Docker builder image
+#     - name: Build Builder with Cache
+#       id: build-with-cache
+#       continue-on-error: true
+#       run: >-
+#         docker build
+#         --build-arg BUILDKIT_INLINE_CACHE=1
+#         -f docker/Dockerfile
+#         --cache-from ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder:latest
+#         -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder:latest
+#         --target builder
+#         .
 
-      - name: Build Builder with Cache failed -> Build Builder without Cache
-        if: ${{ steps.build-with-cache.outcome == 'failure' }}
-        run: >-
-          docker build
-          -f docker/Dockerfile
-          -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder:latest
-          --target builder
-          .et builder
-          .
+#     - name: Build Builder with Cache failed -> Build Builder without Cache
+#       if: ${{ steps.build-with-cache.outcome == 'failure' }}
+#       run: >-
+#         docker build
+#         -f docker/Dockerfile
+#         -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder:latest
+#         --target builder
+#         .
 
-      # Docker runtime image
-      - name: Build Runtime with Cache
-        id: build-runtime-with-cache
-        continue-on-error: true
-        run: >-
-          docker build
-          --build-arg COLLECT_STATIC=1
-          --build-arg BUILDKIT_INLINE_CACHE=1
-          -f docker/Dockerfile
-          --cache-from ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:latest
-          -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
-          -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:latest
-          .
+#     # Docker runtime image
+#     - name: Build Runtime with Cache
+#       id: build-runtime-with-cache
+#       continue-on-error: true
+#       run: >-
+#         docker build
+#         --build-arg COLLECT_STATIC=1
+#         --build-arg BUILDKIT_INLINE_CACHE=1
+#         -f docker/Dockerfile
+#         --cache-from ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:latest
+#         -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
+#         -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:latest
+#         .
 
-      - name: Build Runtime with Cache failed -> Build Runtime without Cache
-        if: ${{ steps.build-runtime-with-cache.outcome == 'failure' }}
-        run: >-
-          docker build
-          --build-arg COLLECT_STATIC=1
-          -f docker/Dockerfile
-          -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
-          -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:latest
-          .
+#     - name: Build Runtime with Cache failed -> Build Runtime without Cache
+#       if: ${{ steps.build-runtime-with-cache.outcome == 'failure' }}
+#       run: >-
+#         docker build
+#         --build-arg COLLECT_STATIC=1
+#         -f docker/Dockerfile
+#         -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
+#         -t ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:latest
+#         .
 
 
-      - name: Run deployment system checks
-        run: >-
-          docker run
-          --env SKIP_MIGRATIONS=true
-          --env-file .env.ci
-          --rm ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
-          python manage.py check --deploy --fail-level WARNING
-      - name: Push builder image to Artifact Registry
-        run: docker push --all-tags ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder
-      - name: Push runtime image to Artifact Registry
-        run: docker push --all-tags ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}
-      - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v1
-        with:
-          service: ${{ secrets.CLOUD_RUN_NAME }}
-          image: ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
-          region: europe-north1
+#     - name: Run deployment system checks
+#       run: >-
+#         docker run
+#         --env SKIP_MIGRATIONS=true
+#         --env-file .env.ci
+#         --rm ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
+#         python manage.py check --deploy --fail-level WARNING
+#     - name: Push builder image to Artifact Registry
+#       run: docker push --all-tags ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}-builder
+#     - name: Push runtime image to Artifact Registry
+#       run: docker push --all-tags ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}
+#     - name: Deploy to Cloud Run
+#       uses: google-github-actions/deploy-cloudrun@v1
+#       with:
+#         service: ${{ secrets.CLOUD_RUN_NAME }}
+#         image: ${{ secrets.RUNTIME_DOCKERIMAGE_URL }}:${{ github.sha }}
+#         region: europe-north1
