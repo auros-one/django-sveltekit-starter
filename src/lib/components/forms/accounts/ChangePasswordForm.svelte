@@ -39,8 +39,9 @@
 	}
 </script>
 
-<form class="w-80" on:submit|preventDefault={onChangePassword}>
-	<h3 class="mb-2 text-base font-semibold leading-7 text-gray-900">Change Password</h3>
+<form class="w-[440px] rounded-lg bg-white px-6 py-4" on:submit|preventDefault={onChangePassword}>
+	<h2 class="mb-6 text-lg font-semibold leading-7 text-gray-900">Update Password</h2>
+
 	<label for="password" class="block text-sm font-medium leading-6 text-gray-700"
 		>Current Password</label
 	>
@@ -56,7 +57,7 @@
 		/>
 	</div>
 	<label for="email" class="block text-sm font-medium leading-6 text-gray-700">New Password</label>
-	<div class="mb-2 mt-2">
+	<div class="mb-8 mt-2">
 		<input
 			id="new-password"
 			name="new-password"
@@ -72,5 +73,13 @@
 			<p class="text-sm text-green-500">{messagePasswordChange}</p>
 		{/if}
 	</div>
-	<Button bind:loading type="submit">Update Password</Button>
+	<div class="flex items-center justify-between">
+		<a
+			href="/account/reset-password"
+			target="_blank"
+			class="text-sm font-semibold leading-6 text-primary-600 hover:text-primary-500"
+			>Forgot your password?</a
+		>
+		<Button bind:loading type="submit" class="w-auto">Save</Button>
+	</div>
 </form>

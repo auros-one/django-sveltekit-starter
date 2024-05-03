@@ -36,8 +36,8 @@
 	}
 </script>
 
-<form class="w-80" on:submit|preventDefault={onChangeEmail}>
-	<h3 class="mb-2 text-base font-semibold leading-7 text-gray-900">Change Email</h3>
+<form class="w-[440px] rounded-lg bg-white px-6 py-4" on:submit|preventDefault={onChangeEmail}>
+	<h2 class="mb-6 text-lg font-semibold leading-7 text-gray-900">Update Email</h2>
 	<label for="new_email" class="block text-sm font-medium leading-6 text-gray-700">New Email</label>
 	<div class="mb-4 mt-2">
 		<input
@@ -51,7 +51,7 @@
 		/>
 	</div>
 	<label for="email" class="block text-sm font-medium leading-6 text-gray-700">Password</label>
-	<div class="mb-2 mt-2">
+	<div class="mb-8 mt-2">
 		<input
 			id="password"
 			name="password"
@@ -67,5 +67,7 @@
 			<p class="text-sm text-green-500">Email changed successfully.</p>
 		{/if}
 	</div>
-	<Button type="submit" bind:loading>Update Email</Button>
+	<div class="flex items-center justify-end">
+		<Button type="submit" bind:loading class="w-auto">Save</Button>
+	</div>
 </form>

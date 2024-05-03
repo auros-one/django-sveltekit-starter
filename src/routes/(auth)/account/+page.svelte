@@ -7,38 +7,14 @@
 	import { user } from '$lib/stores/account';
 </script>
 
-<div class="flex h-full flex-col items-center justify-center gap-4">
-	<h1 class="my-4 text-2xl font-bold">Account</h1>
-
-	{#if $user}
-		<table class="mx-auto divide-y divide-gray-200 border border-gray-200">
-			<thead class="bg-gray-50">
-				<tr>
-					<th
-						colspan="2"
-						class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-800"
-						>User Details</th
-					>
-				</tr>
-			</thead>
-			<tbody class="divide-y divide-gray-200 bg-white">
-				{#each Object.entries($user) as [key, value]}
-					<tr>
-						<td class="whitespace-nowrap px-4 py-3"
-							><pre class="w-min rounded-md bg-gray-200 px-2 py-0.5 text-sm">{key}</pre></td
-						>
-						<td class="whitespace-nowrap px-6 py-4"
-							>{Array.isArray(value) ? value.join(', ') : JSON.stringify(value)}</td
-						>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	{/if}
-	{#if !$user?.verified}
+<div class="flex flex-col items-center justify-center gap-12 p-8">
+	<p class="text-2xl font-bold">{$user?.email}</p>
+	<div class="flex w-min flex-col items-center gap-8">
 		<SendVerificationEmail />
-	{/if}
-	<ChangePasswordForm />
-	<ChangeEmailForm />
-	<Button class="bg-red-600 hover:bg-red-500" on:click={logout}>Log out</Button>
+		<div class="flew-row flex gap-4">
+			<ChangeEmailForm />
+			<ChangePasswordForm />
+		</div>
+		<Button class="bg-red-600 px-8 hover:bg-red-500" on:click={logout}>Log out</Button>
+	</div>
 </div>
