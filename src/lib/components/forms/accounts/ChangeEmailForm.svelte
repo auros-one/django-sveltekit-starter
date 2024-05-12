@@ -12,7 +12,7 @@
 		loading = true;
 
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-		let reponse = await apiClient.POST('/accounts/change-email/', {
+		let response = await apiClient.POST('/accounts/change-email/', {
 			body: {
 				new_email: formData.new_email as string,
 				password: formData.password as string
@@ -24,11 +24,11 @@
 			credentials: 'include'
 		});
 
-		if (reponse.error) {
-			// reponse.error is a key-value json of errors. Turn it into 1 long string: "<error 1>. <error 2>."
+		if (response.error) {
+			// response.error is a key-value json of errors. Turn it into 1 long string: "<error 1>. <error 2>."
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			error = Object.values(reponse.error).join('. ');
+			error = Object.values(response.error).join('. ');
 		} else {
 			success = true;
 		}
