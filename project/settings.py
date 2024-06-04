@@ -286,7 +286,7 @@ if sentry_dsn := os.environ.get("SENTRY_DSN"):  # pragma: no cover
         dsn=sentry_dsn,
         environment=ENVIRONMENT,
         integrations=[DjangoIntegration(), LoggingIntegration()],
-        request_bodies="medium",  # type: ignore
+        max_request_body_size="medium",
         send_default_pii=True,
     )
 
