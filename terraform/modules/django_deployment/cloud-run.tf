@@ -19,6 +19,9 @@ resource "null_resource" "push_placeholder_image_if_needed" {
       REPO_NAME="${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.django_repo.name}"
       IMAGE_TAG="$REPO_NAME/${var.project_slug}:latest"
 
+      # Authenticate Docker with gcloud
+      gcloud auth configure-docker ${var.region}-docker.pkg.dev
+
       # Check if any image exists in the repository
       if ! gcloud artifacts docker images list "$REPO_NAME" --format='get(tags)' | grep -q 'latest'; then
         docker pull ${var.placeholder_image}
@@ -79,7 +82,7 @@ resource "google_cloud_run_v2_service" "default" {
     max_instance_request_concurrency = 50
   }
 
-  depends_on = [google_project_service.enable_project_services, google_secret_manager_secret_version.placeholder_config]
+  depends_on = [null_resource.push_placeholder_image_if_needed, google_project_service.enable_project_services, google_secret_manager_secret_version.placeholder_config]
 }
 
 resource "google_cloud_run_service_iam_member" "cloud_run_invoker" {
