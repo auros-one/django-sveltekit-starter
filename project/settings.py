@@ -26,9 +26,9 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
 
 # Domains
 
-HOST_DOMAIN = os.environ.get("HOST_DOMAIN", "localhost:8000")
+HOST_DOMAINS = os.environ.get("HOST_DOMAINS", "localhost:8000, 127.0.0.1").split(",")
+FRONTEND_DOMAINS = os.environ.get("FRONTEND_DOMAINS", "localhost:5173").split(",")
 
-FRONTEND_DOMAIN = os.environ.get("FRONTEND_DOMAIN", "localhost:5173")
 PASSWORD_CONFIRM_RESET_PATH = os.environ.get(
     "PASSWORD_RESET_PATH", "/account/reset-password/confirm"
 )
@@ -39,9 +39,7 @@ EMAIL_VERIFICATION_PATH = os.environ.get(
 
 # Security
 
-ALLOWED_HOSTS = (
-    [f"{HOST_DOMAIN}"] if ENVIRONMENT == "production" else ["localhost", "127.0.0.1"]
-)
+ALLOWED_HOSTS = HOST_DOMAINS
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -59,7 +57,7 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    f"https://{domain}" for domain in [HOST_DOMAIN, FRONTEND_DOMAIN] if domain
+    f"https://{domain}" for domain in HOST_DOMAINS + FRONTEND_DOMAINS if domain
 ]
 
 CSRF_COOKIE_SECURE = True

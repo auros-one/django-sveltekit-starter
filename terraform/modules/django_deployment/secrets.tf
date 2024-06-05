@@ -36,8 +36,8 @@ resource "google_secret_manager_secret_version" "config" {
     GUNICORN_WORKERS=1
     SECRET_KEY=${random_password.django_secret.result}
     SENTRY_DSN=${var.sentry_dsn}
-    HOST_DOMAIN=${replace(google_cloud_run_v2_service.default.uri, "https://", "")}
-    FRONTEND_DOMAIN=${var.frontend_domain}
+    HOST_DOMAINS=${replace(google_cloud_run_v2_service.default.uri, "https://", "")}
+    FRONTEND_DOMAINS=${var.frontend_domain}
 EOF
 }
 

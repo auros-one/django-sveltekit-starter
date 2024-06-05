@@ -3,9 +3,8 @@ from allauth.account.utils import user_pk_to_url_str
 from dj_rest_auth.serializers import (
     PasswordResetSerializer as RestAuthPasswordResetSerializer,
 )
-from rest_framework import serializers
-
 from django.conf import settings
+from rest_framework import serializers
 
 from .models import User
 
@@ -41,9 +40,9 @@ class PasswordResetSerializer(RestAuthPasswordResetSerializer):
 
         # Overwrite the url_generator with a custom one.
         if settings.ENVIRONMENT == "development":
-            base_url = f"http://{settings.FRONTEND_DOMAIN}{settings.PASSWORD_CONFIRM_RESET_PATH}"
+            base_url = f"http://{settings.FRONTEND_DOMAINS[0]}{settings.PASSWORD_CONFIRM_RESET_PATH}"
         else:
-            base_url = f"https://{settings.FRONTEND_DOMAIN}{settings.PASSWORD_CONFIRM_RESET_PATH}"
+            base_url = f"https://{settings.FRONTEND_DOMAINS[0]}{settings.PASSWORD_CONFIRM_RESET_PATH}"
 
         def _url_generator(request, user, temp_key):
             return f"{base_url}?uid={user_pk_to_url_str(user)}&token={temp_key}"

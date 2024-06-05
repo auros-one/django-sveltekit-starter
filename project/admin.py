@@ -23,6 +23,6 @@ class CustomAdminSite(admin.AdminSite):
 
     # The URL for the “View site” link at the top of each admin page.
     if settings.ENVIRONMENT == "development":
-        site_url = f"http://{settings.FRONTEND_DOMAIN}/"
+        site_url = f"http://{settings.FRONTEND_DOMAINS[0]}/"
     else:  # pragma: no cover
-        site_url = f"https://{settings.FRONTEND_DOMAIN}/"
+        site_url = f"https://{settings.FRONTEND_DOMAINS[0]}/"
