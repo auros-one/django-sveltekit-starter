@@ -230,3 +230,15 @@ gcloud run deploy $CLOUD_RUN_NAME \
   --allow-unauthenticated \
   --set-secrets=/app/secrets/.env=$PROJECT_SLUG-config:latest
 ```
+
+### Setup a custom domain with Cloudflare
+
+Assuming [example.com](https://example.com/) is your desired domain.
+
+1. Configure Cloudflare CNAME with "proxy" mode for your domain to ghs.googlehosted.com
+2. Set SSL TLS encryption mode to "full"
+3. Disable "Always use HTTPS"
+4. Disable "Automatic HTTPS Rewrites"
+5. Configure example.com with Googles Domain Mapping
+
+It takes about 20 minutes for a fresh domain on Google to get a certificate there. During that time you will see the general "Browser works -> Cloudflare works -> Server issue" screen from Cloudflare, yet be patient it will pass.
