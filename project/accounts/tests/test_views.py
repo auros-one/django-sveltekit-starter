@@ -3,12 +3,11 @@ from http import HTTPStatus
 
 import pytest
 from allauth.account.admin import EmailAddress
-from model_bakery import baker
-from rest_framework.test import APIClient
-
 from django.contrib.auth import authenticate
 from django.core import mail
 from django.urls import reverse
+from model_bakery import baker
+from rest_framework.test import APIClient
 
 from ..models import User
 
@@ -23,7 +22,7 @@ class TestAuth:
 
         # create user
         response = api_client.post(
-            "/accounts/signup/",
+            reverse("rest_register"),
             {
                 "email": "test@example.com",
                 "password1": "a-super-strong-password-145338-@!#&",
@@ -52,7 +51,7 @@ class TestAuth:
         key = key_match.group(1)
 
         # verify email
-        response = api_client.post("/accounts/signup/verify-email/", {"key": key})
+        response = api_client.post(reverse("rest_verify_email"), {"key": key})
 
         # check results
         assert response.status_code == HTTPStatus.OK
@@ -62,7 +61,7 @@ class TestAuth:
 
     def test_login(self, api_client: APIClient, user: User):
         response = api_client.post(
-            "/accounts/login/",
+            reverse("rest_login"),
             {
                 "email": user.email,
                 "password": "a-super-strong-password-145338-@!#&",
@@ -77,9 +76,9 @@ class TestAuth:
         assert "user" in result
         assert result["user"]["email"] == user.email
 
-        # Use the jwt token to make a request to the /authcheck/ view
+        # Use the jwt token to make a request to the authcheck view
         response = api_client.get(
-            "/authcheck/", HTTP_AUTHORIZATION="Bearer " + result["access"]
+            reverse("authcheck"), HTTP_AUTHORIZATION="Bearer " + result["access"]
         )
         assert response.status_code == HTTPStatus.NO_CONTENT
 
