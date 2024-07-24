@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { apiClient } from '$lib/api/index';
 	import Button from '$lib/components/Button.svelte';
-	import { waitForJWT } from '$lib/stores/auth';
 
 	let loading: boolean = false;
 	let errorPasswordChange: string | undefined = undefined;
@@ -19,12 +18,7 @@
 				old_password: old_password,
 				new_password1: new_password,
 				new_password2: new_password
-			},
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: 'Bearer ' + (await waitForJWT())
-			},
-			credentials: 'include'
+			}
 		});
 
 		if (response.error) {

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { apiClient } from '$lib/api/index';
-	import { waitForJWT } from '$lib/stores/auth';
 	import Button from '$lib/components/Button.svelte';
 
 	let loading: boolean = false;
@@ -16,12 +15,7 @@
 			body: {
 				new_email: formData.new_email as string,
 				password: formData.password as string
-			},
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: 'Bearer ' + (await waitForJWT())
-			},
-			credentials: 'include'
+			}
 		});
 
 		if (response.error) {
