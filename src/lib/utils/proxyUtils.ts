@@ -34,30 +34,25 @@ export function getProxyRequestHandler(
 	const proxyRequest: RequestHandler = async ({ url, request }) => {
 		const destinationUrl = getProxiedUrl(url, request);
 
-		// Forward all headers
+		// Forward all headers except 'host'
 		const forwardedHeaders: Record<string, string> = {};
 		for (const [header, value] of request.headers) {
-			forwardedHeaders[header] = value;
+			if (header !== 'host') {
+				// Don't forward the original host header
+				forwardedHeaders[header] = value;
+			}
 		}
-		forwardedHeaders['host'] = new URL(destinationUrl).host; // Add the correct 'host' header
+		forwardedHeaders['host'] = new URL(destinationUrl).host;
 
-		// The body is only passed if it's not empty
-		const body = request.body; // get the body as a stream
-		const requestData: {
-			method: string;
-			headers: Record<string, string>;
-			duplex: string;
-			body?: ReadableStream | null;
-		} = {
+		const requestData = {
 			method: request.method,
 			headers: forwardedHeaders,
-			duplex: 'half',
-			body: body
+			duplex: 'half' as const,
+			body: request.body,
+			redirect: 'manual' as const // Add this line to handle redirects manually
 		};
 
-		// make the request to the backend API
 		return fetch(destinationUrl.toString(), requestData).catch((err) => {
-			// put the keys in a string:
 			const keys = Object.keys(err);
 			const keysString = keys.join(', ');
 			throw error(
