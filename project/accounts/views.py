@@ -1,12 +1,25 @@
 from allauth.account.admin import EmailAddress
+from dj_rest_auth.registration.views import RegisterView
+from django.contrib.auth import authenticate
+from django.db import IntegrityError, transaction
 from rest_framework import status
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.contrib.auth import authenticate
-from django.db import transaction
 from project.accounts.serializers import EmailChangeSerializer
+
+
+class CustomRegisterView(RegisterView):
+    def create(self, request, *args, **kwargs):
+        try:
+            return super().create(request, *args, **kwargs)
+        except IntegrityError as e:
+            if "user_email_key" in str(e):
+                raise ValidationError(
+                    {"email": ["This email address is already in use."]}
+                )
+            raise e
 
 
 class ChangeEmailView(APIView):

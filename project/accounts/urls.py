@@ -1,12 +1,13 @@
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
-from rest_framework.authtoken.models import TokenProxy
-
 from django.contrib import admin
 from django.urls import include, path
-from project.accounts.views import ChangeEmailView
+from rest_framework.authtoken.models import TokenProxy
+
+from project.accounts.views import ChangeEmailView, CustomRegisterView
 
 urlpatterns = [
+    path("signup/", CustomRegisterView.as_view(), name="custom-signup"),
     path("signup/", include("dj_rest_auth.registration.urls"), name="signup"),
     path("", include("dj_rest_auth.urls")),
     path("change-email/", ChangeEmailView.as_view(), name="change-email"),

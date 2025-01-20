@@ -22,7 +22,7 @@ class TestAuth:
 
         # create user
         response = api_client.post(
-            reverse("rest_register"),
+            reverse("custom-signup"),
             {
                 "email": "test@example.com",
                 "password1": "a-super-strong-password-145338-@!#&",
