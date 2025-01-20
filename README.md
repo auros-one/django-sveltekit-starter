@@ -1,4 +1,4 @@
-# SvelteKit Template (integrates with Django Template)
+# Frontend Template (integrates with Backend Template)
 
 ## Backend Integration
 

@@ -101,7 +101,7 @@
 					<div class="size-8">
 						<img class="h-8 w-auto" src="/logo.png" alt="Your logo" />
 					</div>
-					<span class="ml-2 text-lg font-semibold text-gray-900">Your App</span>
+					<span class="ml-2 text-lg font-semibold text-gray-900">My App</span>
 				</div>
 
 				<!-- Navigation -->

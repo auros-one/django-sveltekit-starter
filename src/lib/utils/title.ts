@@ -1,6 +1,6 @@
 import { onDestroy, onMount } from 'svelte';
 
-export const DEFAULT_TITLE = 'SvelteKit x Django Template';
+export const DEFAULT_TITLE = 'My App';
 
 export function setTitle(title: string) {
 	if (typeof window === 'undefined') return;
