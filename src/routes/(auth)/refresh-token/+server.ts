@@ -6,7 +6,7 @@ export const GET = (async ({ cookies, fetch }) => {
 	try {
 		// refresh-token cookie is required
 		const refreshToken = cookies.get('refresh-token');
-		if (refreshToken === undefined) throw error(401);
+		if (refreshToken === undefined) error(401);
 
 		// get new JWT from backend
 		const response = await fetch(PUBLIC_BASE_API_URL + '/api/accounts/token/refresh/', {
@@ -19,11 +19,11 @@ export const GET = (async ({ cookies, fetch }) => {
 
 		if (!response.ok) {
 			cookies.delete('refresh-token', { path: '/' });
-			throw error(401);
+			error(401);
 		}
 		return response;
 	} catch (err) {
 		cookies.delete('refresh-token', { path: '/' });
-		throw error(500, `${err}`);
+		error(500, `${err}`);
 	}
 }) satisfies RequestHandler;

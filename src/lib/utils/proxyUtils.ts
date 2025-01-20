@@ -55,7 +55,7 @@ export function getProxyRequestHandler(
 		return fetch(destinationUrl.toString(), requestData).catch((err) => {
 			const keys = Object.keys(err);
 			const keysString = keys.join(', ');
-			throw error(
+			error(
 				500,
 				`error "${err} "(keys: ${keysString}) (${err?.cause?.code}) ${err?.cause?.reason}`
 			);

@@ -8,5 +8,5 @@ import type { PageServerLoad } from './$types';
 
 export const load = (async ({ cookies }) => {
 	const refreshToken = cookies.get('refresh-token');
-	if (refreshToken !== undefined) throw redirect(302, '/');
+	if (refreshToken !== undefined) redirect(302, '/');
 }) satisfies PageServerLoad;

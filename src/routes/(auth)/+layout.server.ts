@@ -30,6 +30,6 @@ export const load = (async ({ cookies }) => {
 		// If anything goes wrong, clear all cookies and redirect to the login page
 		COOKIES_TO_FORWARD.forEach((cookie) => cookies.delete(cookie, { path: '/' }));
 		cookies.delete('refresh-token', { path: '/' });
-		throw redirect(302, '/welcome');
+		redirect(302, '/welcome');
 	}
 }) satisfies LayoutServerLoad;
