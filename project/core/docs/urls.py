@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.urls import path
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
+from drf_spectacular.views import SpectacularAPIView
 
 docs_title = settings.SPECTACULAR_SETTINGS["TITLE"]
 try:
@@ -15,10 +15,5 @@ except Exception:  # pragma: no cover
 
 
 urlpatterns = [
-    path(
-        "",
-        SpectacularRedocView.as_view(url_name="schema", title=docs_title),
-        name="docs",
-    ),
     path("schema", SpectacularAPIView.as_view(), name="schema"),
 ]
