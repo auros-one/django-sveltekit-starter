@@ -1,5 +1,29 @@
 {% extends "admin/base_site.html" %}
 {% load static %}
+
 {% block extrahead %}
-    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+<link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+/* Apply custom colors for both light and dark themes */
+html[data-theme="light"],
+html[data-theme="dark"],
+:root {
+    --primary: #3484d6;
+    --secondary: #2468b7;
+    --link-fg: #2468b7;
+    --link-selected-fg: #3484d6;
+}
+
+/* Additional styles for dark theme */
+html[data-theme="dark"] {
+    --primary-fg: #ffffff;
+    --body-fg: #e0eefb;
+    --body-bg: #0f2444;
+    --header-color: #ffffff;
+}
+</style>
 {% endblock %}

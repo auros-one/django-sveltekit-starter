@@ -100,6 +100,7 @@ if ENVIRONMENT == "development":
 
 CSP_SCRIPT_SRC = [
     "'self'",
+    "blob:",
     "cdn.jsdelivr.net",
 ]
 
@@ -145,6 +146,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "project.core.xframe.XFrameAllowFrontendDomainsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "csp.middleware.CSPMiddleware",
