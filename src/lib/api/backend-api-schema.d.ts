@@ -335,6 +335,11 @@ export interface components {
 			 * Format: email
 			 */
 			email?: string;
+			/**
+			 * Superuser status
+			 * @description Designates that this user has all permissions without explicitly assigning them.
+			 */
+			is_superuser?: boolean;
 		};
 		Register: {
 			username?: string;
@@ -371,6 +376,11 @@ export interface components {
 			 */
 			email: string;
 			readonly verified: boolean;
+			/**
+			 * Superuser status
+			 * @description Designates that this user has all permissions without explicitly assigning them.
+			 */
+			is_superuser?: boolean;
 		};
 		UserDetailsRequest: {
 			/**
@@ -378,6 +388,11 @@ export interface components {
 			 * Format: email
 			 */
 			email: string;
+			/**
+			 * Superuser status
+			 * @description Designates that this user has all permissions without explicitly assigning them.
+			 */
+			is_superuser?: boolean;
 		};
 		VerifyEmailRequest: {
 			key: string;

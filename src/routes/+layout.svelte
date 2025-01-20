@@ -6,6 +6,4 @@
 
 <Title title={DEFAULT_TITLE} />
 
-<div class="overflow-y-scroll">
-	<slot />
-</div>
+<slot />
