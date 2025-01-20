@@ -10,7 +10,8 @@ export default defineConfig({
 		sentryVitePlugin({
 			org: process.env.SENTRY_ORG,
 			project: process.env.SENTRY_PROJECT,
-			authToken: process.env.SENTRY_AUTH_TOKEN
+			authToken: process.env.SENTRY_AUTH_TOKEN,
+			silent: true // Set this to false when debugging Sentry issues
 		}),
 		sveltekit()
 	],
