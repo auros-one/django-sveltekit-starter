@@ -21,7 +21,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("email", "verified")
+        fields = ("email", "verified", "is_superuser")
 
 
 class PasswordResetSerializer(RestAuthPasswordResetSerializer):
