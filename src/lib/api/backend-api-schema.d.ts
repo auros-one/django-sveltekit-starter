@@ -336,6 +336,11 @@ export interface components {
 			 */
 			email?: string;
 		};
+		Register: {
+			username?: string;
+			/** Format: email */
+			email: string;
+		};
 		RegisterRequest: {
 			username?: string;
 			/** Format: email */
@@ -550,7 +555,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['JWT'];
+					'application/json': components['schemas']['Register'];
 				};
 			};
 		};

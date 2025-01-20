@@ -1,13 +1,24 @@
 <script lang="ts">
-	import { ressendVerifyEmail } from '$lib/api/account/auth';
+	import { apiClient } from '$lib/api';
 	import { user } from '$lib/stores/account';
 	import Button from './Button.svelte';
 	let sent: boolean = false;
+	let error: string | null = null;
 
 	async function onSendVerificationEmail() {
-		if (!$user) return;
-		const res = await ressendVerifyEmail($user.email);
-		if (res) sent = true;
+		error = null;
+		const { response } = await apiClient.POST('/accounts/signup/resend-email/', {
+			body: {
+				email: $user.email
+			}
+		});
+		if (response.status.toString().startsWith('2')) {
+			sent = true;
+		} else if (response.status.toString().startsWith('5')) {
+			error = 'Something went wrong on our end. Please try again later.';
+		} else {
+			error = 'Something went wrong. Please try again later.';
+		}
 	}
 </script>
 
@@ -65,6 +76,10 @@
 					Send new verification email
 				{/if}
 			</Button>
+
+			{#if error}
+				<p class="mt-2 text-red-600">{error}</p>
+			{/if}
 		{/if}
 	</div>
 </div>

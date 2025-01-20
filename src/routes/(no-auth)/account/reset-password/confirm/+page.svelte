@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { confirmPasswordReset } from '$lib/api/account/auth';
+	import { apiClient } from '$lib/api';
 	import Button from '$lib/components/Button.svelte';
 	import Spinner from '$lib/components/loading/Spinner.svelte';
 
@@ -19,18 +19,22 @@
 		if (token === null || uid === null) return;
 		loading = true;
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-		const response = await confirmPasswordReset(
-			formData.password1 as string,
-			formData.password2 as string,
-			uid,
-			token
-		);
-		if (response.status.toString().startsWith('2')) {
-			success = true;
-		} else if (response.status.toString().startsWith('4')) {
-			error = 'Invalid url. Please try again.';
-		} else {
+
+		const { error: _error, response } = await apiClient.POST('/accounts/password/reset/confirm/', {
+			body: {
+				new_password1: formData.password1 as string,
+				new_password2: formData.password2 as string,
+				uid: uid,
+				token: token
+			}
+		});
+		if (response.status.toString().startsWith('5')) {
+			return { non_field_errors: ['Something went wrong on our end. Please try again later.'] };
+		}
+		if (_error) {
 			error = 'Something went wrong. Please try again later.';
+		} else {
+			success = true;
 		}
 		loading = false;
 	}

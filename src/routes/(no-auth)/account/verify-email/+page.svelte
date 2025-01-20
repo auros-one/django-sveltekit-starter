@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-
-	import { verifyEmail } from '$lib/api/account/auth';
+	import { apiClient } from '$lib/api';
 	import Spinner from '$lib/components/loading/Spinner.svelte';
 	import { onMount } from 'svelte';
 
@@ -19,12 +18,18 @@
 		if (key === null) return;
 		loading = true;
 
-		const response = await verifyEmail(key);
+		const { response } = await apiClient.POST('/accounts/signup/verify-email/', {
+			body: {
+				key
+			}
+		});
 
 		if (response.status.toString().startsWith('2')) {
 			success = true;
 		} else if (response.status.toString().startsWith('4')) {
 			error = 'Invalid url. Please try again.';
+		} else if (response.status.toString().startsWith('5')) {
+			error = 'Something went wrong on our end. Please try again later.';
 		} else {
 			error = 'Something went wrong. Please try again later.';
 		}

@@ -17,7 +17,9 @@ const apiClient = createClient<paths>({ baseUrl: '/api' }); // api request are p
 const UNPROTECTED_ROUTES = [
 	'/api/accounts/signup/',
 	'/api/accounts/login/',
-	'/api/accounts/token/refresh/'
+	'/api/accounts/token/refresh/',
+	'/api/accounts/password/reset/',
+	'/api/accounts/password/reset/confirm/'
 ];
 const addJWT: Middleware = {
 	async onRequest({ request }) {

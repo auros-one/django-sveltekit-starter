@@ -9,9 +9,9 @@
 	async function onSignup(e: Event) {
 		loading = true;
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-		const email = formData.email;
-		const password1 = formData.password1;
-		const password2 = formData.password2;
+		const email = formData.email as string;
+		const password1 = formData.password1 as string;
+		const password2 = formData.password2 as string;
 
 		if (
 			typeof email !== 'string' ||
@@ -22,27 +22,18 @@
 			!password2
 		) {
 			errors = { message: ['Invalid email or password'] };
-			loading = false;
-			return;
-		}
-
-		if (password1 !== password2) {
+		} else if (password1 !== password2) {
 			errors = { message: ['Passwords do not match'] };
-			loading = false;
-			return;
+		} else {
+			// sign up returns undefined if successful, or an error object if not
+			errors = await signup(email, password1, password2);
 		}
 
-		const signupData = (await signup(email, password1, password2)) as
-			| { [key: string]: [string] }
-			| { access: string };
-		if (!signupData.access) {
-			errors = signupData as { [key: string]: [string] };
-			loading = false;
-			return;
+		// If signup is successful, log in and redirect to home
+		if (errors === undefined) {
+			await login(email, password1);
+			await goto('/');
 		}
-
-		await login(email, password1);
-		await goto('/');
 		loading = false;
 	}
 </script>
@@ -71,6 +62,11 @@
 						class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
 					/>
 				</div>
+				{#if errors?.email}
+					{#each errors.email as error}
+						<p class="mt-1 text-sm text-red-500">{error}</p>
+					{/each}
+				{/if}
 			</div>
 
 			<div>
@@ -86,6 +82,11 @@
 						class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
 					/>
 				</div>
+				{#if errors?.password1}
+					{#each errors.password1 as error}
+						<p class="mt-1 text-sm text-red-500">{error}</p>
+					{/each}
+				{/if}
 			</div>
 
 			<div>
@@ -101,14 +102,17 @@
 						class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
 					/>
 				</div>
+				{#if errors?.password2}
+					{#each errors.password2 as error}
+						<p class="mt-1 text-sm text-red-500">{error}</p>
+					{/each}
+				{/if}
 			</div>
 
 			<div>
-				{#if errors}
-					{#each Object.keys(errors) as key}
-						{#each errors[key] as error}
-							<p class="text-sm text-red-500">{error}</p>
-						{/each}
+				{#if errors?.non_field_errors || errors?.message}
+					{#each errors.non_field_errors || errors.message || [] as error}
+						<p class="text-sm text-red-500">{error}</p>
 					{/each}
 				{/if}
 			</div>
