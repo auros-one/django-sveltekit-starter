@@ -12,7 +12,7 @@
 	class="circle"
 	class:pause-animation={pause}
 	style="--size: {size}{unit}; --color: {color}; --duration: {duration}; --thickness: {ringThickness}"
-/>
+></div>
 
 <style>
 	.circle {

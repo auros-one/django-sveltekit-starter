@@ -178,10 +178,9 @@
 															class={`absolute left-[18px] top-0 w-[2px] bg-gray-200 ${
 																isLast ? 'h-1/2' : 'h-full'
 															}`}
-														/>
-														<span
-															class="absolute left-[18px] top-1/2 h-[2px] w-[10px] bg-gray-200"
-														/>
+														></span>
+														<span class="absolute left-[18px] top-1/2 h-[2px] w-[10px] bg-gray-200"
+														></span>
 														{subroute.name}
 													</a>
 												</li>

@@ -28,8 +28,8 @@ export const load = (async ({ cookies }) => {
 		};
 	} catch (e) {
 		// If anything goes wrong, clear all cookies and redirect to the login page
-		COOKIES_TO_FORWARD.forEach((cookie) => cookies.delete(cookie));
-		cookies.delete('refresh-token');
+		COOKIES_TO_FORWARD.forEach((cookie) => cookies.delete(cookie, { path: '/' }));
+		cookies.delete('refresh-token', { path: '/' });
 		throw redirect(302, '/welcome');
 	}
 }) satisfies LayoutServerLoad;
