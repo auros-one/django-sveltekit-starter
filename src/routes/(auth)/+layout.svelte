@@ -34,7 +34,7 @@
 			try {
 				const updatedTokenInfo = await refresh();
 				$jwt = updatedTokenInfo.token;
-			} catch (e) {
+			} catch {
 				goto('/account/login');
 				clearInterval(refreshTokenLoop); // Clear the interval if an error occurs
 			}
@@ -50,7 +50,7 @@
 			}, 2000);
 			await initJWTRefreshLoop();
 			getUser();
-		} catch (e) {
+		} catch {
 			goto('/account/login');
 		}
 	});

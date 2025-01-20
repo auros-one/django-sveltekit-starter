@@ -20,7 +20,6 @@
 
 		if (response.error) {
 			// response.error is a key-value json of errors. Turn it into 1 long string: "<error 1>. <error 2>."
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			error = Object.values(response.error).join('. ');
 		} else {

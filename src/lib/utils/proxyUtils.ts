@@ -29,7 +29,7 @@ import type { RequestHandler } from '@sveltejs/kit';
  * @returns A RequestHandler that proxies a request to another URL.
  */
 export function getProxyRequestHandler(
-	getProxiedUrl: (url: URL, request: Request) => string
+	getProxiedUrl: (_url: URL, _request: Request) => string
 ): RequestHandler {
 	const proxyRequest: RequestHandler = async ({ url, request }) => {
 		const destinationUrl = getProxiedUrl(url, request);
