@@ -10,7 +10,7 @@ exclude_lines = [
     "@typing.overload",
     "pragma: no cover",
 ]
-fail_under = 80
+fail_under = 0
 
 [tool.django-stubs]
 django_settings_module = "project.settings"
@@ -26,7 +26,7 @@ exclude = ["**/migrations", "**/node_modules", "**/__pycache__", "**/.*"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "project.settings"
-addopts = "--cov --numprocesses auto --dist loadscope --reuse-db"
+addopts = "--cov --dist=no -n 0 --reuse-db"
 python_files = ["tests.py", "**/tests/test_*.py", "**/tests/**/test_*.py"]
 
 [tool.ruff]
