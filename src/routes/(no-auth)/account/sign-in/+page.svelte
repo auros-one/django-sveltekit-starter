@@ -2,18 +2,23 @@
 	import { goto } from '$app/navigation';
 	import { login } from '$lib/api/account/auth';
 	import Button from '$lib/components/Button.svelte';
+	import { page } from '$app/stores';
 
 	let loading: boolean = false;
-	let errors: { [key: string]: [] } | undefined;
+	let errors: { [key: string]: [string] } | Record<string, any> | undefined;
 
 	async function onLogin(e: Event) {
 		loading = true;
 		const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-		const data = (await login(formData.email as string, formData.password as string)) as
-			| { [key: string]: [] }
-			| { access: string };
-		if (data.access) await goto('/');
-		else errors = data as { [key: string]: [] };
+		const data = await login(formData.email as string, formData.password as string);
+		if (data?.access) {
+			// Successful login - check for next parameter
+			const nextParam = $page.url.searchParams.get('next');
+			const nextUrl = nextParam ? decodeURIComponent(nextParam) : '/';
+			await goto(nextUrl);
+		} else {
+			errors = data;
+		}
 		loading = false;
 	}
 </script>
@@ -22,7 +27,7 @@
 	<div class="sm:mx-auto sm:w-full sm:max-w-sm">
 		<a href="/welcome"><img class="mx-auto h-10 w-auto" src="/favicon.png" alt="Company logo" /></a>
 		<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-			Log in to your account
+			Sign in to your account
 		</h2>
 	</div>
 
@@ -78,7 +83,7 @@
 			</div>
 
 			<div>
-				<Button bind:loading type="submit" class="w-full">Log in</Button>
+				<Button bind:loading type="submit" class="w-full">Sign in</Button>
 			</div>
 		</form>
 

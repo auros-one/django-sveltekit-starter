@@ -2,6 +2,7 @@ import { invalidateAll } from '$app/navigation';
 import { jwt } from '$lib/stores/auth';
 import { user } from '$lib/stores/account';
 import { apiClient } from '$lib/api';
+import type { components } from '$lib/api/backend-api-schema';
 
 export async function signup(
 	email: string,
@@ -27,7 +28,10 @@ export async function signup(
 	return undefined;
 }
 
-export async function login(email: string, password: string) {
+export async function login(
+	email: string,
+	password: string
+): Promise<{ [key: string]: [string] } | components['schemas']['JWT']> {
 	const { data, error, response } = await apiClient.POST('/accounts/login/', {
 		body: {
 			email,

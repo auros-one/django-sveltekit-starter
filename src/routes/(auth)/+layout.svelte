@@ -23,6 +23,11 @@
 
 	let refreshTokenLoop: ReturnType<typeof setInterval> | undefined = undefined;
 
+	function redirectToLogin() {
+		const currentPath = encodeURIComponent($page.url.pathname + $page.url.search);
+		goto(`/account/sign-in?next=${currentPath}`);
+	}
+
 	async function initJWTRefreshLoop() {
 		const result = await refresh();
 		$jwt = result.token;
@@ -35,7 +40,7 @@
 				const updatedTokenInfo = await refresh();
 				$jwt = updatedTokenInfo.token;
 			} catch {
-				goto('/account/login');
+				redirectToLogin();
 				clearInterval(refreshTokenLoop); // Clear the interval if an error occurs
 			}
 		}, refreshRateMS);
@@ -51,7 +56,7 @@
 			await initJWTRefreshLoop();
 			getUser();
 		} catch {
-			goto('/account/login');
+			redirectToLogin();
 		}
 	});
 

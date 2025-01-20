@@ -88,7 +88,7 @@
 			<p class="text-md mt-5">
 				You can now <a
 					class="font-semibold leading-6 text-primary-600 hover:text-primary-500"
-					href="/account/login">log in</a
+					href="/account/sign-in">sign in</a
 				> with your new password.
 			</p>
 		</div>

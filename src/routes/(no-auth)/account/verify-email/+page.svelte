@@ -62,7 +62,7 @@
 			<p class="font-sm text-gray-800">Email verified</p>
 			<a
 				class="text-md mt-5 font-semibold leading-6 text-primary-600 hover:text-primary-500"
-				href="/account/login">Log in</a
+				href="/account/sign-in">Sign in</a
 			>
 		</div>
 	{:else}
@@ -87,7 +87,7 @@
 			</p>
 			<a
 				class="text-md mt-5 font-semibold leading-6 text-primary-600 hover:text-primary-500"
-				href="/account/login">Log in</a
+				href="/account/sign-in">Sign in</a
 			>
 		</div>
 	{/if}

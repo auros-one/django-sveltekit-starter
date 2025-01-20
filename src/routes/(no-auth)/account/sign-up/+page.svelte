@@ -29,7 +29,7 @@
 			errors = await signup(email, password1, password2);
 		}
 
-		// If signup is successful, log in and redirect to home
+		// If signup is successful, sign in and redirect to home
 		if (errors === undefined) {
 			await login(email, password1);
 			await goto('/');
@@ -125,8 +125,8 @@
 		<p class="mt-10 text-center text-sm text-gray-500">
 			Already have an account?
 			<a
-				href="/account/login"
-				class="font-semibold leading-6 text-primary-600 hover:text-primary-500">Log in</a
+				href="/account/sign-in"
+				class="font-semibold leading-6 text-primary-600 hover:text-primary-500">Sign in</a
 			>
 		</p>
 	</div>
