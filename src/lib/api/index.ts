@@ -21,36 +21,28 @@ const UNPROTECTED_ROUTES = [
 ];
 const addJWT: Middleware = {
 	async onRequest({ request }) {
-		// don’t modify request for unprotected routes
+		// don't modify request for unprotected routes
 		const url = new URL(request.url);
 		if (UNPROTECTED_ROUTES.some((route) => url.pathname.startsWith(route))) {
-			console.log('addJWT UNPROTECTED_ROUTES', url.pathname);
 			return undefined;
 		}
 
-		// add JWT token to the request headers
-		const clonedRequest = request.clone();
+		// Create new headers to avoid modifying the original
+		const headers = new Headers(request.headers);
 		const jwt = await waitForJWT();
-		clonedRequest.headers.set('Authorization', `Bearer ${jwt}`);
-		return clonedRequest;
+		headers.set('Authorization', `Bearer ${jwt}`);
+
+		// Create a new request instead of cloning
+		return new Request(request.url, {
+			method: request.method,
+			headers,
+			body: request.body,
+			credentials: request.credentials,
+			mode: request.mode,
+			referrer: request.referrer
+		});
 	}
 };
 apiClient.use(addJWT);
-
-/**
- * Middleware to throw an error if the response status is 4xx or 5xx
- */
-const throwOnError: Middleware = {
-	async onResponse({ response }) {
-		if (response.status >= 400) {
-			const body = response.headers.get('content-type')?.includes('json')
-				? JSON.stringify(await response.clone().json())
-				: await response.clone().text();
-			throw new Error(body);
-		}
-		return undefined;
-	}
-};
-apiClient.use(throwOnError);
 
 export { apiClient };

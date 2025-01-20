@@ -5,128 +5,286 @@
 
 export interface paths {
 	'/accounts/change-email/': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
 		post: operations['accounts_change_email_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/login/': {
-		/**
-		 * @description Check the credentials and return the REST Token
-		 * if the credentials are valid and authenticated.
-		 * Calls Django Auth login method to register User ID
-		 * in Django session framework
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Check the credentials and return the REST Token
+		 *     if the credentials are valid and authenticated.
+		 *     Calls Django Auth login method to register User ID
+		 *     in Django session framework
 		 *
-		 * Accept the following POST parameters: username, password
-		 * Return the REST Framework Token Object's key.
-		 */
+		 *     Accept the following POST parameters: username, password
+		 *     Return the REST Framework Token Object's key. */
 		post: operations['accounts_login_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/logout/': {
-		/**
-		 * @description Calls Django logout method and delete the Token object
-		 * assigned to the current User object.
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Calls Django logout method and delete the Token object
+		 *     assigned to the current User object.
 		 *
-		 * Accepts/Returns nothing.
-		 */
+		 *     Accepts/Returns nothing. */
 		post: operations['accounts_logout_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/password/change/': {
-		/**
-		 * @description Calls Django Auth SetPasswordForm save method.
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Calls Django Auth SetPasswordForm save method.
 		 *
-		 * Accepts the following POST parameters: new_password1, new_password2
-		 * Returns the success/fail message.
-		 */
+		 *     Accepts the following POST parameters: new_password1, new_password2
+		 *     Returns the success/fail message. */
 		post: operations['accounts_password_change_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/password/reset/': {
-		/**
-		 * @description Calls Django Auth PasswordResetForm save method.
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Calls Django Auth PasswordResetForm save method.
 		 *
-		 * Accepts the following POST parameters: email
-		 * Returns the success/fail message.
-		 */
+		 *     Accepts the following POST parameters: email
+		 *     Returns the success/fail message. */
 		post: operations['accounts_password_reset_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/password/reset/confirm/': {
-		/**
-		 * @description Password reset e-mail link is confirmed, therefore
-		 * this resets the user's password.
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Password reset e-mail link is confirmed, therefore
+		 *     this resets the user's password.
 		 *
-		 * Accepts the following POST parameters: token, uid,
-		 *     new_password1, new_password2
-		 * Returns the success/fail message.
-		 */
+		 *     Accepts the following POST parameters: token, uid,
+		 *         new_password1, new_password2
+		 *     Returns the success/fail message. */
 		post: operations['accounts_password_reset_confirm_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/signup/': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
 		post: operations['accounts_signup_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/signup/resend-email/': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
 		post: operations['accounts_signup_resend_email_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/signup/verify-email/': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
 		post: operations['accounts_signup_verify_email_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/token/refresh/': {
-		/**
-		 * @description Takes a refresh type JSON web token and returns an access type JSON web
-		 * token if the refresh token is valid.
-		 */
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Takes a refresh type JSON web token and returns an access type JSON web
+		 *     token if the refresh token is valid. */
 		post: operations['accounts_token_refresh_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/token/verify/': {
-		/**
-		 * @description Takes a token and indicates if it is valid.  This view provides no
-		 * information about a token's fitness for a particular use.
-		 */
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Takes a token and indicates if it is valid.  This view provides no
+		 *     information about a token's fitness for a particular use. */
 		post: operations['accounts_token_verify_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/accounts/user/': {
-		/**
-		 * @description Reads and updates UserModel fields
-		 * Accepts GET, PUT, PATCH methods.
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description Reads and updates UserModel fields
+		 *     Accepts GET, PUT, PATCH methods.
 		 *
-		 * Default accepted fields: username, first_name, last_name
-		 * Default display fields: pk, username, email, first_name, last_name
-		 * Read-only fields: pk, email
+		 *     Default accepted fields: username, first_name, last_name
+		 *     Default display fields: pk, username, email, first_name, last_name
+		 *     Read-only fields: pk, email
 		 *
-		 * Returns UserModel fields.
-		 */
+		 *     Returns UserModel fields. */
 		get: operations['accounts_user_retrieve'];
-		/**
-		 * @description Reads and updates UserModel fields
-		 * Accepts GET, PUT, PATCH methods.
+		/** @description Reads and updates UserModel fields
+		 *     Accepts GET, PUT, PATCH methods.
 		 *
-		 * Default accepted fields: username, first_name, last_name
-		 * Default display fields: pk, username, email, first_name, last_name
-		 * Read-only fields: pk, email
+		 *     Default accepted fields: username, first_name, last_name
+		 *     Default display fields: pk, username, email, first_name, last_name
+		 *     Read-only fields: pk, email
 		 *
-		 * Returns UserModel fields.
-		 */
+		 *     Returns UserModel fields. */
 		put: operations['accounts_user_update'];
-		/**
-		 * @description Reads and updates UserModel fields
-		 * Accepts GET, PUT, PATCH methods.
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		/** @description Reads and updates UserModel fields
+		 *     Accepts GET, PUT, PATCH methods.
 		 *
-		 * Default accepted fields: username, first_name, last_name
-		 * Default display fields: pk, username, email, first_name, last_name
-		 * Read-only fields: pk, email
+		 *     Default accepted fields: username, first_name, last_name
+		 *     Default display fields: pk, username, email, first_name, last_name
+		 *     Read-only fields: pk, email
 		 *
-		 * Returns UserModel fields.
-		 */
+		 *     Returns UserModel fields. */
 		patch: operations['accounts_user_partial_update'];
+		trace?: never;
 	};
 	'/authcheck/': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		/** @description A private Healthcheck endpoint used for testing API key permissions. */
 		get: operations['Auth Check'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 	'/healthcheck/': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		/** @description Healthcheck endpoint. */
 		get: operations['Health Check'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
 	};
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
 	schemas: {
 		EmailChange: {
@@ -163,12 +321,10 @@ export interface components {
 			uid: string;
 			token: string;
 		};
-		/**
-		 * @description Overwrite dj-rest-auths PasswordResetSerializer to accept a custom password reset link.
+		/** @description Overwrite dj-rest-auths PasswordResetSerializer to accept a custom password reset link.
 		 *
-		 * It does so by adding the a custom url_generator to the AllAuthPasswordResetForm.save()
-		 * options.
-		 */
+		 *     It does so by adding the a custom url_generator to the AllAuthPasswordResetForm.save()
+		 *     options. */
 		PasswordResetRequest: {
 			/** Format: email */
 			email: string;
@@ -192,10 +348,10 @@ export interface components {
 			email: string;
 		};
 		RestAuthDetail: {
-			detail: string;
+			readonly detail: string;
 		};
 		TokenRefresh: {
-			access: string;
+			readonly access: string;
 		};
 		TokenRefreshRequest: {
 			refresh: string;
@@ -209,7 +365,7 @@ export interface components {
 			 * Format: email
 			 */
 			email: string;
-			verified: boolean;
+			readonly verified: boolean;
 		};
 		UserDetailsRequest: {
 			/**
@@ -228,13 +384,15 @@ export interface components {
 	headers: never;
 	pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
 export interface operations {
 	accounts_change_email_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['EmailChangeRequest'];
@@ -244,22 +402,22 @@ export interface operations {
 		};
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['EmailChange'];
 				};
 			};
 		};
 	};
-	/**
-	 * @description Check the credentials and return the REST Token
-	 * if the credentials are valid and authenticated.
-	 * Calls Django Auth login method to register User ID
-	 * in Django session framework
-	 *
-	 * Accept the following POST parameters: username, password
-	 * Return the REST Framework Token Object's key.
-	 */
 	accounts_login_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['LoginRequest'];
@@ -269,34 +427,41 @@ export interface operations {
 		};
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['JWT'];
 				};
 			};
 		};
 	};
-	/**
-	 * @description Calls Django logout method and delete the Token object
-	 * assigned to the current User object.
-	 *
-	 * Accepts/Returns nothing.
-	 */
 	accounts_logout_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['RestAuthDetail'];
 				};
 			};
 		};
 	};
-	/**
-	 * @description Calls Django Auth SetPasswordForm save method.
-	 *
-	 * Accepts the following POST parameters: new_password1, new_password2
-	 * Returns the success/fail message.
-	 */
 	accounts_password_change_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['PasswordChangeRequest'];
@@ -306,19 +471,22 @@ export interface operations {
 		};
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['RestAuthDetail'];
 				};
 			};
 		};
 	};
-	/**
-	 * @description Calls Django Auth PasswordResetForm save method.
-	 *
-	 * Accepts the following POST parameters: email
-	 * Returns the success/fail message.
-	 */
 	accounts_password_reset_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['PasswordResetRequest'];
@@ -328,21 +496,22 @@ export interface operations {
 		};
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['RestAuthDetail'];
 				};
 			};
 		};
 	};
-	/**
-	 * @description Password reset e-mail link is confirmed, therefore
-	 * this resets the user's password.
-	 *
-	 * Accepts the following POST parameters: token, uid,
-	 *     new_password1, new_password2
-	 * Returns the success/fail message.
-	 */
 	accounts_password_reset_confirm_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['PasswordResetConfirmRequest'];
@@ -352,6 +521,9 @@ export interface operations {
 		};
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['RestAuthDetail'];
 				};
@@ -359,6 +531,12 @@ export interface operations {
 		};
 	};
 	accounts_signup_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['RegisterRequest'];
@@ -368,6 +546,9 @@ export interface operations {
 		};
 		responses: {
 			201: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['JWT'];
 				};
@@ -375,6 +556,12 @@ export interface operations {
 		};
 	};
 	accounts_signup_resend_email_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['ResendEmailVerificationRequest'];
@@ -384,6 +571,9 @@ export interface operations {
 		};
 		responses: {
 			201: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['RestAuthDetail'];
 				};
@@ -391,6 +581,12 @@ export interface operations {
 		};
 	};
 	accounts_signup_verify_email_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['VerifyEmailRequest'];
@@ -400,17 +596,22 @@ export interface operations {
 		};
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['RestAuthDetail'];
 				};
 			};
 		};
 	};
-	/**
-	 * @description Takes a refresh type JSON web token and returns an access type JSON web
-	 * token if the refresh token is valid.
-	 */
 	accounts_token_refresh_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['TokenRefreshRequest'];
@@ -420,17 +621,22 @@ export interface operations {
 		};
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['TokenRefresh'];
 				};
 			};
 		};
 	};
-	/**
-	 * @description Takes a token and indicates if it is valid.  This view provides no
-	 * information about a token's fitness for a particular use.
-	 */
 	accounts_token_verify_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['TokenVerifyRequest'];
@@ -441,40 +647,39 @@ export interface operations {
 		responses: {
 			/** @description No response body */
 			200: {
-				content: never;
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
 			};
 		};
 	};
-	/**
-	 * @description Reads and updates UserModel fields
-	 * Accepts GET, PUT, PATCH methods.
-	 *
-	 * Default accepted fields: username, first_name, last_name
-	 * Default display fields: pk, username, email, first_name, last_name
-	 * Read-only fields: pk, email
-	 *
-	 * Returns UserModel fields.
-	 */
 	accounts_user_retrieve: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['UserDetails'];
 				};
 			};
 		};
 	};
-	/**
-	 * @description Reads and updates UserModel fields
-	 * Accepts GET, PUT, PATCH methods.
-	 *
-	 * Default accepted fields: username, first_name, last_name
-	 * Default display fields: pk, username, email, first_name, last_name
-	 * Read-only fields: pk, email
-	 *
-	 * Returns UserModel fields.
-	 */
 	accounts_user_update: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody: {
 			content: {
 				'application/json': components['schemas']['UserDetailsRequest'];
@@ -484,23 +689,22 @@ export interface operations {
 		};
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['UserDetails'];
 				};
 			};
 		};
 	};
-	/**
-	 * @description Reads and updates UserModel fields
-	 * Accepts GET, PUT, PATCH methods.
-	 *
-	 * Default accepted fields: username, first_name, last_name
-	 * Default display fields: pk, username, email, first_name, last_name
-	 * Read-only fields: pk, email
-	 *
-	 * Returns UserModel fields.
-	 */
 	accounts_user_partial_update: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
 		requestBody?: {
 			content: {
 				'application/json': components['schemas']['PatchedUserDetailsRequest'];
@@ -510,31 +714,55 @@ export interface operations {
 		};
 		responses: {
 			200: {
+				headers: {
+					[name: string]: unknown;
+				};
 				content: {
 					'application/json': components['schemas']['UserDetails'];
 				};
 			};
 		};
 	};
-	/** @description A private Healthcheck endpoint used for testing API key permissions. */
 	'Auth Check': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
 		responses: {
 			/** @description Authenticated. */
 			204: {
-				content: never;
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
 			};
 			/** @description Not authenticated. */
 			403: {
-				content: never;
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
 			};
 		};
 	};
-	/** @description Healthcheck endpoint. */
 	'Health Check': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
 		responses: {
 			/** @description No response body */
 			204: {
-				content: never;
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
 			};
 		};
 	};

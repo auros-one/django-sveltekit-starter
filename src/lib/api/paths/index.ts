@@ -15,7 +15,7 @@ export const apiPath = {
 		resend_email: makeAPIPath('/accounts/signup/resend-email/'),
 		login: makeAPIPath('/accounts/login/'),
 		// This endpoint is called from the server, so it doesn't need to be proxied
-		refresh: PUBLIC_BASE_API_URL + '/accounts/token/refresh/',
+		refresh: PUBLIC_BASE_API_URL + '/api/accounts/token/refresh/',
 		logout: makeAPIPath('/accounts/logout/'),
 		password_change: makeAPIPath('/accounts/password/change/'),
 		password_reset: makeAPIPath('/accounts/password/reset/'),

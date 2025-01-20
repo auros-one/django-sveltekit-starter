@@ -4,9 +4,10 @@ import { exec } from 'child_process';
 import fetch from 'node-fetch';
 import yaml from 'js-yaml';
 
-const BACKEND_URL = 'http://localhost:8000';
+const BACKEND_URL = 'http://127.0.0.1:8000';
+const DOCS_PATH = '/api/docs/schema';
 
-fetch(`${BACKEND_URL}/docs/schema`)
+fetch(`${BACKEND_URL}${DOCS_PATH}`)
 	.then((response) => response.text())
 	.then(async (schemaText) => {
 		// Write the schema to a temporary file

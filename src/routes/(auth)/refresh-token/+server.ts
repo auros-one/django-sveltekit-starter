@@ -18,12 +18,12 @@ export const GET = (async ({ cookies, fetch }) => {
 		});
 
 		if (!response.ok) {
-			cookies.delete('refresh-token');
+			cookies.delete('refresh-token', { path: '/' });
 			throw error(401);
 		}
 		return response;
 	} catch (err) {
-		cookies.delete('refresh-token');
+		cookies.delete('refresh-token', { path: '/' });
 		throw error(500, `${err}`);
 	}
 }) satisfies RequestHandler;

@@ -8,13 +8,12 @@ const PROXY_PATH = '/api';
 /* Create a proxy request handler using `getProxyRequestHandler` */
 
 function getBackendProxiedUrl(url: URL, _request: Request): string {
-	// Strip `/api` from the request path and build the new URL
-	const strippedPath = url.pathname.substring(PROXY_PATH.length);
-	const proxiedUrl = `${PUBLIC_BASE_API_URL}${strippedPath}${url.search}`;
+	// Forward the request to the backend server
+	const proxiedUrl = `${PUBLIC_BASE_API_URL}${url.pathname}${url.search}`;
 	return proxiedUrl;
 }
 
-const apiProxyHandler = getProxyRequestHandler(getBackendProxiedUrl);
+const backendProxyHandler = getProxyRequestHandler(getBackendProxiedUrl);
 
 /* Wrap server-side hooks to send errors to Sentry */
 
@@ -23,9 +22,9 @@ const { onHandle, onError } = serverInit(PUBLIC_SENTRY_DSN);
 /* Server-side hooks */
 
 export const handle: Handle = onHandle(async ({ event, resolve }) => {
-	// Intercept requests to `/api` and handle them with `apiProxyHandler`
+	// Intercept requests to `/api` and forwards the to the backend server
 	if (event.url.pathname.startsWith(PROXY_PATH)) {
-		return apiProxyHandler(event);
+		return backendProxyHandler(event);
 	}
 
 	// Otherwise, continue with SvelteKit's default request handler
