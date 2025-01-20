@@ -1,7 +1,6 @@
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
-
 from django.conf import settings
 from django.urls import path
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
 
 docs_title = settings.SPECTACULAR_SETTINGS["TITLE"]
 try:

@@ -121,8 +121,7 @@ AUTH_USER_MODEL = "accounts.User"
 INSTALLED_APPS = [
     # Needs to go before other apps.
     "project.accounts.apps.AccountsConfig",
-    "project.utils.apps.UtilsConfig",
-    "project.docs.apps.DocsConfig",
+    "project.core.apps.CoreConfig",
     "project.apps.CustomAdminConfig",
     "corsheaders",
     "debug_toolbar",
@@ -331,9 +330,9 @@ USE_TZ = True
 
 # Static files.
 
-STATICFILES_DIRS = [BASE_DIR / "project" / "static"]
+STATICFILES_DIRS = [BASE_DIR / "project" / "core" / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATIC_URL = "/static/"
+STATIC_URL = "/api/static/"
 
 if ENVIRONMENT == "production":  # pragma: no cover
     if (GS_BUCKET_NAME := os.environ.get("GS_BUCKET_NAME")) is None:
@@ -379,7 +378,7 @@ SILENCED_SYSTEM_CHECKS = [
     # SECURE_SSL_REDIRECT -- seems to break Cloud Run and is handled there.
     "security.W008",
     # we don't use django.middleware.csrf.CsrfViewMiddleware, instead we
-    # use our custom project.utils.middleware.CsrfProtectMiddleware that
+    # use our custom project.core.middleware.CsrfProtectMiddleware that
     # only applies to the admin and debug toolbar.
     "security.W003",
 ]

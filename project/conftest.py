@@ -1,14 +1,14 @@
 import pytest
 import respx
 from allauth.account.admin import EmailAddress
+from django.test.utils import override_settings
 from hypothesis.extra.django._fields import _for_slug, register_for
 from model_bakery import baker
 from model_bakery.random_gen import gen_slug, gen_text
 from rest_framework.test import APIClient
 
-from django.test.utils import override_settings
 from project.accounts.models import User
-from project.utils import fields
+from project.core import fields
 
 
 def _gen_slug(max_length: int = 500) -> str:  # pragma: no cover
@@ -18,8 +18,8 @@ def _gen_slug(max_length: int = 500) -> str:  # pragma: no cover
     return gen_slug(max_length)
 
 
-baker.generators.add("project.utils.fields.SlugField", _gen_slug)
-baker.generators.add("project.utils.fields.StringField", gen_text)
+baker.generators.add("project.core.fields.SlugField", _gen_slug)
+baker.generators.add("project.core.fields.StringField", gen_text)
 
 
 @register_for(fields.SlugField)

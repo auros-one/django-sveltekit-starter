@@ -9,7 +9,8 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Upper
 from django.utils import timezone
-from project.utils.fields import EmailField, StringField
+
+from project.core.fields import EmailField, StringField
 
 
 class UserManager(BaseUserManager):

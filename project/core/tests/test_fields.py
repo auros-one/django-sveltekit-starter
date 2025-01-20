@@ -1,9 +1,8 @@
+from django import forms
 from hypothesis import given
 from hypothesis.extra.django import from_field
 
-from django import forms
-
-from ..fields import SlugField
+from project.core.fields import SlugField
 
 
 @given(slug=from_field(SlugField(blank=True)))

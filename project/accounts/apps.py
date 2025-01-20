@@ -8,4 +8,4 @@ class AccountsConfig(AppConfig):
     def ready(self):
         # import KnoxTokenScheme so it's loaded for drf-spectacular
         # https://github.com/tfranzel/drf-spectacular/issues/264#issuecomment-1317781295
-        from project.schema import JWTSchema  # noqa: F401  # type: ignore
+        from project.core.docs.schemas import JWTSchema  # noqa: F401  # type: ignore

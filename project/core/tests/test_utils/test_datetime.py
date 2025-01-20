@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 
-from .. import datetime_utils
+from project.core.utils.datetime import get_request_datetime_argument
 
 
 class TestDatetimeArgumentParsing:
@@ -36,13 +36,13 @@ class TestDatetimeArgumentParsing:
     )
     def test_valid_datetime(self, string, expected, factory: APIRequestFactory):
         request = Request(factory.get("/dummy_url", {"start_time": string}))
-        result = datetime_utils.get_request_datetime_argument(request, "start_time")
+        result = get_request_datetime_argument(request, "start_time")
         assert result == expected
 
     def test_invalid_datetime(self, factory: APIRequestFactory):
         request = Request(factory.get("/dummy_url", {"start_time": "invalid_datetime"}))
         with pytest.raises(ValidationError) as context:
-            datetime_utils.get_request_datetime_argument(request, "start_time")
+            get_request_datetime_argument(request, "start_time")
         assert context.value.detail == {
             "start_time": [
                 "Invalid datetime, expects ISO format. For example: 2020-01-01T00:00:00Z"
@@ -52,7 +52,7 @@ class TestDatetimeArgumentParsing:
     def test_missing_datetime(self, factory: APIRequestFactory):
         request = Request(factory.get("/dummy_url"))
         with pytest.raises(ValidationError) as context:
-            datetime_utils.get_request_datetime_argument(request, "start_time")
+            get_request_datetime_argument(request, "start_time")
         assert context.value.detail == {
             "start_time": [
                 "Missing 'start_time' parameter. Expects a datetime in ISO format. For example: 2020-01-01T00:00:00Z"
