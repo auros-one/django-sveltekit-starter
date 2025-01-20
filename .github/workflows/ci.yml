@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: npm
-          node-version: 16
+          node-version: 22
       - name: Install dependencies
         run: npm install
 
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: npm
-          node-version: 16
+          node-version: 22
       - name: Install dependencies
         run: npm install
       - name: Run linters
@@ -44,7 +44,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: npm
-          node-version: 16
+          node-version: 22
       - name: Install dependencies
         run: npm install
       - name: Copy .env.example to .env
