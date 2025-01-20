@@ -21,7 +21,7 @@
 	export let data: LayoutData;
 	$user = data.user;
 
-	let refreshTokenLoop: number | undefined = undefined;
+	let refreshTokenLoop: ReturnType<typeof setInterval> | undefined = undefined;
 
 	async function initJWTRefreshLoop() {
 		const result = await refresh();
