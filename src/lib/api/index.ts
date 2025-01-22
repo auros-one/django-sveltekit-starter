@@ -29,19 +29,13 @@ const addJWT: Middleware = {
 			return undefined;
 		}
 
-		// Create new headers to avoid modifying the original
-		const headers = new Headers(request.headers);
+		// add JWT token to the request headers
 		const jwt = await waitForJWT();
+		const headers = new Headers(request.headers);
 		headers.set('Authorization', `Bearer ${jwt}`);
 
-		// Create a new request instead of cloning
-		return new Request(request.url, {
-			method: request.method,
-			headers,
-			body: request.body,
-			credentials: request.credentials,
-			mode: request.mode,
-			referrer: request.referrer
+		return new Request(request, {
+			headers
 		});
 	}
 };
