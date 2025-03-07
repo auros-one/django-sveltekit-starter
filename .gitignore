@@ -85,12 +85,8 @@ ipython_config.py
 # pyenv
 .python-version
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+# Poetry
+.venv/
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
@@ -140,3 +136,29 @@ node_modules/
 .idea/
 
 .DS_Store
+
+storage/
+
+# Keep optimized_parser_latest.json but ignore other optimized parser files
+optimized_parser_[0-9]*.json
+*/optimized_parser_[0-9]*.json
+!optimized_parser_latest.json
+!*/optimized_parser_latest.json
+
+# Keep optimized_job_criteria_latest.json but ignore other optimized job criteria files
+optimized_job_criteria_[0-9]*.json
+*/optimized_job_criteria_[0-9]*.json
+!optimized_job_criteria_latest.json
+!*/optimized_job_criteria_latest.json
+
+*/images/*
+images/*
+output/*
+*/output/*
+*.png
+
+*.tfvars
+
+*.ps1
+
+ansible_env.yml

@@ -1,0 +1,19 @@
+---
+# Main playbook for Django application deployment
+# This playbook has been organized into separate components
+
+- name: Deploy app with Dokku variables
+  hosts: app_server
+  become: yes
+  pre_tasks:
+    - debug:
+        msg:
+          - "project_name: {{ project_name }}"
+          - "app_name: {{ app_name }}"
+          - "db_name: {{ db_name }}"
+  roles:
+    - dokku_base
+    - dokku_database
+    - dokku_redis
+    - dokku_application
+    - dokku_environment

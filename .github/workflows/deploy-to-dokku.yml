@@ -1,0 +1,26 @@
+name: Deploy to Dokku
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Deploy to Dokku
+        uses: docker://dokku/ci-docker-image:latest
+        env:
+          GIT_REMOTE_URL: ${{ secrets.DOKKU_GIT_REMOTE_URL }}
+          SSH_PRIVATE_KEY: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+          BRANCH: 'master'
+          CI_BRANCH_NAME: 'main'
+          GIT_PUSH_FLAGS: '--force'
+          TRACE: '1'
+        with:
+          args: dokku-deploy

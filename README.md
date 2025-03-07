@@ -9,27 +9,27 @@ Authentication integration with the SvelteKit Template.
 ### Requirements
 
 -   Python 3.11+
--   Pipenv
+-   Poetry
 -   Docker & Docker Compose
 
 ### Installation
 
 ```console
 cp .env.example .env
-pipenv install --dev
-pipenv shell
+poetry install
+poetry shell
 pre-commit install
 ```
 
 ### Running Locally
 
-**Don't forget to activate the Python virtual environment with `pipenv shell`**
+**Don't forget to activate the Python virtual environment with `poetry shell`**
 
 **start DB and run migrations**
 
 ```console
 docker compose up db -d
-pipenv shell
+poetry shell
 python manage.py migrate
 ```
 
@@ -55,7 +55,7 @@ python manage.py migrate
 
 ### Testing
 
-**in Pipenv**
+**in Poetry**
 
 ```console
 pytest --dist=no -n 0 --cov-report=html
@@ -97,148 +97,106 @@ We're using dj-rest-auth for authentication which in turn uses django-allauth fo
 
 ### Deploy with Terraform
 
-[Terraform Deployment Instructions](/terraform/README.md) - After deploying the infrastructure with Terraform, let the CI/CD pipeline deploy the Django application to this infrastracture (Cloud Run).
+[Terraform Deployment Instructions](/terraform/README.md) - Terraform creates the infrastructure on Hetzner Cloud including server, network, firewall, and S3 buckets. Run `terraform apply` in the terraform directory to provision all resources.
 
-### Setting up GitHub Actions CI/CD
+### Deploying to Hetzner Cloud with Dokku
 
-**Store the following Terraform outputs as [Github Repository Secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository):**
+For deploying to our Hetzner Cloud infrastructure using Dokku, we use a dedicated GitHub Actions workflow:
 
--   Terraform output `runtime_dockerimage_url` -> Github Repo Secret `RUNTIME_DOCKERIMAGE_URL`
--   Terraform output `github_actions_sa_key` -> Github Repo Secret `GOOGLE_AUTHENTICATION_CREDENTIALS_JSON`
--   Terraform output `cloud_run_id` -> Github Repo Secret `CLOUD_RUN_NAME`
+1. **Automatic Deployment**: The workflow in `.github/workflows/deploy-to-dokku.yml` automatically deploys any code pushed to the `hetzner` branch to our Dokku application.
 
-View a Terraform secret with:
+2. **How to Deploy**:
+   ```console
+   git checkout hetzner
+   git add .
+   git commit -m "Your changes"
+   git push origin hetzner
+   ```
+
+### Ansible Deployment
+
+After Terraform creates the infrastructure, Ansible configures the server:
 
 ```console
-terraform output <secret_name>
+cd ansible
+ansible-playbook -i inventory/hosts site.yml
 ```
+
+This installs Dokku, sets up PostgreSQL, configures the application, and manages environment variables. See [Deployment Guide](/deploy.md) for details.
+
+### Setting up GitHub Actions CI/CD for Dokku
+
+To set up the GitHub Actions workflow for automatic deployment to Dokku:
+
+1. **Configure the following secrets in your GitHub repository**:
+   - `DOKKU_GIT_REMOTE_URL`: The Git remote URL for your Dokku app (format: `ssh://dokku@your-server-ip:your-project-name-backend`)
+   - `DOKKU_SSH_PRIVATE_KEY`: The SSH private key that has access to your Dokku server
+
+2. **Verify the workflow file**:
+   - Ensure `.github/workflows/deploy-to-dokku.yml` is configured to deploy from the `hetzner` branch
 
 ### Post-Deployment Settings
 
-Don't forget to:
+After deployment, you'll need to configure a few settings:
 
--   create a superuser
--   set the site name and domain
+1. **Create a superuser**:
+   ```console
+   # SSH into your server
+   ssh root@your-server-ip
 
-The 'Managing the Django deployment' section below has instructions on how to do this.
+   # Create a superuser
+   dokku run your-project-name-backend python manage.py createsuperuser
+   ```
 
-## Managing the Django deployment
+2. **Configure site domain**:
+   - Access the Django admin at `https://api.your-domain.com/admin/sites/site/`
+   - Update the domain to match your actual domain
 
-**ALWAYS FIRST SET THE ENV VARS AND AUTHENTICATE TO GCP**
+For more detailed instructions, see the [Deployment Guide](/deploy.md).
 
-```console
-export PROJECT_ID= ... # GCP Project ID
-export PROJECT_SLUG= ... # GCP Project slug (this is one of the Terraform module inputs)
-export CLOUD_SQL_CONNECTION_NAME = ... # GCP Cloud SQL connection name (this is one of the Terraform module outputs)
-export RUNTIME_DOCKERIMAGE_URL= ... # Terraform output `runtime_dockerimage_url`
-CLOUD_RUN_NAME= ... # Terraform output `cloud_run_name`
-```
+## Managing Your Dokku Deployment
 
-```console
-gcloud auth login
-gcloud auth application-default login
-gcloud config set project $PROJECT_ID
-```
-
-### Creating a Superuser
-
-1. Set the database connection details in your `.env` (see below how to get the GCP .env.gcp file to get the DB connection details).
-
-```
-POSTGRES_HOST=localhost
-POSTGRES_DB=
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-```
-
-2. Connect to the Cloud SQL using the Cloud SQL Proxy.
-    - See [Connecting from a local machine](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy#connect) for information on setting up the proxy.
-    - See `terraform output` to get the `sql_instance_connection_name`
+### Useful Commands
 
 ```console
-./cloud-sql-proxy $CLOUD_SQL_CONNECTION_NAME
-// Example:
-./cloud-sql-proxy "test-deployment-2-405517:us-east4:deployment-twee-db-instance"
+# View application logs
+ssh root@your-server-ip dokku logs your-project-name-backend -t
+
+# Restart the application
+ssh root@your-server-ip dokku ps:restart your-project-name-backend
+
+# View environment variables
+ssh root@your-server-ip dokku config your-project-name-backend
+
+# Set an environment variable
+ssh root@your-server-ip dokku config:set your-project-name-backend KEY=VALUE
+
+# Access PostgreSQL database
+ssh root@your-server-ip dokku postgres:connect your-project-name-db
 ```
 
-3. Create a superuser using the Django command.
+### Manual Deployment
+
+If you need to deploy manually (without GitHub Actions):
 
 ```console
-python manage.py createsuperuser
+# Add the Dokku remote
+git remote add dokku dokku@your-server-ip:your-project-name-backend
+
+# Push your changes
+git push dokku main:master
 ```
 
-### Setting Site Name and Domain
+For complete documentation on managing your deployment, refer to the [Deployment Guide](/deploy.md).
 
-Don't forget to update the site domain and name in the Django backend at:
+## Running Celery Worker
 
--   url: <terraform output `cloud_run_url`>/admin/sites/site
+To start the Celery worker with the correct queue configuration:
 
-This name and domain are used in the email templates and the admin dashboard.
-cloud_run_url
+`ash
+# Activate virtual environment first
 
-### Editing .env.gcp
-
-**Get the current .env.gcp file**:
-
-```console
-gcloud secrets versions access latest --secret="$PROJECT_SLUG-config" --project="$PROJECT_ID" > .env.gcp
-```
-
-**Set a new .env.gcp file**:
-
-```console
-gcloud secrets versions add "$PROJECT_SLUG-config" --data-file=".env.gcp"
-```
-
-**List all versions of the .env.gcp file**:
-
-```console
-gcloud secrets versions list "$PROJECT_SLUG-config"
-```
-
-**Required project details:**
-
-```console
-export PROJECT_ID= ... # GCP project ID
-export RUNTIME_DOCKERIMAGE_URL= ... # Terraform output `runtime_dockerimage_url`
-```
-
-**Authenticate to GCP**
-
-```console
-gcloud auth login
-gcloud auth application-default login
-gcloud config set project $PROJECT_ID
-```
-
-### Deploying manually
-
-```console
-export DOCKER_IMG="${RUNTIME_DOCKERIMAGE_URL}:latest"
-docker buildx build \
-  --platform linux/amd64 \
-  --build-arg BUILDKIT_INLINE_CACHE=1 \
-  -f Dockerfile \
-  --no-cache \
-  -t $DOCKER_IMG \
-  .
-docker push $DOCKER_IMG
-gcloud run deploy $CLOUD_RUN_NAME \
-  --image=$DOCKER_IMG \
-  --region=us-east4 \
-  --platform=managed \
-  --allow-unauthenticated \
-  --set-secrets=/app/secrets/.env=$PROJECT_SLUG-config:latest
-```
-
-### Setup a custom domain with Cloudflare
-
-Assuming [example.com](https://example.com/) is your desired domain.
-
-1. Configure Cloudflare CNAME with "proxy" mode for your domain to ghs.googlehosted.com
-2. Set SSL TLS encryption mode to "full"
-3. Disable "Always use HTTPS"
-4. Disable "Automatic HTTPS Rewrites"
-5. Configure example.com with Googles Domain Mapping
-
-It takes about 20 minutes for a fresh domain on Google to get a certificate there. During that time you will see the general "Browser works -> Cloudflare works -> Server issue" screen from Cloudflare, yet be patient it will pass.
+# Start the Celery worker
+celery -A project worker --loglevel=info -Q backend_tasks
+``n
+This ensures the backend worker only processes tasks meant for the backend application.

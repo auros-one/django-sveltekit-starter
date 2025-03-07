@@ -2,23 +2,29 @@ FROM python:3.11-slim AS builder
 
 WORKDIR /build
 
-ENV PIPENV_VENV_IN_PROJECT=1
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1
 
-RUN pip install --user pipenv setuptools wheel
+# Install Poetry
+RUN pip install --upgrade pip && \
+    pip install poetry
 
 RUN apt-get -y update && apt-get -y install --no-install-recommends \
     gcc \
     libc-dev \
     libpq-dev
 
-COPY Pipfile Pipfile.lock /build/
-
-RUN pip install --user pipenv
+COPY pyproject.toml poetry.lock* /build/
 
 ARG ENVIRONMENT="production"
 RUN if [ "$ENVIRONMENT" = "development" ] ;\
-    then /root/.local/bin/pipenv install --deploy --dev ;\
-    else /root/.local/bin/pipenv install --deploy ;\
+    then poetry install --no-root ;\
+    else poetry install --no-root --only main ;\
     fi
 
 # Final runner

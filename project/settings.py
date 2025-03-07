@@ -8,6 +8,8 @@ from datetime import timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
+import dj_database_url
+import nest_asyncio
 import sentry_sdk
 from dotenv import load_dotenv
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -127,6 +129,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "debug_toolbar",
     "django_extensions",
+    "django_celery_beat",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -241,23 +244,26 @@ LOGOUT_ON_PASSWORD_CHANGE = False
 # we use email as the primary identifier, not username
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 
 # Database.
 
-DATABASES = {
-    "default": {
-        "CONN_MAX_AGE": 0,
-        "ENGINE": "django.db.backends.postgresql",
-        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-        "NAME": os.environ.get("POSTGRES_DB"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-        "USER": os.environ.get("POSTGRES_USER"),
+if database_url := os.environ.get("DATABASE_URL"):
+    DATABASES = {"default": dj_database_url.parse(database_url)}
+else:
+    DATABASES = {
+        "default": {
+            "CONN_MAX_AGE": 0,
+            "ENGINE": "django.db.backends.postgresql",
+            "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+            "NAME": os.environ.get("POSTGRES_DB"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+            "USER": os.environ.get("POSTGRES_USER"),
+        }
     }
-}
 
 
 # Passwords.
@@ -283,6 +289,7 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 # Logging & reporting.
 
 if sentry_dsn := os.environ.get("SENTRY_DSN"):  # pragma: no cover
+    # Only initialize Sentry if DSN is not empty
     sentry_sdk.init(
         dsn=sentry_dsn,
         environment=ENVIRONMENT,
@@ -290,6 +297,8 @@ if sentry_dsn := os.environ.get("SENTRY_DSN"):  # pragma: no cover
         max_request_body_size="medium",
         send_default_pii=True,
     )
+else:
+    logger.info("Sentry DSN is empty, skipping Sentry initialization")
 
 
 # Email
@@ -339,35 +348,71 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/api/static/"
 
 if ENVIRONMENT == "production":  # pragma: no cover
-    if (GS_BUCKET_NAME := os.environ.get("GS_BUCKET_NAME")) is None:
-        raise ValueError("GS_BUCKET_NAME must be set in production.")
-    # Google Cloud Storage settings.
-    default_storage_settings = {
-        "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
-        "OPTIONS": {
-            "bucket_name": GS_BUCKET_NAME,
+    # S3 Storage Settings for Hetzner
+    HETZNER_ACCESS_KEY_ID = os.environ.get("HETZNER_S3_ACCESS_KEY")
+    HETZNER_SECRET_ACCESS_KEY = os.environ.get("HETZNER_S3_SECRET_KEY")
+    HETZNER_STORAGE_BUCKET_NAME = os.environ.get("HETZNER_S3_BUCKET_NAME")
+    HETZNER_S3_ENDPOINT_URL = os.environ.get("HETZNER_S3_ENDPOINT_URL")
+    HETZNER_S3_REGION_NAME = os.environ.get("HETZNER_S3_REGION_NAME")
+    HETZNER_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=86400",
+    }
+    HETZNER_DEFAULT_ACL = "public-read"
+    HETZNER_QUERYSTRING_AUTH = False
+
+    # Storage backends
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "bucket_name": HETZNER_STORAGE_BUCKET_NAME,
+                "location": "media",
+                "access_key": HETZNER_ACCESS_KEY_ID,
+                "secret_key": HETZNER_SECRET_ACCESS_KEY,
+                "region_name": HETZNER_S3_REGION_NAME,
+                "endpoint_url": HETZNER_S3_ENDPOINT_URL,
+                "default_acl": HETZNER_DEFAULT_ACL,
+                "querystring_auth": HETZNER_QUERYSTRING_AUTH,
+                "object_parameters": HETZNER_S3_OBJECT_PARAMETERS,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
+
+    # Media URL for production
+    MEDIA_URL = f"{HETZNER_S3_ENDPOINT_URL}/{HETZNER_STORAGE_BUCKET_NAME}/media/"
 else:
     # Local storage settings.
     default_storage_path = BASE_DIR / "storage/"
     if not default_storage_path.exists():  # pragma: no cover
         default_storage_path.mkdir(mode=0o700)  # TODO is this necessary ??
-    default_storage_settings = {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-        "OPTIONS": {
-            "location": str(default_storage_path),
+
+    # Storages settings for development
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "OPTIONS": {
+                "location": str(default_storage_path),
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
         },
     }
 
-# Storages settings
-STORAGES = {
-    "default": default_storage_settings,
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    },
-}
+    # Media URL for development
+    MEDIA_URL = "/media/"
 
+# Redis and Celery Settings
+REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", REDIS_URL)
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", REDIS_URL)
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
 
 # Default primary key field type.
 
@@ -411,3 +456,38 @@ def show_toolbar(request):  # pragma: no cover
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": show_toolbar,
 }
+
+
+# OpenAI
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+if not OPENAI_API_KEY and ENVIRONMENT == "production":  # pragma: no cover
+    raise Exception(
+        "OPENAI_API_KEY env var is not set. Some features may not work correctly."
+    )
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o")
+
+
+# OpenRouter
+
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+
+
+# GCP.
+
+GCP_PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "job-funnel-425420")
+GCP_REGION = os.environ.get("GCP_REGION", "us-east4")
+CLOUD_RUN_JOB_NAME = os.environ.get(
+    "CLOUD_RUN_JOB_NAME", "jobfunnel-cloud-run-job-runner"
+)
+MULTION_AI_API_KEY = os.environ.get("MULTION_AI_API_KEY")
+
+# Groq
+
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+# Serper
+
+SERPER_API_KEY = os.environ.get("SERPER_API_KEY")
+# Prevent some asyncio issues
+# https://github.com/erdewit/nest_asyncio
+nest_asyncio.apply()
