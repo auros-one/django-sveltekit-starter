@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "job-funnel-backend"
 version = "0.1.0"
-description = "JobFunnel backend application"
+description = "Django backend application"
 authors = ["Your Name <your.email@example.com>"]
 readme = "README.md"
 packages = []

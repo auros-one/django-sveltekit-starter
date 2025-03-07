@@ -1,4 +1,4 @@
-# JobFunnel Deployment Guide
+# Django Project Deployment Guide
 
 Deploying the project backend to Hetzner Cloud using Terraform and Ansible.
 
@@ -17,7 +17,7 @@ Before running Terraform, you need to set up a few things in your Hetzner Cloud 
 1. **Create a Project**:
 
     - Log in to Hetzner Cloud Console
-    - Create a new project (e.g., "JobFunnel")
+    - Create a new project (e.g., "Project Name")
 
 2. **Generate API Token**:
 

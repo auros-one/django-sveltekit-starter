@@ -64,7 +64,7 @@ pytest --dist=no -n 0 --cov-report=html
 **Running a specific file**
 
 ```console
-docker compose run --rm web python -m manage shell_plus pytest project/app_name/tests.py --dist=no -n 0 --cov-report=html
+docker compose run --rm web python -m pytest project/app_name/tests.py --dist=no -n 0 --cov-report=html
 ```
 
 **Test Coverage**
@@ -101,9 +101,9 @@ We're using dj-rest-auth for authentication which in turn uses django-allauth fo
 
 ### Deploying to Hetzner Cloud with Dokku
 
-For deploying to our Hetzner Cloud infrastructure using Dokku, we use a dedicated GitHub Actions workflow:
+For deploying to Hetzner Cloud infrastructure using Dokku, we use a dedicated GitHub Actions workflow:
 
-1. **Automatic Deployment**: The workflow in `.github/workflows/deploy-to-dokku.yml` automatically deploys any code pushed to the `hetzner` branch to our Dokku application.
+1. **Automatic Deployment**: The workflow in `.github/workflows/deploy-to-dokku.yml` automatically deploys any code pushed to the `hetzner` branch to the Dokku application.
 
 2. **How to Deploy**:
    ```console
@@ -129,7 +129,7 @@ This installs Dokku, sets up PostgreSQL, configures the application, and manages
 To set up the GitHub Actions workflow for automatic deployment to Dokku:
 
 1. **Configure the following secrets in your GitHub repository**:
-   - `DOKKU_GIT_REMOTE_URL`: The Git remote URL for your Dokku app (format: `ssh://dokku@your-server-ip:your-project-name-backend`)
+   - `DOKKU_GIT_REMOTE_URL`: The Git remote URL for your Dokku app (format: `ssh://dokku@your-server-ip:your-app-name`)
    - `DOKKU_SSH_PRIVATE_KEY`: The SSH private key that has access to your Dokku server
 
 2. **Verify the workflow file**:
@@ -145,7 +145,7 @@ After deployment, you'll need to configure a few settings:
    ssh root@your-server-ip
 
    # Create a superuser
-   dokku run your-project-name-backend python manage.py createsuperuser
+   dokku run your-app-name python manage.py createsuperuser
    ```
 
 2. **Configure site domain**:
@@ -160,19 +160,19 @@ For more detailed instructions, see the [Deployment Guide](/deploy.md).
 
 ```console
 # View application logs
-ssh root@your-server-ip dokku logs your-project-name-backend -t
+ssh root@your-server-ip dokku logs your-app-name -t
 
 # Restart the application
-ssh root@your-server-ip dokku ps:restart your-project-name-backend
+ssh root@your-server-ip dokku ps:restart your-app-name
 
 # View environment variables
-ssh root@your-server-ip dokku config your-project-name-backend
+ssh root@your-server-ip dokku config your-app-name
 
 # Set an environment variable
-ssh root@your-server-ip dokku config:set your-project-name-backend KEY=VALUE
+ssh root@your-server-ip dokku config:set your-app-name KEY=VALUE
 
 # Access PostgreSQL database
-ssh root@your-server-ip dokku postgres:connect your-project-name-db
+ssh root@your-server-ip dokku postgres:connect your-db-name
 ```
 
 ### Manual Deployment
@@ -181,7 +181,7 @@ If you need to deploy manually (without GitHub Actions):
 
 ```console
 # Add the Dokku remote
-git remote add dokku dokku@your-server-ip:your-project-name-backend
+git remote add dokku dokku@your-server-ip:your-app-name
 
 # Push your changes
 git push dokku main:master
@@ -193,10 +193,11 @@ For complete documentation on managing your deployment, refer to the [Deployment
 
 To start the Celery worker with the correct queue configuration:
 
-`ash
+```console
 # Activate virtual environment first
 
 # Start the Celery worker
-celery -A project worker --loglevel=info -Q backend_tasks
-``n
-This ensures the backend worker only processes tasks meant for the backend application.
+celery -A project worker --loglevel=info -Q default
+```
+
+This ensures the worker only processes tasks meant for the application.

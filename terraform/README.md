@@ -1,6 +1,6 @@
-# JobFunnel Infrastructure as Code
+# Infrastructure as Code
 
-This Terraform configuration defines the infrastructure for JobFunnel on Hetzner Cloud. The infrastructure supports a Django backend application with PostgreSQL database using Dokku for containerized deployment.
+This Terraform configuration defines the infrastructure for a Django application on Hetzner Cloud. The infrastructure supports a Django backend application with PostgreSQL database using Dokku for containerized deployment.
 
 ## Project Structure
 

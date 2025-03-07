@@ -472,14 +472,6 @@ OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o")
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
-
-# GCP.
-
-GCP_PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "job-funnel-425420")
-GCP_REGION = os.environ.get("GCP_REGION", "us-east4")
-CLOUD_RUN_JOB_NAME = os.environ.get(
-    "CLOUD_RUN_JOB_NAME", "jobfunnel-cloud-run-job-runner"
-)
 MULTION_AI_API_KEY = os.environ.get("MULTION_AI_API_KEY")
 
 # Groq

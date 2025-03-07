@@ -1,6 +1,6 @@
 # Backend Deployment with Ansible and Dokku
 
-This directory contains Ansible playbooks for deploying the JobFunnel backend application using Dokku on a Hetzner Cloud server.
+This directory contains Ansible playbooks for deploying a Django backend application using Dokku on a Hetzner Cloud server.
 
 ## Overview
 
@@ -140,20 +140,20 @@ The PostgreSQL database is exposed on port 5432 and can be accessed using:
 
 ```bash
 # Get database connection information
-ssh root@your-server-ip dokku postgres:info jobfunnel-db
+ssh root@your-server-ip dokku postgres:info your-db-name
 
 # Connect to the database using psql
-ssh root@your-server-ip dokku postgres:connect jobfunnel-db
+ssh root@your-server-ip dokku postgres:connect your-db-name
 ```
 
 For external access (e.g., from your local machine):
 
 ```bash
 # Get the database credentials
-ssh root@your-server-ip dokku postgres:info jobfunnel-db
+ssh root@your-server-ip dokku postgres:info your-db-name
 
 # Connect using psql from your local machine
-psql -h your-server-ip -p 5432 -U postgres -d jobfunnel-db
+psql -h your-server-ip -p 5432 -U postgres -d your-db-name
 ```
 
 ## Checking Deployment Status
@@ -161,19 +161,19 @@ psql -h your-server-ip -p 5432 -U postgres -d jobfunnel-db
 To check the status of your application:
 
 ```bash
-ansible -i inventory/hosts app_server -m shell -a "dokku ps:report jobfunnel-backend"
+ansible -i inventory/hosts app_server -m shell -a "dokku ps:report your-app-name"
 ```
 
 To view logs:
 
 ```bash
-ansible -i inventory/hosts app_server -m shell -a "dokku logs jobfunnel-backend -t"
+ansible -i inventory/hosts app_server -m shell -a "dokku logs your-app-name -t"
 ```
 
 To check Celery worker status:
 
 ```bash
-ansible -i inventory/hosts app_server -m shell -a "dokku ps:report jobfunnel-backend worker"
+ansible -i inventory/hosts app_server -m shell -a "dokku ps:report your-app-name worker"
 ```
 
 ## Troubleshooting
@@ -185,9 +185,9 @@ If you encounter issues during deployment:
 3. Ensure your `.env` file is properly configured
 4. Check that you can SSH into the server manually: `ssh root@your-server-ip`
 5. Verify that Dokku is installed: `ssh root@your-server-ip dokku version`
-6. Check the Dokku logs: `ssh root@your-server-ip dokku logs jobfunnel-backend -t`
-7. Verify the database service is running: `ssh root@your-server-ip dokku postgres:info jobfunnel-db`
-8. Check the application configuration: `ssh root@your-server-ip dokku config jobfunnel-backend`
+6. Check the Dokku logs: `ssh root@your-server-ip dokku logs your-app-name -t`
+7. Verify the database service is running: `ssh root@your-server-ip dokku postgres:info your-db-name`
+8. Check the application configuration: `ssh root@your-server-ip dokku config your-app-name`
 
 ## Advanced Configuration
 

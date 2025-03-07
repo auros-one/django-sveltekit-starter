@@ -6,7 +6,7 @@ from celery import Celery
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
 
 # Create Celery app
-app = Celery("job-funnel-celery")
+app = Celery("project-name-celery")
 
 # Load config from Django settings (CELERY_ namespace)
 app.config_from_object("django.conf:settings", namespace="CELERY")
