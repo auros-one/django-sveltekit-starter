@@ -111,6 +111,16 @@ Manually update the `inventory/hosts` file with your server's IP address (from T
 app ansible_host=XXX-YOUR-SERVER-IP-XXX ansible_user=root ...
 ```
 
+## Step 5: Configure Let's Encrypt
+
+The deployment automatically sets up Let's Encrypt for HTTPS. Make sure to:
+
+1. **Set Email for Let's Encrypt**: Add `DJANGO_SUPERUSER_EMAIL` to your `.env.production` file. This email will be used for Let's Encrypt certificate notifications.
+
+2. **Ensure Firewall Allows HTTP**: Make sure port 80 is open in your firewall configuration to allow Let's Encrypt domain verification.
+
+3. **DNS Configuration**: Ensure your domain's DNS records point to your server's IP address before running the Ansible playbook.
+
 ## Step 6: Deploy Application with Ansible
 
 Now you're ready to deploy the application using Ansible:
@@ -159,3 +169,4 @@ If you encounter issues during deployment:
 2. Verify that your `ansible_env.yml` file contains the correct values
 3. Ensure your `.env.production` file is properly configured
 4. Access the server from local machine with ssh: `ssh -i ~/.ssh/id_rsa root@your-server-ip`
+5. If Let's Encrypt fails, check that port 80 is open and accessible from the internet
