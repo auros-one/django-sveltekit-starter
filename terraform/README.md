@@ -1,81 +1,79 @@
-# Terraform Deployment Instructions
+# Infrastructure as Code
 
-## 1. Create a GCP Project
+This Terraform configuration defines the infrastructure for a Django application on Hetzner Cloud. The infrastructure supports a Django backend application with PostgreSQL database using Dokku for containerized deployment.
 
-Store the project ID and preferred region in an environment variable for later use:
+## Infrastructure Components
 
-```shell
-export PROJECT_ID=
-export GCP_ZONE=us-east4
-```
+### Server
 
-**note:** don't forget to setup billing for your project
+The configuration creates a single Ubuntu 22.04 server (CPX21 by default) running Dokku, which hosts:
 
-## 2. Authenticate to GCP
+-   The Django backend application
+-   PostgreSQL database as a Dokku service
+-   Both components are deployed as separate Dokku apps
 
-```shell
-gcloud auth login
-gcloud auth application-default login
-gcloud config set project $PROJECT_ID
-```
+Server features:
 
-## 3. Fill Out terraform Variables
+-   Configured with developer SSH keys for secure access
+-   Tagged with labels for project, environment, and application roles
+-   Sized appropriately for production workloads (CPX21 has 4 vCPUs, 8GB RAM)
 
-If you're using the django deployment module, you have to fill out it's variables in [`main.tf`](/terraform/main.tf):
+### Network
 
-```hcl
-module "django_deployment" {
-  source          = "./modules/django_deployment"
-  project_id      = "$PROJECT_ID"
-  region          = "$GCP_ZONE"
-  project_slug    = "my-project-slug"
-  sentry_dsn      = ""
-  frontend_domain = ""
-}
-```
+A private network is created for secure internal communication:
 
-## 3. Create and Reference a GCS Bucket for Terraform State
+-   Network range: 10.0.0.0/16
+-   Subnet: 10.0.1.0/24 in the eu-central network zone
+-   Server attached with static IP: 10.0.1.1
 
-Terraform keeps track of the state of your infrastructure. We store this state in a GCS bucket so that it can be shared between developers.
+### Firewall
 
-Note that the bucket namespace is shared by all users of the system so we choose a globally unique name by using the project ID as a prefix.
+A firewall is configured to secure the server with the following rules:
 
-```shell
-./create_state_bucket.sh
-```
+-   HTTP (80) and HTTPS (443) open to the internet for web access
+-   SSH (22) open to the internet for administrative access
+-   PostgreSQL (5432) restricted to specified IPs for database security
 
-It's not possible to use variables in the terraform backend specification so you have to set it manually in the `main.tf` code:
+### S3 Storage
 
-```hcl
-terraform {
-  backend "gcs" {
-    bucket = "$PROJECT_ID-terraform-state"
-    prefix = "terraform/state"
-  }
+Two S3 buckets are configured for application storage:
 
-  ...
+-   Media bucket (`$PROJECT_NAME-app-media`): Stores user-uploaded files with public-read ACL
+-   Backup bucket (`$PROJECT_NAME-db-backups`): Stores database backups with private ACL
 
-}
-```
+## Configuration
 
-## 4. Initialize Terraform
+All configuration is done through variables in `terraform.tfvars`. The key variables include:
 
-```shell
-terraform init
-```
+-   **hcloud_token**: Hetzner Cloud API token for authentication
+-   **hetzner_s3_access_key/secret_key**: Credentials for S3 object storage
+-   **domain_name**: Domain name for the application
+-   **server_location**: Hetzner datacenter location (e.g., "nbg1" for Nuremberg)
+-   **project_name**: Name used for resource naming and tagging
+-   **s3_endpoint_url**: Endpoint URL for Hetzner S3 storage
+-   **developer_ssh_keys**: Map of developer names to their SSH public keys
 
-## 5. Deploy the Infrastructure
+## Important Notes
 
-```shell
-terraform apply
-```
+### Backend Environment Variables
 
-## 6. View Outputs
+The backend application relies on environment variables that are set during the Ansible deployment process. The `dokku_environment/tasks/main.yml` file copies the backend's `.env` file to the server and configures these variables in Dokku.
 
-```shell
-terraform output
-```
+**It is critical that your backend's `.env` file is properly configured before running the Ansible deployment**, as these variables will be used to:
 
-## DEBUGGING
+1. Configure the application's connection to the database
+2. Set up S3 storage access
+3. Configure domain settings and SSL certificates
+4. Set other application-specific variables
 
--   If there's a `403 permission denied error`, make sure the project ID and other details are correct
+### SSH Keys
+
+The SSH keys defined in the `developer_ssh_keys` variable are automatically uploaded to Hetzner Cloud and configured on the server. Each developer's public key is registered in Hetzner Cloud and attached to the server, allowing them to use their corresponding private key (e.g., `~/.ssh/id_rsa`) to SSH into the server.
+
+## Terraform State
+
+The Terraform state is stored locally by default. For team environments, consider:
+
+-   Using a remote state backend like Terraform Cloud
+-   Implementing state locking for collaborative work
+-   Backing up the state file regularly

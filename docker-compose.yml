@@ -2,6 +2,7 @@ version: "3"
 
 volumes:
   db:
+  redis-data:
 
 services:
   web:
@@ -31,3 +32,11 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data

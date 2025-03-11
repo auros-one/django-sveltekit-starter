@@ -85,12 +85,8 @@ ipython_config.py
 # pyenv
 .python-version
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+# Poetry
+.venv/
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
@@ -128,7 +124,6 @@ venv.bak/
 
 node_modules/
 
-
 # Summarize
 **/summary.txt
 
@@ -136,7 +131,16 @@ node_modules/
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+*.tfvars
 
+# Ansible
+ansible_env.yml
+
+# IDE
 .idea/
 
+# MacOS
 .DS_Store
+
+# Storage
+storage/
