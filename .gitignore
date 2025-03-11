@@ -124,7 +124,6 @@ venv.bak/
 
 node_modules/
 
-
 # Summarize
 **/summary.txt
 
@@ -132,9 +131,15 @@ node_modules/
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+*.tfvars
 
+# Ansible
+ansible_env.yml
+
+# IDE
 .idea/
 
+# MacOS
 .DS_Store
 
 storage/
@@ -162,3 +167,6 @@ output/*
 *.ps1
 
 ansible_env.yml
+
+# Storage
+storage/

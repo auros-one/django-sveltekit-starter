@@ -95,7 +95,7 @@ We're using dj-rest-auth for authentication which in turn uses django-allauth fo
 
 ## Deployment
 
-### Deploy with Terraform
+See [DEPLOY.md](/DEPLOY.md) for deployment instructions.
 
 [Terraform Deployment Instructions](/terraform/README.md) - Terraform creates the infrastructure on Hetzner Cloud including server, network, firewall, and S3 buckets. Run `terraform apply` in the terraform directory to provision all resources.
 
