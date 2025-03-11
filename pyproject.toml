@@ -1,3 +1,94 @@
+[tool.poetry]
+name = "backend-template"
+version = "0.1.0"
+description = "Django backend application"
+authors = []
+readme = "README.md"
+packages = []
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+asyncer = "^0.0.8"
+backoff = "*"
+beautifulsoup4 = "*"
+celery = "^5.4.0"
+cloudpickle = "^3.1.1"
+dj-database-url = "*"
+dj-rest-auth = {extras = ["with_social"], version = "*"}
+django = {extras = ["argon2"], version = "~=4.2"}
+django-anymail = {extras = ["mailgun"], version = "*"}
+django-celery-beat = "^2.7.0"
+django-cors-headers = "*"
+django-csp = "*"
+django-debug-toolbar = "*"
+django-extensions = "*"
+django-filter = "*"
+django-nested-admin = "*"
+django-permissions-policy = "*"
+django-rich = "*"
+django-storages = {extras = ["boto3"], version = "*"}
+djangorestframework = "*"
+djangorestframework-api-key = "3.*"
+djangorestframework-simplejwt = "*"
+drf-spectacular = "*"
+dspy-ai = "*"
+flower = "*"
+google-api-python-client = "*"
+google-auth = "*"
+google-cloud-run = "*"
+groq = "*"
+gunicorn = "*"
+httpx = "==0.27.2"
+hypothesis = "*"
+json-repair = "^0.39.1"
+langchain = "*"
+langchain-openai = "*"
+markdownify = "*"
+multion = "*"
+nest_asyncio = "*"
+numpy = "*"
+open-interpreter = "*"
+opencv-python = "*"
+pillow = "*"
+psycopg2-binary = "*"
+pypdf = "*"
+pytesseract = "*"
+python-dotenv = "*"
+rapidfuzz = "*"
+redis = "^5.2.1"
+sentry-sdk = "*"
+weasyprint = "*"
+whitenoise = {extras = ["brotli"], version = "*"}
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+django-types = "*"
+djangorestframework-types = "==0.7.1"
+hypothesis = "*"
+inotify = "*"
+ipython = "*"
+isort = "*"
+model-bakery = "*"
+pre-commit = "*"
+ptpython = "*"
+pyright = "*"
+pytest = "*"
+pytest-asyncio = "==0.21.1"
+pytest-cov = "*"
+pytest-django = "*"
+pytest-mock = "*"
+pytest-structlog = "*"
+pytest-xdist = "*"
+reorder-python-imports = "*"
+requests-mock = "*"
+respx = "*"
+ruff = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.coverage.run]
 branch = true
 omit = ["manage.py", "project/asgi.py", "project/wsgi.py"]

@@ -1,60 +1,46 @@
-
-// We use GCS as a backend for storing the state of our infrastructure.
 terraform {
-  backend "gcs" {
-    bucket = ""
-    prefix = "terraform/state"
-  }
   required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">=5.1.0"
+    hcloud = {
+      source  = "hetznercloud/hcloud"
+      version = ">= 1.46.1"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = ">=3.5.1"
+    minio = {
+      source  = "aminueza/minio"
+      version = "3.2.2"
     }
   }
-
-  required_version = ">= 1.4.6"
 }
 
-
-// Django deployment module
-
-module "django_deployment" {
-  source          = "./modules/django_deployment"
-  project_id      = ""
-  region          = "us-east4"
-  project_slug    = ""
-  sentry_dsn      = ""
-  frontend_domain = ""
+provider "hcloud" {
+  token = var.hcloud_token
 }
 
-// Output the values of the outputs from the Django deployment module
-
-output "cloud_run_url" {
-  value       = module.django_deployment.cloud_run_url
-  description = "The URL of the Cloud Run service."
+provider "minio" {
+  minio_server   = var.minio_server_url
+  minio_user     = var.hetzner_s3_access_key
+  minio_password = var.hetzner_s3_secret_key
+  minio_region   = var.server_location
+  minio_ssl      = true
 }
 
-output "cloud_run_name" {
-  value       = module.django_deployment.cloud_run_name
-  description = "The name of the Cloud Run service."
-}
+# Single server hosting both backend and database as separate Dokku apps
+resource "hcloud_server" "app_server" {
+  name        = "${var.project_name}-app"
+  server_type = var.server_type
+  image       = var.server_image
+  location    = var.server_location
 
-output "runtime_dockerimage_url" {
-  value       = module.django_deployment.runtime_dockerimage_url
-  description = "The URL of the Django Dockerimage."
-}
+  labels = {
+    role        = "application"
+    project     = var.project_name
+    environment = "production"
+    dokku_apps  = "backend-database"  # Using dash instead of comma
+  }
 
-output "sql_instance_connection_name" {
-  value       = module.django_deployment.sql_instance_connection_name
-  description = "The connection name of the Cloud SQL instance."
-}
-
-output "github_actions_sa_key" {
-  value       = module.django_deployment.github_actions_sa_key
-  description = "The private key of the GitHub Actions service account."
-  sensitive   = true
+  # Prevent server replacement when SSH keys change
+  lifecycle {
+    ignore_changes = [
+      ssh_keys
+    ]
+  }
 }
