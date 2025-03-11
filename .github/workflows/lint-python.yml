@@ -3,7 +3,7 @@ on:
   workflow_call:
     secrets:
       DEPENDENCY_SSH_KEY:
-        description: SSH key to use when installing with pipenv for private dependencies.
+        description: SSH key to use when installing with pipenv or poetry for private dependencies.
         required: false
     inputs:
       black:
@@ -52,8 +52,8 @@ on:
         required: false
         type: string
       package-manager:
-        default: pipenv
-        description: Package manager to use (pip or pipenv)
+        default: poetry
+        description: Package manager to use (pip, pipenv, or poetry)
         required: false
         type: string
       python-version:
@@ -101,7 +101,7 @@ jobs:
       # Make sure there is some version of isort in case it's not a listed dependency.
       - name: Install isort
         run: pip install isort
-      - name: Set pipenv SSH key from secrets
+      - name: Set SSH key from secrets
         env:
           DEPENDENCY_SSH_KEY: ${{ secrets.DEPENDENCY_SSH_KEY }}
         if: ${{ env.DEPENDENCY_SSH_KEY != null }}
@@ -111,6 +111,12 @@ jobs:
       - name: Install pipenv requirements
         if: inputs.package-manager == 'pipenv'
         run: pip install pipenv && pipenv install --dev
+      - name: Install poetry requirements
+        if: inputs.package-manager == 'poetry'
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="$HOME/.local/bin:$PATH"
+          poetry install
       - name: Install pip requirements
         if: inputs.package-manager == 'pip'
         run: pip install -r ${{ inputs.requirements-files }}
@@ -120,6 +126,9 @@ jobs:
       - name: Run isort (pipenv)
         if: inputs.package-manager == 'pipenv'
         run: pipenv run isort --check-only --profile black --diff .
+      - name: Run isort (poetry)
+        if: inputs.package-manager == 'poetry'
+        run: poetry run isort --check-only --profile black --diff .
       - name: Run isort (pip)
         if: inputs.package-manager == 'pip'
         uses: liskin/gh-problem-matcher-wrap@v1
@@ -132,6 +141,12 @@ jobs:
         with:
           linters: isort
           run: pipenv run python -m isort --check-only --profile black --diff .
+      - name: Run isort (poetry)
+        if: inputs.package-manager == 'poetry'
+        uses: liskin/gh-problem-matcher-wrap@v1
+        with:
+          linters: isort
+          run: poetry run python -m isort --check-only --profile black --diff .
 
   pyright:
     if: inputs.pyright
@@ -142,12 +157,11 @@ jobs:
         run: rm -rf .venv
       - uses: actions/setup-python@v4
         with:
-          cache: ${{ inputs.package-manager }}
           python-version: ${{ inputs.python-version }}
       # Make sure there is some version of pyright in case it's not a listed dependency.
       - name: Install pyright
         run: pip install pyright
-      - name: Set pipenv SSH key from secrets
+      - name: Set SSH key from secrets
         env:
           DEPENDENCY_SSH_KEY: ${{ secrets.DEPENDENCY_SSH_KEY }}
         if: ${{ env.DEPENDENCY_SSH_KEY != null }}
@@ -157,6 +171,12 @@ jobs:
       - name: Install pipenv requirements
         if: inputs.package-manager == 'pipenv'
         run: pip install pipenv && pipenv install --dev
+      - name: Install poetry requirements
+        if: inputs.package-manager == 'poetry'
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="$HOME/.local/bin:$PATH"
+          poetry install --no-root
       - name: Install pip requirements
         if: inputs.package-manager == 'pip'
         run: pip install -r ${{ inputs.requirements-files }}
@@ -166,6 +186,11 @@ jobs:
       - name: Run pyright (pipenv)
         if: inputs.package-manager == 'pipenv'
         run: pipenv run python -m pyright
+      - name: Run pyright (poetry)
+        if: inputs.package-manager == 'poetry'
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          poetry run python -m pyright
 
   reorder-python-imports:
     if: inputs.reorder-python-imports

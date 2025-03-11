@@ -1,0 +1,10 @@
+# Hetzner Cloud API token
+hcloud_token         = "your-hetzner-cloud-api-token"
+# Hetzner S3 Object Storage credentials
+hetzner_s3_access_key = "your-s3-access-key"
+hetzner_s3_secret_key = "your-s3-secret-key"
+# Project configuration
+project_name          = "your-project-name"
+# S3 endpoint configuration
+s3_endpoint_url       = "your-s3-endpoint-url"
+minio_server_url      = "your-objectstorage-url"

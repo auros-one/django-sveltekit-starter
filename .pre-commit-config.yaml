@@ -8,11 +8,14 @@ default_stages:
   - pre-merge-commit
   - pre-rebase
   - pre-push
+default_language_version:
+  python: python3.11
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
       - id: check-added-large-files
+        exclude: poetry.lock
       - id: check-ast
       - id: check-json
       - id: check-merge-conflict
@@ -46,14 +49,14 @@ repos:
       - id: ruff
   - repo: local
     hooks:
-      - id: pipenv-verify
-        name: pipenv verify
+      - id: poetry-check
+        name: poetry check
         language: system
-        entry: pipenv verify
-        files: ^Pipfile.(json|lock)$
+        entry: poetry check
+        files: ^pyproject.toml$
         pass_filenames: false
       - id: django-check
         name: django check
         language: system
-        entry: pipenv run python manage.py check --deploy --fail-level WARNING
+        entry: poetry run python manage.py check --deploy --fail-level WARNING
         pass_filenames: false

@@ -1,0 +1,61 @@
+---
+# Tasks for managing environment variables and domain configuration
+
+# Copy .env file to server for environment variables
+- name: Copy .env file to server
+  copy:
+    src: ../../../.env.production
+    dest: /tmp/.env
+    mode: '0600'
+  ignore_errors: yes
+
+# Set environment variables from .env file for the {{ app_name }} application
+- name: Load environment variables from .env file
+  shell: |
+    grep -v '^#' /tmp/.env | grep -v '^$' | while IFS='=' read -r key value; do
+      dokku config:set --no-restart '{{ app_name }}' "$key=$value"
+    done
+  ignore_errors: yes
+
+# Clean up .env file
+- name: Remove temporary .env file
+  file:
+    path: /tmp/.env
+    state: absent
+  ignore_errors: yes
+
+# Configure domains for the application
+- name: Set domains for the application
+  command: "dokku domains:set '{{ app_name }}' {{ api_domain }}"
+  ignore_errors: yes
+  register: domains_result
+  changed_when: domains_result.rc == 0
+
+# Check if Let's Encrypt certificate already exists
+- name: Check if Let's Encrypt certificate already exists
+  command: "dokku letsencrypt:list"
+  register: letsencrypt_list
+  changed_when: false
+  ignore_errors: yes
+
+# Set Let's Encrypt email address before enabling
+- name: Set Let's Encrypt email address
+  command: "dokku letsencrypt:set '{{ app_name }}' email {{ lookup('env', 'DJANGO_SUPERUSER_EMAIL') }}"
+  ignore_errors: yes
+  register: letsencrypt_email_result
+  changed_when: letsencrypt_email_result.rc == 0
+
+# Enable Let's Encrypt for HTTPS only if not already enabled
+- name: Enable Let's Encrypt for the application
+  command: "dokku letsencrypt:enable '{{ app_name }}'"
+  when: letsencrypt_list.stdout is defined and app_name not in letsencrypt_list.stdout
+  ignore_errors: yes
+  register: letsencrypt_result
+  changed_when: letsencrypt_result.rc == 0
+
+# Restart the application to apply all changes
+- name: Restart the application
+  command: "dokku ps:restart '{{ app_name }}'"
+  ignore_errors: yes
+  register: restart_result
+  changed_when: restart_result.rc == 0

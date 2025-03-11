@@ -9,5 +9,5 @@ if [ -z "$SKIP_MIGRATIONS" ] || [ "$SKIP_MIGRATIONS" = "false" ]; then
 fi
 
 # Execute the command provided as arguments to the entrypoint (from CMD)
-echo "Executing command: $@"
+echo "[entrypoint.sh] Executing command: $@"
 exec "$@"
