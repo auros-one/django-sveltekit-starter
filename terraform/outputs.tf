@@ -27,5 +27,3 @@ output "hetzner_s3_endpoint_url" {
   description = "Endpoint URL for the S3 bucket for application media files"
   value       = minio_s3_bucket.app_media.bucket_domain_name
 }
-
-

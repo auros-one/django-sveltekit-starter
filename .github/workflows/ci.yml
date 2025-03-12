@@ -91,7 +91,7 @@ jobs:
 
   deploy:
     needs: [dependencies, lint, test]
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event.repository.name != 'backend-template'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

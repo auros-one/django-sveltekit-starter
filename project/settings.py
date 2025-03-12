@@ -458,28 +458,6 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 
-# OpenAI
-
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-if not OPENAI_API_KEY and ENVIRONMENT == "production":  # pragma: no cover
-    raise Exception(
-        "OPENAI_API_KEY env var is not set. Some features may not work correctly."
-    )
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o")
-
-
-# OpenRouter
-
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
-
-MULTION_AI_API_KEY = os.environ.get("MULTION_AI_API_KEY")
-
-# Groq
-
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-# Serper
-
-SERPER_API_KEY = os.environ.get("SERPER_API_KEY")
 # Prevent some asyncio issues
 # https://github.com/erdewit/nest_asyncio
 nest_asyncio.apply()

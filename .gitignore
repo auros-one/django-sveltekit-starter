@@ -142,31 +142,5 @@ ansible_env.yml
 # MacOS
 .DS_Store
 
-storage/
-
-# Keep optimized_parser_latest.json but ignore other optimized parser files
-optimized_parser_[0-9]*.json
-*/optimized_parser_[0-9]*.json
-!optimized_parser_latest.json
-!*/optimized_parser_latest.json
-
-# Keep optimized_job_criteria_latest.json but ignore other optimized job criteria files
-optimized_job_criteria_[0-9]*.json
-*/optimized_job_criteria_[0-9]*.json
-!optimized_job_criteria_latest.json
-!*/optimized_job_criteria_latest.json
-
-*/images/*
-images/*
-output/*
-*/output/*
-*.png
-
-*.tfvars
-
-*.ps1
-
-ansible_env.yml
-
 # Storage
 storage/

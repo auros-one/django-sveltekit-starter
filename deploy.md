@@ -169,4 +169,3 @@ If you encounter issues during deployment:
 2. Verify that your `ansible_env.yml` file contains the correct values
 3. Ensure your `.env.production` file is properly configured
 4. Access the server from local machine with ssh: `ssh -i ~/.ssh/id_rsa root@your-server-ip`
-5. If Let's Encrypt fails, check that port 80 is open and accessible from the internet
