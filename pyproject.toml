@@ -9,56 +9,28 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
-asyncer = "^0.0.8"
-backoff = "*"
-beautifulsoup4 = "*"
-celery = "^5.4.0"
-cloudpickle = "^3.1.1"
+# Core Django packages
+django = {extras = ["argon2"], version = "~=4.2"}
+djangorestframework = "*"
 dj-database-url = "*"
 dj-rest-auth = {extras = ["with_social"], version = "*"}
-django = {extras = ["argon2"], version = "~=4.2"}
-django-anymail = {extras = ["mailgun"], version = "*"}
-django-celery-beat = "^2.7.0"
-django-cors-headers = "*"
-django-csp = "*"
-django-debug-toolbar = "*"
-django-extensions = "*"
-django-filter = "*"
-django-nested-admin = "*"
-django-permissions-policy = "*"
-django-rich = "*"
-django-storages = {extras = ["boto3"], version = "*"}
-djangorestframework = "*"
-djangorestframework-api-key = "3.*"
-djangorestframework-simplejwt = "*"
-drf-spectacular = "*"
-dspy-ai = "*"
-flower = "^2.0.1"
-google-api-python-client = "*"
-google-auth = "*"
-google-cloud-run = "*"
-groq = "*"
-gunicorn = "*"
-httpx = "==0.27.2"
+# Used packages (not flagged by deptry)
+beautifulsoup4 = "*"
+celery = "^5.4.0"
 hypothesis = "*"
-json-repair = "^0.39.1"
-langchain = "*"
-langchain-openai = "*"
 markdownify = "*"
-multion = "*"
 nest_asyncio = "*"
-numpy = "*"
-open-interpreter = "*"
-opencv-python = "*"
-pillow = "*"
-psycopg2-binary = "*"
-pypdf = "*"
-pytesseract = "*"
 python-dotenv = "*"
-rapidfuzz = "*"
-redis = "^5.2.1"
 sentry-sdk = "*"
-weasyprint = "*"
+
+# The following packages are not directly imported but are required for functionality
+# Database
+psycopg2-binary = "*"
+# Caching and task queue
+redis = "^5.2.1"
+# Web server
+gunicorn = "*"
+# Security and middleware
 whitenoise = {extras = ["brotli"], version = "*"}
 
 [tool.poetry.group.dev.dependencies]
@@ -84,6 +56,7 @@ reorder-python-imports = "*"
 requests-mock = "*"
 respx = "*"
 ruff = "*"
+deptry = "^0.23.0"
 
 [build-system]
 requires = ["poetry-core"]

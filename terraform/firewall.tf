@@ -31,6 +31,15 @@ resource "hcloud_firewall" "app_firewall" {
       "0.0.0.0/0",
     ]
   }
+  # HTTP for Let's Encrypt verification
+  rule {
+    direction = "in"
+    protocol = "tcp"
+    port = "80"
+    source_ips = [
+      "0.0.0.0/0",
+    ]
+  }
 
   apply_to {
     server = hcloud_server.app_server.id
