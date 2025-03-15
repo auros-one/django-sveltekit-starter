@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_extensions",
     "django_celery_beat",
+    "revproxy.apps.RevProxyConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -456,6 +457,10 @@ def show_toolbar(request):  # pragma: no cover
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": show_toolbar,
 }
+
+
+# Dokku
+DOKKU_APP_NAME = os.environ.get("DOKKU_APP_NAME")
 
 
 # Prevent some asyncio issues

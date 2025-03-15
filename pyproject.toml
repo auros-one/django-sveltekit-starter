@@ -26,6 +26,7 @@ django-extensions = "*"
 django-filter = "*"
 django-nested-admin = "*"
 django-permissions-policy = "*"
+django-revproxy = "*"
 django-rich = "*"
 django-storages = {extras = ["boto3"], version = "*"}
 djangorestframework = "*"

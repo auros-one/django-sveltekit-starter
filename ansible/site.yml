@@ -13,6 +13,7 @@
           - "db_name: {{ db_name }}"
   roles:
     - dokku_base
+    - dokku_network
     - dokku_database
     - dokku_redis
     - dokku_application
