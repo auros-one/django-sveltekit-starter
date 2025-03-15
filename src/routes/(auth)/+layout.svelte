@@ -85,6 +85,10 @@
 					href: '/admin/cloud/home'
 				},
 				{
+					name: 'Tasks',
+					href: '/admin/cloud/tasks'
+				},
+				{
 					name: 'API Docs',
 					href: '/admin/cloud/api-docs'
 				}
