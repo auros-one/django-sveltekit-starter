@@ -244,6 +244,7 @@ LOGOUT_ON_PASSWORD_CHANGE = False
 # we use email as the primary identifier, not username
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
@@ -363,7 +364,7 @@ if ENVIRONMENT == "production":  # pragma: no cover
     # Storage backends
     STORAGES = {
         "default": {
-            "BACKEND": "storages.backends.s3.S3Storage",
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             "OPTIONS": {
                 "bucket_name": HETZNER_STORAGE_BUCKET_NAME,
                 "location": "media",
@@ -374,6 +375,8 @@ if ENVIRONMENT == "production":  # pragma: no cover
                 "default_acl": HETZNER_DEFAULT_ACL,
                 "querystring_auth": HETZNER_QUERYSTRING_AUTH,
                 "object_parameters": HETZNER_S3_OBJECT_PARAMETERS,
+                "addressing_style": "path",
+                "signature_version": "s3",
             },
         },
         "staticfiles": {
