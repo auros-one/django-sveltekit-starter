@@ -6,7 +6,7 @@ This Terraform configuration defines the infrastructure for a Django application
 
 ### Server
 
-The configuration creates a single Ubuntu 22.04 server (CPX21 by default) running Dokku, which hosts:
+The configuration creates an Ubuntu server running Dokku, which hosts:
 
 -   The Django backend application
 -   PostgreSQL database as a Dokku service
@@ -16,7 +16,7 @@ Server features:
 
 -   Configured with developer SSH keys for secure access
 -   Tagged with labels for project, environment, and application roles
--   Sized appropriately for production workloads (CPX21 has 4 vCPUs, 8GB RAM)
+-   Sized appropriately for production workloads
 
 ### Network
 

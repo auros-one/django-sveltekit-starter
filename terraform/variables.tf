@@ -20,7 +20,7 @@ variable "server_location" {
 
 variable "server_type" {
   description = "Hetzner server type"
-  default     = "cpx21"
+  default     = "cx32"
 }
 
 variable "server_image" {

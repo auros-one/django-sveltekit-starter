@@ -1,5 +1,3 @@
-version: "3"
-
 volumes:
   db:
   redis-data:
@@ -11,15 +9,79 @@ services:
       dockerfile: docker/Dockerfile
       args:
         ENVIRONMENT: development
+    command: python -m gunicorn
     depends_on:
       - db
+      - redis
     env_file:
       - .env
-    image: project_name
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    image: projectname-backend
     ports:
       - "8000:8000"
     restart: unless-stopped
     tty: true
+    volumes:
+      - .:/app
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        ENVIRONMENT: development
+    command: celery -A project worker --loglevel=info --autoscale=10,3
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    image: projectname-celery-worker
+    restart: unless-stopped
+    volumes:
+      - .:/app
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        ENVIRONMENT: development
+    command: celery -A project beat --loglevel=info
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    image: projectname-celery-beat
+    restart: unless-stopped
+    volumes:
+      - .:/app
+
+  celery_flower:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        ENVIRONMENT: development
+    command: celery -A project flower --address=0.0.0.0 --port=5555 --url_prefix=api/admin/flower
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    image: projectname-celery-flower
+    ports:
+      - "5555:5555"
+    restart: unless-stopped
     volumes:
       - .:/app
 
@@ -30,7 +92,7 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5420:5432"
     restart: unless-stopped
 
   redis:
