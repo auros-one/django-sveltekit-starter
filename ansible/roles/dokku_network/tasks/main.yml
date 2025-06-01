@@ -1,0 +1,13 @@
+---
+# Tasks for setting up Dokku network for inter-app communication
+
+# Create the internal network for app communication
+- name: Create internal network for inter-app communication
+  command: dokku network:create internal-network
+  when: "'internal-network' not in dokku_networks.stdout"
+  ignore_errors: yes
+
+# Configure application to use the network - all processes in Procfile will share this network
+- name: Add application to internal network
+  command: dokku network:set {{ app_name }} attach-post-deploy internal-network
+  ignore_errors: yes

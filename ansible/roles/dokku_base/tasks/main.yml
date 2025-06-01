@@ -1,0 +1,56 @@
+---
+# Tasks for installing Dokku and plugins
+
+# 1. Install required dependencies
+- name: Install required dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - software-properties-common
+      - git
+    state: present
+    update_cache: yes
+
+# 2. Ensure Dokku is installed
+- name: Check if Dokku is installed
+  command: which dokku
+  register: dokku_check
+  ignore_errors: yes
+  changed_when: false
+
+- name: Download and install Dokku
+  block:
+    - name: Download Dokku bootstrap script
+      get_url:
+        url: https://raw.githubusercontent.com/dokku/dokku/v0.30.7/bootstrap.sh
+        dest: /tmp/bootstrap.sh
+        mode: '0755'
+
+    - name: Run Dokku bootstrap script
+      command: bash /tmp/bootstrap.sh
+  when: dokku_check.rc != 0
+
+# 3. Install Dokku plugins
+- name: Check if PostgreSQL plugin is installed
+  command: dokku plugin:list
+  register: dokku_plugins
+  changed_when: false
+
+- name: Install Dokku PostgreSQL plugin
+  command: dokku plugin:install https://github.com/dokku/dokku-postgres.git postgres
+  when: "'postgres' not in dokku_plugins.stdout"
+
+# Install Dokku Let's Encrypt plugin
+- name: Install Dokku Let's Encrypt plugin
+  command: dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
+  when: "'letsencrypt' not in dokku_plugins.stdout"
+  ignore_errors: yes
+
+# Install Dokku Redis plugin
+- name: Install Dokku Redis plugin
+  command: dokku plugin:install https://github.com/dokku/dokku-redis.git redis
+  when: "'redis' not in dokku_plugins.stdout"
+  ignore_errors: yes

@@ -1,1 +1,121 @@
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
 .DS_Store
+
+# Environment
+.env
+.env.local
+.env.production
+.env.gcp
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Logs
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Django
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+
+# Python
+*.so
+.Python
+*.manifest
+*.spec
+*.mo
+*.pot
+profile_default/
+ipython_config.py
+.python-version
+__pypackages__/
+celerybeat-schedule
+celerybeat.pid
+*.sage.py
+.spyderproject
+.spyproject
+.ropeproject
+.pyre/
+
+# Documentation
+docs/_build/
+/site
+
+# Jupyter
+.ipynb_checkpoints
+
+# Flask
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# PyBuilder
+target/
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Ansible
+ansible_env.yml
+
+# Storage
+storage/
+
+# Summarize
+**/summary.txt
