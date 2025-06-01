@@ -1,0 +1,32 @@
+---
+# Tasks for setting up the application
+
+# Configure Dokku application
+- name: Check if Dokku app exists
+  command: dokku apps:list
+  register: dokku_apps
+  changed_when: false
+
+- name: Create Dokku app if it doesn't exist
+  command: "dokku apps:create '{{ app_name }}'"
+  when: app_name not in dokku_apps.stdout
+  ignore_errors: yes
+
+# Configure Dokku to use Dockerfile in project root
+- name: Configure Dokku to use Dockerfile from project root
+  command: "dokku builder:set '{{ app_name }}' build-dir ."
+  register: dockerfile_config
+  changed_when: dockerfile_config.rc == 0
+  ignore_errors: yes
+
+# Link PostgreSQL database to app
+- name: Check if database is already linked to app
+  command: "dokku postgres:links '{{ db_name }}'"
+  register: postgres_links
+  changed_when: false
+  ignore_errors: yes
+
+- name: Link PostgreSQL database to app
+  command: "dokku postgres:link '{{ db_name }}' '{{ app_name }}'"
+  when: app_name not in postgres_links.stdout
+  ignore_errors: yes

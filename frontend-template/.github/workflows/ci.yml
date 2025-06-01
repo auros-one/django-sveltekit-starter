@@ -1,0 +1,53 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+
+  lint:
+    needs: [dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Run linters
+        run: npm run lint
+
+  svelte-check:
+    needs: [dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Copy .env.example to .env
+        run: cp .env.example .env
+      - name: Run svelte-check
+        run: npm run check
