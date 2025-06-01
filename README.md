@@ -25,7 +25,7 @@ django-sveltekit-starter/
 ## 🛠️ Prerequisites
 
 - Python 3.11+
-- Node.js 22+
+- Node.js 18+
 - Docker & Docker Compose
 - Poetry (Python package manager)
 
