@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name != 'push' || !contains(github.ref, 'main') }}
 
 jobs:
-  dependencies:
+  backend-dependencies:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,19 +23,87 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           export PATH="$HOME/.local/bin:$PATH"
       - name: Install dependencies
+        working-directory: backend
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           poetry install --no-root
 
-  lint:
-    # Dependencies are required for some linters.
-    needs: [dependencies]
-    uses: ./.github/workflows/lint-python.yml
-    with:
-      package-manager: poetry
+  frontend-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+          node-version: 22
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
 
-  test:
-    needs: [dependencies]
+  backend-lint:
+    needs: [backend-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="$HOME/.local/bin:$PATH"
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          poetry install --no-root
+      - name: Run linters
+        working-directory: backend
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          poetry run black --check .
+          poetry run isort --check-only .
+
+  frontend-lint:
+    needs: [frontend-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+          node-version: 22
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
+      - name: Run linters
+        working-directory: frontend
+        run: npm run lint
+
+  frontend-check:
+    needs: [frontend-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+          node-version: 22
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
+      - name: Copy .env.example to .env
+        working-directory: frontend
+        run: cp .env.example .env
+      - name: Run svelte-check
+        working-directory: frontend
+        run: npm run check
+
+  backend-test:
+    needs: [backend-dependencies]
     runs-on: ubuntu-latest
     services:
       db:
@@ -66,16 +134,20 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           export PATH="$HOME/.local/bin:$PATH"
       - name: Set up environment
+        working-directory: backend
         run: cp .env.ci .env
       - name: Install dependencies
+        working-directory: backend
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           poetry install --no-root
       - name: Check for missing migrations
+        working-directory: backend
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           poetry run python manage.py makemigrations --check --dry-run
       - name: Run system checks
+        working-directory: backend
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           poetry run python manage.py check
@@ -87,26 +159,4 @@ jobs:
           PATH: /home/runner/.local/bin:/usr/local/bin:/usr/bin:/bin
         with:
           linters: pytest
-          run: poetry run python -m pytest --create-db
-
-  deploy:
-    needs: [dependencies, lint, test]
-    if: github.ref == 'refs/heads/main' && github.event.repository.name != 'backend-template'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Deploy to Dokku
-        uses: docker://dokku/ci-docker-image:latest
-        env:
-          GIT_REMOTE_URL: ${{ secrets.DOKKU_GIT_REMOTE_URL }}
-          SSH_PRIVATE_KEY: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
-          BRANCH: "master"
-          CI_BRANCH_NAME: "main"
-          GIT_PUSH_FLAGS: "--force"
-          TRACE: "1"
-        with:
-          args: dokku-deploy
+          run: cd backend && poetry run python -m pytest --create-db

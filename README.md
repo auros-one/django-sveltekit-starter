@@ -1,113 +1,87 @@
-# Django Template
+# Django-SvelteKit Starter
 
-Django template with multiple convenient features.
+A production-ready monorepo template for building full-stack applications with Django (backend) and SvelteKit (frontend).
 
-Authentication integration with the SvelteKit Template.
+## 🚀 Features
 
-## Local Development
+- **Django Backend**: REST API with Django REST Framework
+- **SvelteKit Frontend**: Type-safe, fast, and modern UI
+- **Docker Compose**: One-command local development
+- **GitHub Actions**: Automated CI/CD with path-based triggers
+- **Type Safety**: Auto-generated TypeScript types from Django
+- **Monorepo Benefits**: Atomic commits, shared tooling, simplified workflow
 
-### Requirements
+## 📦 Project Structure
 
--   Python 3.11+
--   Poetry
--   Docker & Docker Compose
-
-### Installation
-
-```console
-cp .env.example .env
-poetry install
-poetry shell
-pre-commit install
+```
+django-sveltekit-starter/
+├── backend/          # Django REST API
+├── frontend/         # SvelteKit application  
+├── docker-compose.yml
+├── Makefile         # Common development commands
+└── .github/         # CI/CD workflows
 ```
 
-### Running Locally
+## 🛠️ Prerequisites
 
-**Don't forget to activate the Python virtual environment with `poetry shell`**
+- Python 3.11+
+- Node.js 22+
+- Docker & Docker Compose
+- Poetry (Python package manager)
 
-**start DB and run migrations**
+## 🏃 Quick Start
 
-```console
-docker compose up db -d
-poetry shell
-python manage.py migrate
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/auros-one/django-sveltekit-starter.git
+   cd django-sveltekit-starter
+   ```
+
+2. **Install dependencies**
+   ```bash
+   make install
+   ```
+
+3. **Start development environment**
+   ```bash
+   make dev
+   ```
+
+4. **Access the applications**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000
+   - Django Admin: http://localhost:8000/admin
+
+## 📝 Development Commands
+
+```bash
+make help        # Show all available commands
+make install     # Install all dependencies
+make dev         # Start Docker Compose stack
+make test        # Run all tests
+make format      # Format code
+make lint        # Lint code
+make clean       # Clean generated files
 ```
 
-**run development server**
+## 🔧 Configuration
 
-```console
-python manage.py runserver
-```
+### Backend
+- Configuration: `backend/.env`
+- Database: PostgreSQL (via Docker)
+- API Docs: http://localhost:8000/api/schema/swagger-ui/
 
-### Running in docker compose
+### Frontend  
+- Configuration: `frontend/.env`
+- API URL: Set via `PUBLIC_API_URL` environment variable
 
-```console
-docker compose up -d
-docker compose run --rm web python manage.py migrate
-```
+## 🚢 Deployment
 
-### Migrations
+Both frontend and backend can be deployed independently:
 
-```console
-python manage.py makemigrations
-python manage.py migrate
-```
+- **Backend**: Deploy as a standard Django application
+- **Frontend**: Deploy to any static hosting service
 
-### Testing
+## 📄 License
 
-**in Poetry**
-
-```console
-pytest --dist=no -n 0 --cov-report=html
-```
-
-**Running a specific file**
-
-```console
-docker compose run --rm web python -m pytest project/app_name/tests.py --dist=no -n 0 --cov-report=html
-```
-
-**Test Coverage**
-
-By running the tests with `--cov-report=html` a coverage report will be generated in `htmlcov/index.html`.
-
-**in Docker**
-
-```console
-docker compose run --rm web python -m pytest --dist=no -n 0 --cov-report=html
-```
-
-### Type Checking
-
-```console
-pyright .
-```
-
-## Django Management Commands
-
-```console
-python manage.py <command>
-```
-
-## Accounts Verification and Other Emails
-
-We're using dj-rest-auth for authentication which in turn uses django-allauth for email verification. The templates for the emails are overridden in `project/accounts/templates/account/email` and the original templates can be found here: https://github.com/pennersr/django-allauth/tree/main/allauth/templates/account/email
-
-## Deployment
-
-See [DEPLOY.md](/DEPLOY.md) for deployment instructions.
-
-Once the deployment setup is complete, Github Actions will automatically deploy changes to main to the server.
-
-## Running Celery Worker
-
-To start the Celery worker with the correct queue configuration:
-
-```console
-# Activate virtual environment first
-
-# Start the Celery worker
-celery -A project worker --loglevel=info -Q default
-```
-
-This ensures the worker only processes tasks meant for the application.
+MIT License - see LICENSE file for details
