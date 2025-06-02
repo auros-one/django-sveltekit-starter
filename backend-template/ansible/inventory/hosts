@@ -1,5 +1,0 @@
-[app_server]
-app ansible_host=xxx.xxx.xxx.xx ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_ssh_common_args='-o ForwardAgent=yes -o StrictHostKeyChecking=no'
-
-[all:vars]
-ansible_python_interpreter=/usr/bin/python3
