@@ -15,8 +15,8 @@ jobs:
     
     - name: Build and start services
       run: |
-        docker-compose build
-        docker-compose up -d
+        docker compose build
+        docker compose up -d
         
     - name: Wait for services
       run: |
@@ -30,8 +30,8 @@ jobs:
         
     - name: Show logs on failure
       if: failure()
-      run: docker-compose logs
+      run: docker compose logs
         
     - name: Stop services
       if: always()
-      run: docker-compose down -v
+      run: docker compose down -v
