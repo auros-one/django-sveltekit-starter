@@ -13,7 +13,7 @@ This is a Django-SvelteKit monorepo with production-ready infrastructure:
 
 ### Backend (Django)
 ```bash
-cd backend-template/
+cd backend/
 poetry run python manage.py runserver  # Dev server
 poetry run python manage.py migrate    # Run migrations
 poetry run pytest                      # Run tests
@@ -22,7 +22,7 @@ docker-compose up                      # Full stack
 
 ### Frontend (SvelteKit)
 ```bash
-cd frontend-template/
+cd frontend/
 npm run dev                    # Dev server (port 5173)
 npm run sync-types            # Sync API types from backend (CRITICAL)
 npm run build                 # Production build
@@ -47,16 +47,16 @@ The frontend uses **automatic OpenAPI type generation**:
 
 ## Important File Locations
 
-- **Django settings**: `backend-template/project/settings.py`
-- **API client**: `frontend-template/src/lib/api/index.ts`
-- **Auth logic**: `frontend-template/src/routes/(auth)/+layout.server.ts`
-- **User model**: `backend-template/project/accounts/models.py`
+- **Django settings**: `backend/project/settings.py`
+- **API client**: `frontend/src/lib/api/index.ts`
+- **Auth logic**: `frontend/src/routes/(auth)/+layout.server.ts`
+- **User model**: `backend/project/accounts/models.py`
 
 ## Monorepo Structure
 
 ```
-├── backend-template/     # Django API with Celery
-├── frontend-template/    # SvelteKit app with Tailwind
+├── backend/     # Django API with Celery
+├── frontend/    # SvelteKit app with Tailwind
 └── MONOREPO-GUIDE.md    # Detailed setup instructions
 ```
 
