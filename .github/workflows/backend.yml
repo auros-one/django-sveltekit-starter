@@ -58,10 +58,12 @@ jobs:
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
     
-    - name: Run tests
+    - name: Run pytest
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+      run: poetry run pytest
+        
+    - name: Run linters
       run: |
-        poetry run pytest
         poetry run black --check .
         poetry run isort --check-only .
