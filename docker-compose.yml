@@ -26,7 +26,9 @@ services:
       DEBUG: "True"
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      target: development
     command: npm run dev -- --host
     volumes:
       - ./frontend:/app

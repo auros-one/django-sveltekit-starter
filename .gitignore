@@ -21,6 +21,10 @@ dist/
 build/
 *.egg-info/
 
+# SvelteKit
+.svelte-kit/
+.vercel/
+
 # Logs
 *.log
 

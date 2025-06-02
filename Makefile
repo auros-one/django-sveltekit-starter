@@ -36,8 +36,8 @@ format:
 	cd frontend && npm run format
 
 lint:
-	cd backend && poetry run flake8
-	cd backend && poetry run mypy .
+	cd backend && poetry run ruff check .
+	cd backend && poetry run pyright .
 	cd frontend && npm run lint
 
 clean:
