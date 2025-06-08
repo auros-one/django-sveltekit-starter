@@ -1,19 +1,36 @@
-.PHONY: help install dev test format lint clean
+.PHONY: help install dev test format lint clean setup-pre-commit sync-types
 
 help:
 	@echo "Available commands:"
-	@echo "  make install    - Install all dependencies"
-	@echo "  make dev        - Start development environment"
-	@echo "  make test       - Run all tests"
-	@echo "  make format     - Format all code"
-	@echo "  make lint       - Lint all code"
-	@echo "  make clean      - Clean up generated files"
+	@echo "  make install           - Install all dependencies"
+	@echo "  make setup-pre-commit  - Install pre-commit hooks"
+	@echo "  make sync-types        - Sync API types from backend to frontend"
+	@echo "  make dev               - Start development environment"
+	@echo "  make test              - Run all tests"
+	@echo "  make format            - Format all code"
+	@echo "  make lint              - Lint all code"
+	@echo "  make clean             - Clean up generated files"
 
 install:
 	@echo "Installing backend dependencies..."
 	cd backend && poetry install
 	@echo "Installing frontend dependencies..."
 	cd frontend && npm install
+	@echo "Installing pre-commit..."
+	pip install pre-commit
+	@echo "Setting up pre-commit hooks..."
+	pre-commit install --install-hooks
+
+setup-pre-commit:
+	@echo "Installing pre-commit..."
+	pip install pre-commit
+	@echo "Setting up pre-commit hooks..."
+	pre-commit install --install-hooks
+
+sync-types:
+	@echo "Syncing API types from backend to frontend..."
+	cd frontend && npm run sync-types
+	@echo "Types synced successfully!"
 
 dev:
 	docker-compose up

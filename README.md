@@ -67,13 +67,15 @@ django-sveltekit-starter/
 ### Global Commands (from root directory)
 
 ```bash
-make help        # Show all available commands
-make install     # Install all dependencies
-make dev         # Start Docker Compose stack
-make test        # Run all tests
-make format      # Format code
-make lint        # Lint code
-make clean       # Clean generated files
+make help               # Show all available commands
+make install            # Install all dependencies + pre-commit hooks
+make setup-pre-commit   # Install pre-commit hooks only
+make sync-types         # Sync API types from backend to frontend
+make dev                # Start Docker Compose stack
+make test               # Run all tests
+make format             # Format code
+make lint               # Lint code
+make clean              # Clean generated files
 ```
 
 ### Backend Commands
@@ -112,12 +114,34 @@ This monorepo emphasizes **type safety between frontend and backend**:
 2. **Frontend** automatically generates TypeScript types from the schema
 3. **Always run** `npm run sync-types` after any backend API changes
 
-- [ ] TODO: should be 1 command which: 1. generates the openapi.yml schema with drf-spectacular, 2. with openapi-tech turns that into the api-types.ts file
+- [ ] TODO: should be 1 command which: 1. generates the openapi.yml schema with drf-spectacular, 2. with openapi-tech turns that into the api-types.ts file
   - [ ] make sure the engineering-handbook specifies this
 
 ```bash
 make sync-types
 ```
+
+## 🔒 Code Quality & Pre-commit
+
+This monorepo uses **intelligent pre-commit hooks** that only run when relevant files change:
+
+- **Backend tools** (`backend/**/*.py`): black, isort, ruff, pyupgrade, django-upgrade, Django system checks
+- **Frontend tools** (`frontend/**/*.{js,ts,svelte}`): prettier, eslint, svelte-check  
+- **Smart type sync**: Auto-generates TypeScript types when backend API files change
+
+Pre-commit hooks are automatically installed with `make install`, or manually with `make setup-pre-commit`.
+
+## 🚀 CI/CD & GitHub Actions
+
+**Path-based GitHub Actions workflows** for efficient CI/CD:
+
+- **Backend CI**: Triggers on `backend/**` changes - runs Django tests, migrations, linting
+- **Frontend CI**: Triggers on `frontend/**` OR any `backend/**` changes - syncs types, runs tests/linting  
+- **Integration Tests**: Full Docker stack testing on main branch and PRs
+
+✅ Backend changes → backend tests + frontend type sync (safe & reliable)  
+✅ Frontend changes → frontend tests only  
+✅ Integration tests catch full-stack issues
 
 ## 🔐 Authentication
 
@@ -126,7 +150,7 @@ make sync-types
 - **Route protection** in SvelteKit using server-side auth checks
 - **Custom User model** uses email (not username) as primary identifier
 
-- [ ] TODO: the user model should use username instead of email as the primary identifier
+- [ ] TODO: the user model should use username instead of email as the primary identifier
   -> but username = email for now
   -> this enables multi-tenancy by doing: username = f"{tenant_id}-{email}" 🚀
 
