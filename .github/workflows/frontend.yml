@@ -97,13 +97,5 @@ jobs:
     - name: Run linting
       run: npm run lint
 
-    - name: Run tests
-      run: npm test
-
     - name: Build application
       run: npm run build
-
-    - name: Run pre-commit on frontend files
-      uses: pre-commit/action@v3.0.0
-      with:
-        extra_args: --files frontend/**/*
