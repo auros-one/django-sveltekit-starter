@@ -45,4 +45,3 @@ clean:
 	find . -type f -name "*.pyc" -delete
 	rm -rf frontend/.svelte-kit
 	rm -rf frontend/build
-EOF < /dev/null

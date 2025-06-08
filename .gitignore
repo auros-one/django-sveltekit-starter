@@ -26,4 +26,3 @@ build/
 
 # Docker
 docker-compose.override.yml
-EOF < /dev/null

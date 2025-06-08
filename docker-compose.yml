@@ -47,4 +47,3 @@ services:
 
 volumes:
   postgres_data:
-EOF < /dev/null
