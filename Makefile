@@ -1,4 +1,4 @@
-.PHONY: help install dev test format lint clean setup-pre-commit sync-types
+.PHONY: help install dev test format lint clean setup-pre-commit sync-types reset-db fresh-start
 
 help:
 	@echo "Available commands:"
@@ -6,6 +6,8 @@ help:
 	@echo "  make setup-pre-commit  - Install pre-commit hooks"
 	@echo "  make sync-types        - Sync API types from backend to frontend"
 	@echo "  make dev               - Start development environment"
+	@echo "  make reset-db          - Reset database (WARNING: destroys all data)"
+	@echo "  make fresh-start       - Reset database + setup dev environment"
 	@echo "  make test              - Run all tests"
 	@echo "  make format            - Format all code"
 	@echo "  make lint              - Lint all code"
@@ -49,7 +51,7 @@ dev-frontend:
 
 test:
 	@echo "Running backend tests..."
-	cd backend && poetry run pytest
+	cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/django_sveltekit_db poetry run pytest
 	@echo "Running frontend tests..."
 	cd frontend && npm test
 
@@ -59,8 +61,8 @@ format:
 	cd frontend && npm run format
 
 lint:
-	cd backend && poetry run flake8
-	cd backend && poetry run mypy .
+	cd backend && poetry run ruff check .
+	cd backend && poetry run pyright .
 	cd frontend && npm run lint
 
 clean:
@@ -68,3 +70,32 @@ clean:
 	find . -type f -name "*.pyc" -delete
 	rm -rf frontend/.svelte-kit
 	rm -rf frontend/build
+
+reset-db:
+	@echo "🚨 WARNING: This will destroy all database data!"
+	@echo "Stopping and removing database container..."
+	docker compose down db -v
+	@echo "Waiting for database container to be removed..."
+	@while docker compose ps db 2>/dev/null | grep -q db; do \
+		echo "Waiting for db container to stop..."; \
+		sleep 1; \
+	done
+	@echo "Starting fresh database container..."
+	docker compose up db -d
+	@echo "Waiting for database to be ready..."
+	@until docker compose exec db pg_isready -U postgres >/dev/null 2>&1; do \
+		echo "Waiting for database to be ready..."; \
+		sleep 2; \
+	done
+	@echo "🔄 Running database migrations..."
+	cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/django_sveltekit_db poetry run python manage.py migrate
+	@echo "✅ Database reset complete!"
+
+fresh-start: reset-db
+	@echo "🔄 Setting up development environment..."
+	cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/django_sveltekit_db poetry run python manage.py setup_dev_env
+	@echo "✅ Fresh development environment ready!"
+	@echo ""
+	@echo "🎉 You can now login with:"
+	@echo "   Email: admin@admin.com"
+	@echo "   Password: admin"
