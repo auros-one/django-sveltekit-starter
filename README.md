@@ -210,4 +210,3 @@ See `backend/deploy.md` for detailed deployment instructions.
 - **frontend/README.md**: Frontend-specific documentation
 
 **Built with 💚 using Django 4.2+, SvelteKit 2+, and modern development practices.**
-# Test comment
