@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"sync-types": "node sync_openapi.js",
+		"sync-types": "cd .. && make sync-types",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",

@@ -110,12 +110,11 @@ The project uses PostgreSQL. For development, the database runs in Docker via `d
 
 This monorepo emphasizes **type safety between frontend and backend**:
 
-1. **Django** generates OpenAPI schema
-2. **Frontend** automatically generates TypeScript types from the schema
-3. **Always run** `npm run sync-types` after any backend API changes
+1. **Django** generates OpenAPI schema with `drf-spectacular`
+2. **TypeScript types** are automatically generated from the schema using `openapi-typescript`
+3. **Single command** synchronizes everything: `make sync-types`
 
-- [ ] TODO: should be 1 command which: 1. generates the openapi.yml schema with drf-spectacular, 2. with openapi-tech turns that into the api-types.ts file
-  - [ ] make sure the engineering-handbook specifies this
+**Always run after backend API changes:**
 
 ```bash
 make sync-types
@@ -126,7 +125,7 @@ make sync-types
 This monorepo uses **intelligent pre-commit hooks** that only run when relevant files change:
 
 - **Backend tools** (`backend/**/*.py`): black, isort, ruff, pyupgrade, django-upgrade, Django system checks
-- **Frontend tools** (`frontend/**/*.{js,ts,svelte}`): prettier, eslint, svelte-check  
+- **Frontend tools** (`frontend/**/*.{js,ts,svelte}`): prettier, eslint, svelte-check
 - **Smart type sync**: Auto-generates TypeScript types when backend API files change
 
 Pre-commit hooks are automatically installed with `make install`, or manually with `make setup-pre-commit`.
@@ -136,11 +135,11 @@ Pre-commit hooks are automatically installed with `make install`, or manually wi
 **Path-based GitHub Actions workflows** for efficient CI/CD:
 
 - **Backend CI**: Triggers on `backend/**` changes - runs Django tests, migrations, linting
-- **Frontend CI**: Triggers on `frontend/**` OR any `backend/**` changes - syncs types, runs tests/linting  
+- **Frontend CI**: Triggers on `frontend/**` OR any `backend/**` changes - syncs types, runs tests/linting
 - **Integration Tests**: Full Docker stack testing on main branch and PRs
 
-✅ Backend changes → backend tests + frontend type sync (safe & reliable)  
-✅ Frontend changes → frontend tests only  
+✅ Backend changes → backend tests + frontend type sync (safe & reliable)
+✅ Frontend changes → frontend tests only
 ✅ Integration tests catch full-stack issues
 
 ## 🔐 Authentication

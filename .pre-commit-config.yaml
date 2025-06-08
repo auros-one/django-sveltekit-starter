@@ -10,7 +10,6 @@ default_stages:
   - pre-push
 default_language_version:
   python: python3.11
-  node: "20"
 repos:
   # General file checks (run on all files)
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -53,14 +52,14 @@ repos:
       - id: pyupgrade
         args: [--py311-plus]
         files: ^backend/.*\.py$
-  
+
   - repo: https://github.com/adamchainz/django-upgrade
     rev: "1.14.0"
     hooks:
       - id: django-upgrade
         args: [--target-version, "4.2"]
         files: ^backend/.*\.py$
-  
+
   - repo: https://github.com/pycqa/isort
     rev: "5.12.0"
     hooks:
@@ -68,14 +67,14 @@ repos:
         name: isort (python)
         files: ^backend/.*\.py$
         args: [--settings-path=backend/pyproject.toml]
-  
+
   - repo: https://github.com/psf/black
     rev: "24.1.0"
     hooks:
       - id: black
         files: ^backend/.*\.py$
         args: [--config=backend/pyproject.toml]
-  
+
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.0.280
     hooks:
@@ -83,32 +82,7 @@ repos:
         files: ^backend/.*\.py$
         args: [--config=backend/pyproject.toml]
 
-  # Frontend Tools (only run on frontend files)
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        files: ^frontend/.*\.(js|ts|json|svelte|html|css|md)$
-        args: [--config=frontend/.prettierrc]
-        additional_dependencies:
-          - prettier@^3.4.2
-          - prettier-plugin-svelte@^3.3.3
-          - prettier-plugin-tailwindcss@^0.6.10
-
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.18.0
-    hooks:
-      - id: eslint
-        files: ^frontend/.*\.(js|ts|svelte)$
-        args: [--config=frontend/eslint.config.js]
-        additional_dependencies:
-          - eslint@^9.18.0
-          - "@typescript-eslint/eslint-plugin@^8.20.0"
-          - "@typescript-eslint/parser@^8.20.0"
-          - "eslint-plugin-svelte@^2.46.1"
-          - "eslint-config-prettier@^10.0.1"
-
-  # Project-specific checks
+  # Project-specific checks using local system tools
   - repo: local
     hooks:
       # Backend-specific checks
@@ -118,14 +92,29 @@ repos:
         entry: bash -c 'cd backend && poetry check'
         files: ^backend/pyproject\.toml$
         pass_filenames: false
-      
+
       - id: django-check
         name: django check
         language: system
         entry: bash -c 'cd backend && poetry run python manage.py check --deploy --fail-level WARNING'
         files: ^backend/.*\.py$
         pass_filenames: false
-      
+
+      # Frontend tools using system Node.js
+      - id: frontend-prettier
+        name: prettier (frontend)
+        language: system
+        entry: bash -c 'cd frontend && npm run format'
+        files: ^frontend/.*\.(js|ts|json|svelte|html|css|md)$
+        pass_filenames: false
+
+      - id: frontend-eslint
+        name: eslint (frontend)
+        language: system
+        entry: bash -c 'cd frontend && npm run lint'
+        files: ^frontend/.*\.(js|ts|svelte)$
+        pass_filenames: false
+
       # Type sync (runs when backend changes, updates frontend)
       - id: sync-types
         name: sync API types from backend
@@ -133,11 +122,3 @@ repos:
         entry: bash -c 'cd frontend && npm run sync-types'
         files: ^backend/.*(models|serializers|views|urls).*\.py$
         pass_filenames: false
-      
-      # Frontend-specific checks (run after sync-types or on frontend changes)
-      - id: svelte-check
-        name: svelte check
-        language: system
-        entry: bash -c 'cd frontend && npm run check'
-        files: ^frontend/.*\.(js|ts|svelte|json)$|^frontend/src/lib/api/backend-api-schema\.d\.ts$
-        pass_filenames: false 

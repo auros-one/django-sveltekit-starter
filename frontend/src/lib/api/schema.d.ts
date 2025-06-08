@@ -134,6 +134,9 @@ export interface paths {
 		};
 		get?: never;
 		put?: never;
+		/** @description Registers a new user.
+		 *
+		 *     Accepts the following POST parameters: username, email, password1, password2. */
 		post: operations['accounts_signup_create'];
 		delete?: never;
 		options?: never;
@@ -150,6 +153,9 @@ export interface paths {
 		};
 		get?: never;
 		put?: never;
+		/** @description Resends another email to an unverified email.
+		 *
+		 *     Accepts the following POST parameter: email. */
 		post: operations['accounts_signup_resend_email_create'];
 		delete?: never;
 		options?: never;
@@ -166,6 +172,9 @@ export interface paths {
 		};
 		get?: never;
 		put?: never;
+		/** @description Verifies the email associated with the provided key.
+		 *
+		 *     Accepts the following POST parameter: key. */
 		post: operations['accounts_signup_verify_email_create'];
 		delete?: never;
 		options?: never;

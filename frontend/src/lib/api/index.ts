@@ -6,7 +6,8 @@
  * > npm run sync-types
  */
 import createClient, { type Middleware } from 'openapi-fetch';
-import type { paths } from './backend-api-schema.d.ts';
+
+import type { paths } from './schema.d.ts';
 import { waitForJWT } from '$lib/stores/auth';
 
 const apiClient = createClient<paths>({ baseUrl: '/api' }); // api request are proxied through /api

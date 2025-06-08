@@ -18,7 +18,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    gh repo create auros-one/django-sveltekit-starter --public --description "Production-ready Django + SvelteKit starter template"
    ```
-   
+
    Or create manually via GitHub UI with name: `django-sveltekit-starter`
 
 2. Clone the new empty repository:
@@ -44,7 +44,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    # Create the backend directory
    mkdir backend
-   
+
    # Move all files except .git into backend/
    # This preserves the Git history while reorganizing files
    git ls-tree -r HEAD --name-only | while read filename; do
@@ -54,7 +54,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
        git mv "$filename" "backend/$filename"
      fi
    done
-   
+
    git commit -m "Move backend files into backend/ subdirectory"
    ```
 
@@ -70,7 +70,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    git read-tree --prefix=frontend/ -u sveltekit-template/main
    git commit -m "Merge sveltekit-template repository into frontend/ subdirectory"
-   
+
    # Now merge the history
    git pull -s subtree sveltekit-template main --allow-unrelated-histories -m "Merge sveltekit-template history"
    ```
@@ -86,30 +86,30 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    *.swp
    *.swo
    .DS_Store
-   
+
    # Environment
    .env
    .env.local
-   
+
    # Dependencies
    node_modules/
    __pycache__/
    *.pyc
    .venv/
    venv/
-   
+
    # Build outputs
    dist/
    build/
    *.egg-info/
-   
+
    # Logs
    *.log
-   
+
    # Docker
    docker-compose.override.yml
    EOF
-   
+
    git add .gitignore
    git commit -m "Add root .gitignore"
    ```
@@ -118,7 +118,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    cat > Makefile << 'EOF'
    .PHONY: help install dev test format lint clean
-   
+
    help:
    	@echo "Available commands:"
    	@echo "  make install    - Install all dependencies"
@@ -127,45 +127,45 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    	@echo "  make format     - Format all code"
    	@echo "  make lint       - Lint all code"
    	@echo "  make clean      - Clean up generated files"
-   
+
    install:
    	@echo "Installing backend dependencies..."
    	cd backend && poetry install
    	@echo "Installing frontend dependencies..."
    	cd frontend && npm install
-   
+
    dev:
    	docker-compose up
-   
+
    dev-backend:
    	cd backend && poetry run python manage.py runserver
-   
+
    dev-frontend:
    	cd frontend && npm run dev
-   
+
    test:
    	@echo "Running backend tests..."
    	cd backend && poetry run pytest
    	@echo "Running frontend tests..."
    	cd frontend && npm test
-   
+
    format:
    	cd backend && poetry run black .
    	cd backend && poetry run isort .
    	cd frontend && npm run format
-   
+
    lint:
    	cd backend && poetry run flake8
    	cd backend && poetry run mypy .
    	cd frontend && npm run lint
-   
+
    clean:
    	find . -type d -name "__pycache__" -exec rm -rf {} +
    	find . -type f -name "*.pyc" -delete
    	rm -rf frontend/.svelte-kit
    	rm -rf frontend/build
    EOF
-   
+
    git add Makefile
    git commit -m "Add root Makefile"
    ```
@@ -174,7 +174,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    cat > docker-compose.yml << 'EOF'
    version: '3.8'
-   
+
    services:
      db:
        image: postgres:15
@@ -186,7 +186,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
          - postgres_data:/var/lib/postgresql/data
        ports:
          - "5432:5432"
-   
+
      backend:
        build: ./backend
        command: python manage.py runserver 0.0.0.0:8000
@@ -199,7 +199,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
        environment:
          DATABASE_URL: postgresql://postgres:postgres@db:5432/django_sveltekit_db
          DEBUG: "True"
-   
+
      frontend:
        build: ./frontend
        command: npm run dev -- --host
@@ -212,11 +212,11 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
          PUBLIC_API_URL: http://localhost:8000
        depends_on:
          - backend
-   
+
    volumes:
      postgres_data:
    EOF
-   
+
    git add docker-compose.yml
    git commit -m "Add root docker-compose.yml"
    ```
@@ -232,7 +232,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    cat > .github/workflows/backend.yml << 'EOF'
    name: Backend CI/CD
-   
+
    on:
      push:
        paths:
@@ -244,15 +244,15 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
          - 'backend/**'
          - '.github/workflows/backend.yml'
          - 'docker-compose.yml'
-   
+
    defaults:
      run:
        working-directory: backend
-   
+
    jobs:
      test:
        runs-on: ubuntu-latest
-       
+
        services:
          postgres:
            image: postgres:15
@@ -265,32 +265,32 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
              --health-retries 5
            ports:
              - 5432:5432
-       
+
        steps:
        - uses: actions/checkout@v4
-       
+
        - name: Set up Python
          uses: actions/setup-python@v4
          with:
            python-version: '3.11'
-       
+
        - name: Install Poetry
          uses: snok/install-poetry@v1
          with:
            virtualenvs-create: true
            virtualenvs-in-project: true
-       
+
        - name: Load cached venv
          id: cached-poetry-dependencies
          uses: actions/cache@v3
          with:
            path: .venv
            key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-       
+
        - name: Install dependencies
          if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
          run: poetry install --no-interaction --no-root
-       
+
        - name: Run tests
          env:
            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
@@ -299,7 +299,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
            poetry run black --check .
            poetry run isort --check-only .
    EOF
-   
+
    git add .github/workflows/backend.yml
    ```
 
@@ -307,7 +307,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    cat > .github/workflows/frontend.yml << 'EOF'
    name: Frontend CI/CD
-   
+
    on:
      push:
        paths:
@@ -319,41 +319,41 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
          - 'frontend/**'
          - '.github/workflows/frontend.yml'
          - 'docker-compose.yml'
-   
+
    defaults:
      run:
        working-directory: frontend
-   
+
    jobs:
      test:
        runs-on: ubuntu-latest
-       
+
        steps:
        - uses: actions/checkout@v4
-       
+
        - name: Setup Node.js
          uses: actions/setup-node@v4
          with:
            node-version: '20'
            cache: 'npm'
            cache-dependency-path: frontend/package-lock.json
-       
+
        - name: Install dependencies
          run: npm ci
-       
+
        - name: Run linting
          run: npm run lint
-       
+
        - name: Run type checking
          run: npm run check
-       
+
        - name: Run tests
          run: npm test
-       
+
        - name: Build
          run: npm run build
    EOF
-   
+
    git add .github/workflows/frontend.yml
    ```
 
@@ -361,45 +361,45 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    cat > .github/workflows/integration.yml << 'EOF'
    name: Integration Tests
-   
+
    on:
      push:
        branches: [main]
      pull_request:
        branches: [main]
-   
+
    jobs:
      integration:
        runs-on: ubuntu-latest
-       
+
        steps:
        - uses: actions/checkout@v4
-       
+
        - name: Build and start services
          run: |
            docker-compose build
            docker-compose up -d
-           
+
        - name: Wait for services
          run: |
            timeout 60 bash -c 'until curl -f http://localhost:8000/health/; do sleep 1; done'
            timeout 60 bash -c 'until curl -f http://localhost:5173/; do sleep 1; done'
-           
+
        - name: Run integration tests
          run: |
            # Add your integration tests here
            curl -f http://localhost:8000/api/
            curl -f http://localhost:5173/
-           
+
        - name: Show logs on failure
          if: failure()
          run: docker-compose logs
-           
+
        - name: Stop services
          if: always()
          run: docker-compose down -v
    EOF
-   
+
    git add .github/workflows/integration.yml
    git commit -m "Add GitHub Actions workflows with path filters"
    ```
@@ -428,61 +428,61 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    cat > README.md << 'EOF'
    # Django-SvelteKit Starter
-   
+
    A production-ready monorepo template for building full-stack applications with Django (backend) and SvelteKit (frontend).
-   
+
    ## 🚀 Features
-   
+
    - **Django Backend**: REST API with Django REST Framework
    - **SvelteKit Frontend**: Type-safe, fast, and modern UI
    - **Docker Compose**: One-command local development
    - **GitHub Actions**: Automated CI/CD with path-based triggers
    - **Type Safety**: Auto-generated TypeScript types from Django
    - **Monorepo Benefits**: Atomic commits, shared tooling, simplified workflow
-   
+
    ## 📦 Project Structure
-   
+
    ```
    django-sveltekit-starter/
    ├── backend/          # Django REST API
-   ├── frontend/         # SvelteKit application  
+   ├── frontend/         # SvelteKit application
    ├── docker-compose.yml
    ├── Makefile         # Common development commands
    └── .github/         # CI/CD workflows
    ```
-   
+
    ## 🛠️ Prerequisites
-   
+
    - Python 3.11+
    - Node.js 18+
    - Docker & Docker Compose
    - Poetry (Python package manager)
-   
+
    ## 🏃 Quick Start
-   
+
    1. **Clone the repository**
       ```bash
       git clone https://github.com/auros-one/django-sveltekit-starter.git
       cd django-sveltekit-starter
       ```
-   
+
    2. **Install dependencies**
       ```bash
       make install
       ```
-   
+
    3. **Start development environment**
       ```bash
       make dev
       ```
-   
+
    4. **Access the applications**
       - Frontend: http://localhost:5173
       - Backend API: http://localhost:8000
       - Django Admin: http://localhost:8000/admin
-   
+
    ## 📝 Development Commands
-   
+
    ```bash
    make help        # Show all available commands
    make install     # Install all dependencies
@@ -492,30 +492,30 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    make lint        # Lint code
    make clean       # Clean generated files
    ```
-   
+
    ## 🔧 Configuration
-   
+
    ### Backend
    - Configuration: `backend/.env`
    - Database: PostgreSQL (via Docker)
    - API Docs: http://localhost:8000/api/schema/swagger-ui/
-   
-   ### Frontend  
+
+   ### Frontend
    - Configuration: `frontend/.env`
    - API URL: Set via `PUBLIC_API_URL` environment variable
-   
+
    ## 🚢 Deployment
-   
+
    Both frontend and backend can be deployed independently:
-   
+
    - **Backend**: Deploy as a standard Django application
    - **Frontend**: Deploy to any static hosting service
-   
+
    ## 📄 License
-   
+
    MIT License - see LICENSE file for details
    EOF
-   
+
    git add README.md
    git commit -m "Add comprehensive README"
    ```
@@ -534,10 +534,10 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    # Install dependencies
    make install
-   
+
    # Try running tests
    make test
-   
+
    # Try starting development environment
    make dev
    ```

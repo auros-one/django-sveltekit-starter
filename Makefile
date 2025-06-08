@@ -28,9 +28,15 @@ setup-pre-commit:
 	pre-commit install --install-hooks
 
 sync-types:
-	@echo "Syncing API types from backend to frontend..."
-	cd frontend && npm run sync-types
-	@echo "Types synced successfully!"
+	@echo "🔄 Generating OpenAPI schema from Django..."
+	cd backend && poetry run python manage.py spectacular --file ../frontend/temp-schema.yml --validate --color
+	@echo "🔄 Converting OpenAPI schema to TypeScript types..."
+	cd frontend && npx openapi-typescript temp-schema.yml -o src/lib/api/schema.d.ts
+	@echo "🎨 Formatting generated types..."
+	cd frontend && npx prettier --write src/lib/api/schema.d.ts
+	@echo "🧹 Cleaning up temporary files..."
+	cd frontend && rm temp-schema.yml
+	@echo "✅ API types synchronized successfully!"
 
 dev:
 	docker-compose up

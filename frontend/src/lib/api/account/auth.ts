@@ -2,7 +2,7 @@ import { invalidateAll } from '$app/navigation';
 import { jwt } from '$lib/stores/auth';
 import { user } from '$lib/stores/account';
 import { apiClient } from '$lib/api';
-import type { components } from '$lib/api/backend-api-schema';
+import type { components } from '$lib/api/schema';
 
 export async function signup(
 	email: string,

@@ -63,7 +63,7 @@ The frontend uses **automatic OpenAPI type generation**:
 ## Development Workflow
 
 1. **Adding API endpoints**: Create Django views/serializers
-2. **Sync types**: Run `npm run sync-types` 
+2. **Sync types**: Run `npm run sync-types`
 3. **Frontend integration**: Use typed API client in components
 4. **Testing**: `pytest` for backend, `npm run check` for frontend
 

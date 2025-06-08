@@ -1,5 +1,5 @@
 import { persisted } from '$lib/stores/utils/cookieStore';
-import type { components } from '$lib/api/backend-api-schema';
+import type { components } from '$lib/api/schema';
 
 export type User = components['schemas']['UserDetails'];
 

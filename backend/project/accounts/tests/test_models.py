@@ -1,5 +1,4 @@
 import pytest
-
 from django.db import IntegrityError, transaction
 
 from ..models import User
