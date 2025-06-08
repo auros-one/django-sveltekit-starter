@@ -94,9 +94,7 @@
 		</div>
 	{:else}
 		<div class="sm:mx-auto sm:w-full sm:max-w-sm">
-			<a href="/welcome"
-				><img class="mx-auto h-10 w-auto" src="/favicon.png" alt="Company logo" /></a
-			>
+			<a href="/welcome"><img class="mx-auto h-10 w-auto" src="/icon.png" alt="Company logo" /></a>
 			<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
 				Reset your password
 			</h2>
