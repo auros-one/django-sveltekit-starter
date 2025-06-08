@@ -1,3 +1,5 @@
+![Django-SvelteKit Starter Banner](banner.png)
+
 # Django-SvelteKit Starter
 
 A production-ready monorepo template for building full-stack applications with Django (backend) and SvelteKit (frontend).
