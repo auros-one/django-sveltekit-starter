@@ -28,6 +28,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Setup environment variables
+      run: cp .env.example .env
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -74,6 +77,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Setup environment variables
+      run: cp .env.example .env
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
