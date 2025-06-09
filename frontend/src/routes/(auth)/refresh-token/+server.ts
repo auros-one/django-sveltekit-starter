@@ -1,15 +1,14 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { PUBLIC_BASE_API_URL } from '$env/static/public';
 
-export const GET = (async ({ cookies, fetch }) => {
+export const GET = (async ({ cookies, fetch, url: _url }) => {
 	try {
 		// refresh-token cookie is required
 		const refreshToken = cookies.get('refresh-token');
 		if (refreshToken === undefined) error(401);
 
-		// get new JWT from backend
-		const response = await fetch(PUBLIC_BASE_API_URL + '/api/accounts/token/refresh/', {
+		// get new JWT using the refresh token
+		const response = await fetch('/api/accounts/token/refresh/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
