@@ -1,5 +1,7 @@
-from allauth.account.admin import EmailAddress
-from allauth.account.utils import user_pk_to_url_str
+from dj_rest_auth.registration.serializers import (
+    RegisterSerializer as BaseRegisterSerializer,
+)
+from dj_rest_auth.serializers import LoginSerializer as RestAuthLoginSerializer
 from dj_rest_auth.serializers import (
     PasswordResetSerializer as RestAuthPasswordResetSerializer,
 )
@@ -9,58 +11,147 @@ from rest_framework import serializers
 from .models import User
 
 
-class UserDetailsSerializer(serializers.ModelSerializer):
-    verified = serializers.SerializerMethodField()
+class RegisterSerializer(BaseRegisterSerializer):
+    """
+    Site-aware registration serializer that creates users with proper site context.
+    """
 
-    def get_verified(self, obj) -> bool:
-        user_emails = EmailAddress.objects.filter(user=obj)
-        if user_emails:
-            return user_emails[0].verified
-        else:
-            return False
+    name = serializers.CharField(max_length=500, required=False, allow_blank=True)
+
+    def validate_email(self, email):
+        """Validate that email doesn't already exist in this site."""
+        site = self.context.get("site")
+
+        if email and site:
+            if User.objects.filter(email__iexact=email, site=site).exists():
+                raise serializers.ValidationError(
+                    "A user with this email already exists in this site."
+                )
+
+        return email
+
+    def get_cleaned_data(self):
+        """Override to include site in cleaned data."""
+        data = super().get_cleaned_data()
+        data["name"] = self.validated_data.get("name", "")
+
+        # Get site from context (added by our CustomRegisterView)
+        site = self.context.get("site")
+        if site:
+            data["site"] = site
+
+        return data
+
+    def save(self, request):
+        """Override to create user with site context."""
+        site = self.context.get("site")
+        if not site:
+            raise serializers.ValidationError(
+                "Site context is required for registration"
+            )
+
+        email = self.validated_data.get("email")
+        password = self.validated_data.get("password1")
+        name = self.validated_data.get("name", "")
+
+        # Create user with site context
+        user = User.objects.create_user(
+            email=email, site=site, name=name, password=password
+        )
+
+        return user
+
+
+class LoginSerializer(RestAuthLoginSerializer):
+    """
+    Site-aware login serializer that allows email-based login while using
+    site-scoped username internally.
+
+    Users still login with email + password, but authentication happens with
+    the internal username format: "site_id-email"
+    """
+
+    username = None  # Remove username field from parent
+    email = serializers.EmailField(required=True)
+
+    def authenticate(self, **credentials):
+        """
+        Override to handle site-aware authentication.
+        Convert email to internal username format for Django auth.
+        """
+        email = credentials.get("email")
+        password = credentials.get("password")
+
+        if email and password:
+            # Get site from request context
+            request = self.context.get("request")
+            if not request or not hasattr(request, "site"):
+                raise serializers.ValidationError(
+                    "Site context is required for authentication"
+                )
+
+            site = request.site
+
+            # Use our custom authentication method
+            return User.objects.authenticate_user(email, site, password)
+
+        return None
+
+
+class UserDetailsSerializer(serializers.ModelSerializer):
+    """
+    User serializer that only exposes public fields.
+    Username is internal and never exposed to frontend.
+    """
 
     class Meta:
         model = User
-        fields = ("email", "verified", "is_superuser")
+        fields = ("email", "name", "is_superuser")  # Only public fields
+        read_only_fields = ("email", "is_superuser")
+
+
+class EmailChangeSerializer(serializers.Serializer):
+    """
+    Serializer for changing user email address.
+    Updates both the public email and internal username.
+    """
+
+    new_email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+        password = attrs["password"]
+        new_email = attrs["new_email"]
+
+        # Verify password
+        if not user.check_password(password):
+            raise serializers.ValidationError({"password": "Invalid password."})
+
+        # Check if email already exists in this site
+        if User.objects.filter(email__iexact=new_email, site=user.site).exists():
+            raise serializers.ValidationError(
+                {"new_email": "This email address is already in use."}
+            )
+
+        return attrs
 
 
 class PasswordResetSerializer(RestAuthPasswordResetSerializer):
     """
-    Overwrite dj-rest-auths PasswordResetSerializer to accept a custom password reset link.
-
-    It does so by adding the a custom url_generator to the AllAuthPasswordResetForm.save()
-    options.
+    Site-aware password reset serializer.
     """
 
-    def save(self):
-        if "allauth" in settings.INSTALLED_APPS:
-            from allauth.account.forms import default_token_generator
-        else:
-            from django.contrib.auth.tokens import default_token_generator
-
-        # Overwrite the url_generator with a custom one.
-        if settings.ENVIRONMENT == "development":
-            base_url = f"http://{settings.FRONTEND_DOMAINS[0]}{settings.PASSWORD_CONFIRM_RESET_PATH}"
-        else:
-            base_url = f"https://{settings.FRONTEND_DOMAINS[0]}{settings.PASSWORD_CONFIRM_RESET_PATH}"
-
-        def _url_generator(request, user, temp_key):
-            return f"{base_url}?uid={user_pk_to_url_str(user)}&token={temp_key}"
-
+    def get_email_options(self):
+        """Override to include site context in password reset emails."""
         request = self.context.get("request")
-        # Set some values to trigger the send_email method.
         opts = {
-            "use_https": request.is_secure(),  # type: ignore[attr-defined]
+            "use_https": request.is_secure() if request else False,
             "from_email": getattr(settings, "DEFAULT_FROM_EMAIL"),
             "request": request,
-            "token_generator": default_token_generator,
-            "url_generator": _url_generator,
         }
 
-        opts.update(self.get_email_options())
-        self.reset_form.save(**opts)  # type: ignore[attr-defined]
+        if hasattr(request, "site") and request is not None:
+            opts["domain_override"] = request.site.domain
 
-
-class EmailChangeSerializer(serializers.Serializer):
-    new_email = serializers.EmailField()
-    password = serializers.CharField()
+        return opts

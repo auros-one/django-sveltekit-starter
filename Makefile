@@ -1,4 +1,4 @@
-.PHONY: help install dev test format lint clean setup-pre-commit sync-types reset-db fresh-start
+.PHONY: help install dev test format lint clean setup-pre-commit sync-types reset-db fresh-start django-check
 
 help:
 	@echo "Available commands:"
@@ -11,6 +11,7 @@ help:
 	@echo "  make test              - Run all tests (auto-starts PostgreSQL)"
 	@echo "  make format            - Format all code"
 	@echo "  make lint              - Lint all code"
+	@echo "  make django-check      - Run Django system checks"
 	@echo "  make clean             - Clean up generated files"
 
 install:
@@ -75,6 +76,7 @@ format:
 lint:
 	cd backend && poetry run ruff check .
 	cd backend && poetry run pyright .
+	cd backend && poetry run python manage.py check --deploy --fail-level WARNING
 	cd frontend && npm run lint
 
 clean:

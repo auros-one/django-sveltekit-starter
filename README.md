@@ -157,11 +157,21 @@ Pre-commit hooks are automatically installed with `make install`, or manually wi
 - **JWT tokens** and a refresh token which is stored in HTTP-only cookies
 - **Automatic token injection** via API client middleware
 - **Route protection** in SvelteKit using server-side auth checks
-- **Custom User model** uses email (not username) as primary identifier
+- **Multi-tenant User model** uses **Django Sites framework** for tenancy
+- **Email-based authentication** - users login with email, internal username is `site_id-email`
+- **Admin authentication** - Django admin accepts email instead of internal username
+- **Site-aware** - all authentication respects site boundaries for true multi-tenancy
 
-- [ ] TODO: the user model should use username instead of email as the primary identifier
-  -> but username = email for now
-  -> this enables multi-tenancy by doing: username = f"{tenant_id}-{email}" 🚀
+### Multi-Tenancy Architecture
+
+This starter template implements **multi-tenancy using Django's built-in Sites framework**:
+
+- **Each tenant = Django Site** (no custom Tenant model needed)
+- **Internal username format**: `{site_id}-{email}` (e.g., `"1-user@example.com"`)
+- **Public interface**: Users only see and use email addresses
+- **Site middleware**: Automatically identifies tenant from subdomain/domain
+- **Isolated data**: Users can only access data within their site
+- **Admin support**: Django admin works with email authentication across sites
 
 ## 🧪 Testing
 

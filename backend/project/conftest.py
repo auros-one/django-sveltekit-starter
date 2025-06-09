@@ -1,6 +1,7 @@
 import pytest
 import respx
 from allauth.account.admin import EmailAddress
+from django.contrib.sites.models import Site
 from django.test.utils import override_settings
 from hypothesis.extra.django._fields import _for_slug, register_for
 from model_bakery import baker
@@ -67,9 +68,23 @@ def api_client() -> APIClient:
 
 
 @pytest.fixture
-def user():
+def site():
+    """Test site fixture."""
+    return Site.objects.create(domain="testsite.localhost", name="Test Site")
+
+
+@pytest.fixture
+def other_site():
+    """Another test site fixture for multi-tenant testing."""
+    return Site.objects.create(domain="othersite.localhost", name="Other Site")
+
+
+@pytest.fixture
+def user(site):
+    """Test user fixture with site context."""
     user = User.objects.create_user(
-        "test@example.com",
+        email="test@example.com",
+        site=site,
         name="Test User",
         password="a-super-strong-password-145338-@!#&",
     )
@@ -78,9 +93,13 @@ def user():
 
 
 @pytest.fixture
-def other_user():
+def other_user(other_site):
+    """Test user in different site for multi-tenant testing."""
     other_user = User.objects.create_user(
-        "other-test-user@example.com", name="Mgmt", password="x"
+        email="other-test-user@example.com",
+        site=other_site,
+        name="Other User",
+        password="other-super-strong-password-145338-@!#&",
     )
     baker.make(
         EmailAddress,
@@ -90,3 +109,22 @@ def other_user():
         primary=True,
     )
     return other_user
+
+
+@pytest.fixture
+def same_site_user(site):
+    """Another user in the same site as the main user fixture."""
+    same_site_user = User.objects.create_user(
+        email="samesite@example.com",
+        site=site,
+        name="Same Site User",
+        password="same-site-password-123",
+    )
+    baker.make(
+        EmailAddress,
+        user=same_site_user,
+        email=same_site_user.email,
+        verified=True,
+        primary=True,
+    )
+    return same_site_user

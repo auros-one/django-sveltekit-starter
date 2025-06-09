@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 from project.accounts.models import User
 
 
+@pytest.mark.django_db
 def test_healthcheck(api_client: APIClient) -> None:
     response = api_client.get(reverse("healthcheck"))
     assert response.status_code == 204

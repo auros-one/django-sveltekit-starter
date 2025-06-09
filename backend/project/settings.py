@@ -151,6 +151,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "project.core.xframe.XFrameAllowFrontendDomainsMiddleware",
+    "project.core.middleware.SiteMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "csp.middleware.CSPMiddleware",
@@ -200,6 +201,8 @@ REST_FRAMEWORK = {
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_REFRESH_COOKIE": "refresh-token",
+    "LOGIN_SERIALIZER": "project.accounts.serializers.LoginSerializer",
+    "REGISTER_SERIALIZER": "project.accounts.serializers.RegisterSerializer",
     "USER_DETAILS_SERIALIZER": "project.accounts.serializers.UserDetailsSerializer",
     "PASSWORD_RESET_SERIALIZER": "project.accounts.serializers.PasswordResetSerializer",
     "OLD_PASSWORD_FIELD_ENABLED": True,
@@ -242,12 +245,14 @@ SPECTACULAR_SETTINGS = {
 OLD_PASSWORD_FIELD_ENABLED = True
 LOGOUT_ON_PASSWORD_CHANGE = False
 
-# we use email as the primary identifier, not username
+# Email is the public identifier, username is internal (for multi-tenancy)
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_LOGIN_METHODS = {"email"}
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USER_MODEL_USERNAME_FIELD = (
+    "username"  # Tell allauth about internal username field
+)
 
 
 # Database.

@@ -13,6 +13,8 @@ export interface paths {
 		};
 		get?: never;
 		put?: never;
+		/** @description Site-aware email change view.
+		 *     Updates both public email and internal username. */
 		post: operations['accounts_change_email_create'];
 		delete?: never;
 		options?: never;
@@ -125,26 +127,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/accounts/signup/': {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Registers a new user.
-		 *
-		 *     Accepts the following POST parameters: username, email, password1, password2. */
-		post: operations['accounts_signup_create'];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	'/accounts/signup/resend-email/': {
+	'/accounts/resend-email/': {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -156,14 +139,14 @@ export interface paths {
 		/** @description Resends another email to an unverified email.
 		 *
 		 *     Accepts the following POST parameter: email. */
-		post: operations['accounts_signup_resend_email_create'];
+		post: operations['accounts_resend_email_create'];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/accounts/signup/verify-email/': {
+	'/accounts/signup/': {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -172,10 +155,8 @@ export interface paths {
 		};
 		get?: never;
 		put?: never;
-		/** @description Verifies the email associated with the provided key.
-		 *
-		 *     Accepts the following POST parameter: key. */
-		post: operations['accounts_signup_verify_email_create'];
+		/** @description Site-aware user registration view. */
+		post: operations['accounts_signup_create'];
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -258,6 +239,25 @@ export interface paths {
 		patch: operations['accounts_user_partial_update'];
 		trace?: never;
 	};
+	'/accounts/verify-email/': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Verifies the email associated with the provided key.
+		 *
+		 *     Accepts the following POST parameter: key. */
+		post: operations['accounts_verify_email_create'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	'/authcheck/': {
 		parameters: {
 			query?: never;
@@ -296,11 +296,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
 	schemas: {
+		/** @description Serializer for changing user email address.
+		 *     Updates both the public email and internal username. */
 		EmailChange: {
 			/** Format: email */
 			new_email: string;
 			password: string;
 		};
+		/** @description Serializer for changing user email address.
+		 *     Updates both the public email and internal username. */
 		EmailChangeRequest: {
 			/** Format: email */
 			new_email: string;
@@ -312,10 +316,14 @@ export interface components {
 			refresh: string;
 			user: components['schemas']['UserDetails'];
 		};
+		/** @description Site-aware login serializer that allows email-based login while using
+		 *     site-scoped username internally.
+		 *
+		 *     Users still login with email + password, but authentication happens with
+		 *     the internal username format: "site_id-email" */
 		LoginRequest: {
-			username?: string;
 			/** Format: email */
-			email?: string;
+			email: string;
 			password: string;
 		};
 		PasswordChangeRequest: {
@@ -330,37 +338,31 @@ export interface components {
 			uid: string;
 			token: string;
 		};
-		/** @description Overwrite dj-rest-auths PasswordResetSerializer to accept a custom password reset link.
-		 *
-		 *     It does so by adding the a custom url_generator to the AllAuthPasswordResetForm.save()
-		 *     options. */
+		/** @description Site-aware password reset serializer. */
 		PasswordResetRequest: {
 			/** Format: email */
 			email: string;
 		};
+		/** @description User serializer that only exposes public fields.
+		 *     Username is internal and never exposed to frontend. */
 		PatchedUserDetailsRequest: {
-			/**
-			 * Email address
-			 * Format: email
-			 */
-			email?: string;
-			/**
-			 * Superuser status
-			 * @description Designates that this user has all permissions without explicitly assigning them.
-			 */
-			is_superuser?: boolean;
+			name?: string | null;
 		};
+		/** @description Site-aware registration serializer that creates users with proper site context. */
 		Register: {
 			username?: string;
 			/** Format: email */
 			email: string;
+			name?: string;
 		};
+		/** @description Site-aware registration serializer that creates users with proper site context. */
 		RegisterRequest: {
 			username?: string;
 			/** Format: email */
 			email: string;
 			password1: string;
 			password2: string;
+			name?: string;
 		};
 		ResendEmailVerificationRequest: {
 			/** Format: email */
@@ -378,30 +380,22 @@ export interface components {
 		TokenVerifyRequest: {
 			token: string;
 		};
+		/** @description User serializer that only exposes public fields.
+		 *     Username is internal and never exposed to frontend. */
 		UserDetails: {
-			/**
-			 * Email address
-			 * Format: email
-			 */
-			email: string;
-			readonly verified: boolean;
+			/** Email address */
+			readonly email: string;
+			name?: string | null;
 			/**
 			 * Superuser status
 			 * @description Designates that this user has all permissions without explicitly assigning them.
 			 */
-			is_superuser?: boolean;
+			readonly is_superuser: boolean;
 		};
+		/** @description User serializer that only exposes public fields.
+		 *     Username is internal and never exposed to frontend. */
 		UserDetailsRequest: {
-			/**
-			 * Email address
-			 * Format: email
-			 */
-			email: string;
-			/**
-			 * Superuser status
-			 * @description Designates that this user has all permissions without explicitly assigning them.
-			 */
-			is_superuser?: boolean;
+			name?: string | null;
 		};
 		VerifyEmailRequest: {
 			key: string;
@@ -559,32 +553,7 @@ export interface operations {
 			};
 		};
 	};
-	accounts_signup_create: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				'application/json': components['schemas']['RegisterRequest'];
-				'application/x-www-form-urlencoded': components['schemas']['RegisterRequest'];
-				'multipart/form-data': components['schemas']['RegisterRequest'];
-			};
-		};
-		responses: {
-			201: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					'application/json': components['schemas']['Register'];
-				};
-			};
-		};
-	};
-	accounts_signup_resend_email_create: {
+	accounts_resend_email_create: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -609,7 +578,7 @@ export interface operations {
 			};
 		};
 	};
-	accounts_signup_verify_email_create: {
+	accounts_signup_create: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -618,18 +587,18 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['VerifyEmailRequest'];
-				'application/x-www-form-urlencoded': components['schemas']['VerifyEmailRequest'];
-				'multipart/form-data': components['schemas']['VerifyEmailRequest'];
+				'application/json': components['schemas']['RegisterRequest'];
+				'application/x-www-form-urlencoded': components['schemas']['RegisterRequest'];
+				'multipart/form-data': components['schemas']['RegisterRequest'];
 			};
 		};
 		responses: {
-			200: {
+			201: {
 				headers: {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RestAuthDetail'];
+					'application/json': components['schemas']['Register'];
 				};
 			};
 		};
@@ -709,7 +678,7 @@ export interface operations {
 			path?: never;
 			cookie?: never;
 		};
-		requestBody: {
+		requestBody?: {
 			content: {
 				'application/json': components['schemas']['UserDetailsRequest'];
 				'application/x-www-form-urlencoded': components['schemas']['UserDetailsRequest'];
@@ -748,6 +717,31 @@ export interface operations {
 				};
 				content: {
 					'application/json': components['schemas']['UserDetails'];
+				};
+			};
+		};
+	};
+	accounts_verify_email_create: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['VerifyEmailRequest'];
+				'application/x-www-form-urlencoded': components['schemas']['VerifyEmailRequest'];
+				'multipart/form-data': components['schemas']['VerifyEmailRequest'];
+			};
+		};
+		responses: {
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/json': components['schemas']['RestAuthDetail'];
 				};
 			};
 		};
