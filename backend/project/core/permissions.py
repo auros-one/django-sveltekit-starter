@@ -10,3 +10,19 @@ class PublicReadOnly(BasePermission):
 
     def has_permission(self, request: Request, view: View) -> bool:
         return request.method in SAFE_METHODS
+
+
+class IsAdminUser(BasePermission):
+    """
+    Allows access only to admin users (staff status).
+    """
+
+    def has_permission(self, request: Request, view: View) -> bool:
+        from project.accounts.models import User
+
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and isinstance(request.user, User)
+            and request.user.is_staff
+        )
