@@ -33,7 +33,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/django_sveltekit_db
       REDIS_URL: redis://redis:6379/0
-      DEBUG: "True"
+      DEBUG: "1"
 
   frontend:
     build: ./frontend
