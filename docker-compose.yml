@@ -1,8 +1,7 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
+    restart: unless-stopped
     environment:
       POSTGRES_DB: django_sveltekit_db
       POSTGRES_USER: postgres
@@ -14,11 +13,15 @@ services:
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend:/app
@@ -34,6 +37,7 @@ services:
 
   frontend:
     build: ./frontend
+    restart: unless-stopped
     command: npm run dev -- --host
     volumes:
       - ./frontend:/app
@@ -41,7 +45,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      PUBLIC_API_URL: http://localhost:8000
+      PUBLIC_BASE_API_URL: http://backend:8000
     depends_on:
       - backend
 
