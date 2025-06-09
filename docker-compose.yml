@@ -35,6 +35,55 @@ services:
       REDIS_URL: redis://redis:6379/0
       DEBUG: "1"
 
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    command: celery -A project worker --loglevel=info
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/django_sveltekit_db
+      REDIS_URL: redis://redis:6379/0
+      DEBUG: "1"
+
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    command: celery -A project beat --loglevel=info
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/django_sveltekit_db
+      REDIS_URL: redis://redis:6379/0
+      DEBUG: "1"
+
+  celery_flower:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    command: celery -A project flower --address=0.0.0.0 --port=5555
+    volumes:
+      - ./backend:/app
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/django_sveltekit_db
+      REDIS_URL: redis://redis:6379/0
+      DEBUG: "1"
+
   frontend:
     build: ./frontend
     restart: unless-stopped
