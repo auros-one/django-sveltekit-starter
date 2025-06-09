@@ -7,7 +7,6 @@
 	export let title: string;
 	export let navbarHeight = 64; // Make this configurable
 
-	let loading = true;
 	let iframeElement: HTMLIFrameElement;
 	let showOverlay = true;
 
@@ -25,19 +24,17 @@
 					) {
 						// Add a small delay to ensure content is painted
 						setTimeout(() => {
-							loading = false;
 							// Add another small delay before hiding overlay for smoother transition
 							setTimeout(() => {
 								showOverlay = false;
 							}, 100);
 						}, 150);
 					}
-				} catch (e) {
+				} catch {
 					// Cross-origin iframes will throw an error when accessing contentDocument
 					// In this case, we'll assume it's loaded if the src is set
 					if (iframeElement.src) {
 						setTimeout(() => {
-							loading = false;
 							setTimeout(() => {
 								showOverlay = false;
 							}, 100);
@@ -52,7 +49,6 @@
 			// Also set up load event listener in case it's not loaded yet
 			const handleLoad = () => {
 				setTimeout(() => {
-					loading = false;
 					setTimeout(() => {
 						showOverlay = false;
 					}, 100);
@@ -77,7 +73,7 @@
 		</div>
 	{/if}
 
-	<iframe bind:this={iframeElement} {src} {title} class="iframe-content" frameborder="0" />
+	<iframe bind:this={iframeElement} {src} {title} class="iframe-content" frameborder="0"></iframe>
 </div>
 
 <style>
