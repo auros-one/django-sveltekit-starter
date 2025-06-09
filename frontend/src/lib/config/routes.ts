@@ -31,8 +31,8 @@ export const navigationRoutes: NavigationRoute[] = [
 				href: '/admin/cloud/home'
 			},
 			{
-				name: 'Tasks',
-				href: '/admin/cloud/tasks'
+				name: 'Cloud Jobs',
+				href: '/admin/cloud/jobs'
 			},
 			{
 				name: 'API Docs',

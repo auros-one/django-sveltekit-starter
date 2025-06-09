@@ -23,7 +23,7 @@
 	}, 2000);
 
 	// Check if we're on an iframe page
-	$: isIframePage = ['/admin/cloud/home', '/admin/cloud/tasks', '/admin/cloud/api-docs'].some(
+	$: isIframePage = ['/admin/cloud/home', '/admin/cloud/jobs', '/admin/cloud/api-docs'].some(
 		(path) => $page.url.pathname.startsWith(path)
 	);
 </script>

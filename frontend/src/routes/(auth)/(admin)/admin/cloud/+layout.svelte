@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 
 	// Check if we're on a cloud page that uses an iframe
-	$: isIframePage = ['/admin/cloud/home', '/admin/cloud/tasks', '/admin/cloud/api-docs'].some(
+	$: isIframePage = ['/admin/cloud/home', '/admin/cloud/jobs', '/admin/cloud/api-docs'].some(
 		(path) => $page.url.pathname.startsWith(path)
 	);
 </script>
