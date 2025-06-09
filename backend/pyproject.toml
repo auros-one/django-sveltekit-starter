@@ -73,7 +73,7 @@ isort = "*"
 model-bakery = "*"
 pre-commit = "*"
 ptpython = "*"
-pyright = "*"
+pyright = "^1.1.401"
 pytest = "*"
 pytest-asyncio = "==0.21.1"
 pytest-cov = "*"
@@ -122,6 +122,8 @@ addopts = "--cov --dist=no -n 0 --reuse-db"
 python_files = ["tests.py", "**/tests/test_*.py", "**/tests/**/test_*.py"]
 
 [tool.ruff]
+
+[tool.ruff.lint]
 # Ignore max line length - black will handle this and it's okay to go over sometimes.
 ignore = ["E501"]
 

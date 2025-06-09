@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { user } from '$lib/stores/account';
