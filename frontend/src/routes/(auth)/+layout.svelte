@@ -1,4 +1,5 @@
 <script lang="ts">
+	console.log('Layout', new Date().toISOString());
 	import { fade } from 'svelte/transition';
 	import type { LayoutData } from './$types';
 	import { user } from '$lib/stores/account';
@@ -14,7 +15,7 @@
 
 	export let data: LayoutData;
 
-	let isLoading = true;
+	let isLoading = false;
 	let showLoadingMessage = false;
 
 	// Show loading message after 2 seconds

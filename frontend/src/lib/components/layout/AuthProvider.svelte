@@ -1,10 +1,10 @@
 <script lang="ts">
+	console.log('AuthProvider', new Date().toISOString());
 	import { getUser } from '$lib/api/account/user';
 	import { onMount, onDestroy } from 'svelte';
 	import { user } from '$lib/stores/account';
-	import { jwt } from '$lib/stores/auth';
 	import { goto } from '$app/navigation';
-	import { refresh } from '$lib/api/account/auth';
+	import { initJWTRefreshLoop } from '$lib/utils/jwt';
 	import { page } from '$app/stores';
 
 	/**
@@ -17,36 +17,25 @@
 	export let data: { user: any };
 	export let isLoading: boolean = true;
 
-	$user = data.user;
+	// Set the initial user from server-side data
+	if (data.user) {
+		$user = data.user;
+		// If we have valid user data from server, we're not loading
+		isLoading = false;
+	}
 
-	let refreshTokenLoop: ReturnType<typeof setInterval> | undefined = undefined;
+	let stopRefreshLoop: (() => void) | undefined = undefined;
 
 	function redirectToLogin() {
 		const currentPath = encodeURIComponent($page.url.pathname + $page.url.search);
 		goto(`/account/sign-in?next=${currentPath}`);
 	}
 
-	async function initJWTRefreshLoop() {
-		const result = await refresh();
-		$jwt = result.token;
-
-		const expirationDate = new Date(result.expiration);
-		const refreshRateMS = expirationDate.valueOf() - Date.now() - 5000;
-
-		refreshTokenLoop = setInterval(async () => {
-			try {
-				const updatedTokenInfo = await refresh();
-				$jwt = updatedTokenInfo.token;
-			} catch {
-				redirectToLogin();
-				clearInterval(refreshTokenLoop);
-			}
-		}, refreshRateMS);
-	}
-
 	onMount(async () => {
 		try {
-			await initJWTRefreshLoop();
+			stopRefreshLoop = await initJWTRefreshLoop({
+				onRefreshError: redirectToLogin
+			});
 			await getUser();
 			isLoading = false;
 		} catch {
@@ -55,7 +44,9 @@
 	});
 
 	onDestroy(() => {
-		if (typeof refreshTokenLoop === 'number') clearInterval(refreshTokenLoop);
+		if (stopRefreshLoop) {
+			stopRefreshLoop();
+		}
 	});
 </script>
 

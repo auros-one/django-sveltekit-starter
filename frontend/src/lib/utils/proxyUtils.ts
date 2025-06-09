@@ -15,8 +15,12 @@ export interface ProxyOptions {
 
 	/**
 	 * Optional function to transform the response before returning
+	 * Can access request context like URL and cookies
 	 */
-	transformResponse?: (_response: Response) => Response | Promise<Response>;
+	transformResponse?: (
+		_response: Response,
+		_context: { url: URL; cookies: any }
+	) => Response | Promise<Response>;
 
 	/**
 	 * Headers to always exclude from forwarding (in addition to 'host')
@@ -53,7 +57,7 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
 
 	const excludeSet = new Set(['host', ...excludeHeaders.map((h) => h.toLowerCase())]);
 
-	return async ({ url, request }) => {
+	return async ({ url, request, cookies }) => {
 		try {
 			// Apply request transformation if provided
 			const transformedRequest = transformRequest ? await transformRequest(request) : request;
@@ -85,7 +89,7 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
 			const response = await fetch(destinationUrl, requestOptions);
 
 			// Apply response transformation if provided
-			return transformResponse ? await transformResponse(response) : response;
+			return transformResponse ? await transformResponse(response, { url, cookies }) : response;
 		} catch (err) {
 			const errorMessage = err instanceof Error ? err.message : String(err);
 
