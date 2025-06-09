@@ -67,6 +67,7 @@ test:
 	cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/django_sveltekit_db poetry run pytest
 
 format:
+	cd backend && poetry run ruff check . --fix
 	cd backend && poetry run black .
 	cd backend && poetry run isort .
 	cd frontend && npm run format
