@@ -1,19 +1,37 @@
-from django.conf import settings
+from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 from django.urls import path
-from drf_spectacular.views import SpectacularAPIView
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
+from rest_framework.authentication import SessionAuthentication
 
-docs_title = settings.SPECTACULAR_SETTINGS["TITLE"]
-try:
-    # We try to get the site name from the database, but this won't work
-    # on a fresh project that hasn't done any migrations yet.
-    from django.contrib.sites.models import Site
+from project.core.docs.utils import get_docs_title
+from project.core.permissions import IsAdminUser
 
-    site_name = Site.objects.get_current().name
-    docs_title += f" | {site_name} admin"
-except Exception:  # pragma: no cover
-    pass
+
+class AdminOnlySpectacularRedocView(SpectacularRedocView):
+    """
+    Redoc view that requires admin permissions.
+    """
+
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTCookieAuthentication, SessionAuthentication]
+
+
+class AdminOnlySpectacularAPIView(SpectacularAPIView):
+    """
+    Schema API view that requires admin permissions.
+    """
+
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTCookieAuthentication, SessionAuthentication]
 
 
 urlpatterns = [
-    path("schema", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "",
+        AdminOnlySpectacularRedocView.as_view(
+            url_name="schema", title=get_docs_title()
+        ),
+        name="docs",
+    ),
+    path("schema/", AdminOnlySpectacularAPIView.as_view(), name="schema"),
 ]
