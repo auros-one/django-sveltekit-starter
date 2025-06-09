@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { user } from '$lib/stores/account';
 	import type { NavigationRoute } from '$lib/config/routes';
+	import { logout } from '$lib/api/account/auth';
 
 	export let routes: NavigationRoute[] = [];
 
@@ -78,14 +79,14 @@
 						on:click={() => (showUserMenu = !showUserMenu)}
 					>
 						<span class="sr-only">Open user menu</span>
-						<div class="flex items-center space-x-3 px-3 py-2">
-							<div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600">
-								<span class="text-sm font-medium text-white">
+						<div class="flex items-center space-x-2 px-2 py-1">
+							<div class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-600">
+								<span class="text-xs font-medium text-white">
 									{$user?.email?.charAt(0).toUpperCase() || 'U'}
 								</span>
 							</div>
 							<span
-								class="hidden max-w-[200px] truncate text-sm font-medium text-gray-700 lg:block"
+								class="hidden max-w-[150px] truncate text-sm font-medium text-gray-700 lg:block"
 							>
 								{$user?.email || 'User'}
 							</span>
@@ -107,13 +108,15 @@
 							>
 								Account Settings
 							</a>
-							<a
-								href="/account/sign-out"
-								class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-								on:click={() => (showUserMenu = false)}
+							<button
+								class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+								on:click={() => {
+									showUserMenu = false;
+									logout();
+								}}
 							>
 								Sign out
-							</a>
+							</button>
 						</div>
 					{/if}
 				</div>
@@ -208,7 +211,7 @@
 				<!-- Mobile user section -->
 				<div class="border-t border-gray-200 pt-4">
 					<div class="flex items-center px-4">
-						<div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600">
+						<div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600">
 							<span class="text-sm font-medium text-white">
 								{$user?.email?.charAt(0).toUpperCase() || 'U'}
 							</span>
@@ -228,13 +231,15 @@
 						>
 							Account Settings
 						</a>
-						<a
-							href="/account/sign-out"
-							class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-							on:click={() => (showMobileMenu = false)}
+						<button
+							class="block w-full px-4 py-2 text-left text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+							on:click={() => {
+								showMobileMenu = false;
+								logout();
+							}}
 						>
 							Sign out
-						</a>
+						</button>
 					</div>
 				</div>
 			</div>
