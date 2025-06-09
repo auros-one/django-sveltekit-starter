@@ -11,13 +11,13 @@
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-	<div class="container mx-auto px-6 py-16">
+	<div class="container mx-auto max-w-6xl px-6 py-16">
 		<!-- Header -->
-		<div class="mb-16 text-center">
-			<a href="/welcome" class="mb-6 inline-block">
+		<div class="mb-24 py-8 text-center">
+			<a href="/welcome" class="mb-8 inline-block">
 				<img class="h-12 w-auto" src="/icon.png" alt="Django-SvelteKit Starter" />
 			</a>
-			<h1 class="mb-4 text-4xl font-bold text-slate-900 md:text-6xl">
+			<h1 class="mb-6 text-4xl font-bold text-slate-900 md:text-6xl">
 				Django-SvelteKit
 				<span
 					class="bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent"
@@ -25,11 +25,11 @@
 					Starter
 				</span>
 			</h1>
-			<p class="mx-auto max-w-2xl text-xl leading-relaxed text-slate-600">
+			<p class="mx-auto mb-4 max-w-2xl text-xl leading-relaxed text-slate-600">
 				A production-ready monorepo template for building full-stack applications with Django
 				backend and SvelteKit frontend
 			</p>
-			<div class="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+			<div class="mt-12 flex flex-col justify-center gap-4 sm:flex-row">
 				<a
 					href="https://github.com/auros-one/django-sveltekit-starter"
 					target="_blank"
@@ -63,10 +63,9 @@
 		<!-- AI Coding Integration Feature Section -->
 		<div class="mb-16">
 			<h2 class="mb-4 text-2xl font-bold text-slate-900">AI-First Development</h2>
-			<p class="mb-4 max-w-3xl text-lg text-slate-600">
-				Built for the AI-assisted development era. Our comprehensive engineering handbook provides
-				AI coders with structured guidelines, best practices, and real-world examples to accelerate
-				development.
+			<p class="mb-4 max-w-4xl text-lg text-slate-600">
+				Built for the AI-assisted development era. Our engineering handbook provides AI coders with
+				structured guidelines, best practices, and real-world examples to accelerate development.
 			</p>
 
 			<div class="mb-8 text-left">
@@ -367,16 +366,173 @@
 			</div>
 		</div>
 
+		<!-- Artifacts Section -->
+		<div class="mb-16">
+			<h2 class="mb-6 text-2xl font-bold text-slate-900">Build Faster with Artifacts</h2>
+			<div class="mb-8 text-center">
+				<div class="inline-flex items-center gap-2 rounded-full bg-primary-50 px-4 py-2">
+					<svg
+						class="h-5 w-5 text-primary-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M13 10V3L4 14h7v7l9-11h-7z"
+						/>
+					</svg>
+					<span class="text-sm font-semibold text-primary-700">AI-Ready Components</span>
+				</div>
+			</div>
+
+			<!-- Example Artifacts Preview -->
+			<div class="mx-auto mb-8 max-w-4xl overflow-hidden rounded-xl bg-gray-900">
+				<div class="border-b border-gray-800 p-6">
+					<div class="flex items-center gap-2 font-mono text-sm text-gray-400">
+						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+							/>
+						</svg>
+						Available Artifacts
+					</div>
+				</div>
+				<div class="divide-y divide-gray-800">
+					<div
+						class="group flex items-center justify-between px-6 py-4 transition-colors hover:bg-gray-800/50"
+					>
+						<div class="flex items-center gap-4">
+							<div class="flex-shrink-0">
+								<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
+									<svg
+										class="h-5 w-5 text-blue-400"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+										/>
+									</svg>
+								</div>
+							</div>
+							<div>
+								<h4 class="font-medium text-white">ChatUI Streaming Interface</h4>
+								<p class="text-sm text-gray-400">
+									Real-time chat with token streaming and markdown support
+								</p>
+							</div>
+						</div>
+						<span class="text-xs text-gray-500 group-hover:text-gray-400">Advanced</span>
+					</div>
+					<div
+						class="group flex items-center justify-between px-6 py-4 transition-colors hover:bg-gray-800/50"
+					>
+						<div class="flex items-center gap-4">
+							<div class="flex-shrink-0">
+								<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
+									<svg
+										class="h-5 w-5 text-green-400"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+										/>
+									</svg>
+								</div>
+							</div>
+							<div>
+								<h4 class="font-medium text-white">Data Table Component</h4>
+								<p class="text-sm text-gray-400">
+									Sortable, paginated tables with TypeScript generics
+								</p>
+							</div>
+						</div>
+						<span class="text-xs text-gray-500 group-hover:text-gray-400">Beginner</span>
+					</div>
+					<div
+						class="group flex items-center justify-between px-6 py-4 transition-colors hover:bg-gray-800/50"
+					>
+						<div class="flex items-center gap-4">
+							<div class="flex-shrink-0">
+								<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
+									<svg
+										class="h-5 w-5 text-purple-400"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M12 4v16m8-8H4"
+										/>
+									</svg>
+								</div>
+							</div>
+							<div>
+								<h4 class="font-medium text-white">More artifacts coming soon...</h4>
+								<p class="text-sm text-gray-400">
+									Authentication flows, dashboards, API integrations, and more
+								</p>
+							</div>
+						</div>
+						<span class="text-xs text-gray-500 group-hover:text-gray-400">Various</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- CTA -->
+			<div class="text-center">
+				<a
+					href="/artifacts"
+					class="inline-flex transform items-center justify-center rounded-lg border border-transparent bg-primary-600 px-8 py-4 text-base font-medium text-white shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary-700 hover:shadow-xl"
+				>
+					Browse All Artifacts
+					<svg
+						class="-mr-1 ml-2 h-5 w-5"
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 20 20"
+						fill="currentColor"
+					>
+						<path
+							fill-rule="evenodd"
+							d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+							clip-rule="evenodd"
+						/>
+					</svg>
+				</a>
+				<p class="mt-4 text-sm text-gray-500">
+					Works with Claude, GPT-4, Cursor, and other AI coding assistants
+				</p>
+			</div>
+		</div>
+
 		<!-- Features Grid -->
 		<div class="mb-16">
 			<h2 class="mb-8 text-center text-2xl font-bold text-slate-900">
 				Everything You Need, Out of the Box
 			</h2>
-			<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
+			<div class="mx-auto grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+				<div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+					<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
 						<svg
-							class="h-6 w-6 text-green-600"
+							class="h-5 w-5 text-green-600"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -396,10 +552,10 @@
 					</p>
 				</div>
 
-				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
+				<div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+					<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
 						<svg
-							class="h-6 w-6 text-blue-600"
+							class="h-5 w-5 text-blue-600"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -419,10 +575,10 @@
 					</p>
 				</div>
 
-				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
+				<div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+					<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
 						<svg
-							class="h-6 w-6 text-purple-600"
+							class="h-5 w-5 text-purple-600"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -441,10 +597,10 @@
 					</p>
 				</div>
 
-				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100">
+				<div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+					<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100">
 						<svg
-							class="h-6 w-6 text-orange-600"
+							class="h-5 w-5 text-orange-600"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -464,10 +620,10 @@
 					</p>
 				</div>
 
-				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-teal-100">
+				<div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+					<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-teal-100">
 						<svg
-							class="h-6 w-6 text-teal-600"
+							class="h-5 w-5 text-teal-600"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -486,9 +642,9 @@
 					</p>
 				</div>
 
-				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-red-100">
-						<svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+					<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-red-100">
+						<svg class="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -508,7 +664,7 @@
 		<!-- Tech Stack -->
 		<div class="mb-16 text-center">
 			<h2 class="mb-8 text-2xl font-bold text-slate-900">Built with Modern Technologies</h2>
-			<div class="flex flex-wrap justify-center gap-4">
+			<div class="mx-auto flex max-w-3xl flex-wrap justify-center gap-4">
 				<span
 					class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm"
 					>Django 4.2+</span
@@ -537,7 +693,9 @@
 		</div>
 
 		<!-- CTA Section -->
-		<div class="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm md:p-12">
+		<div
+			class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm md:p-12"
+		>
 			<h2 class="mb-4 text-2xl font-bold text-slate-900">Get Started</h2>
 			<p class="mx-auto mb-8 max-w-lg text-slate-600">
 				Ready to explore the template? Sign in to see the admin interface or create a new account to
@@ -562,11 +720,49 @@
 				<code class="rounded bg-slate-100 px-2 py-1 text-xs">admin</code>
 			</p>
 		</div>
+
+		<!-- Need Help Section -->
+		<div class="mt-12 flex items-center justify-center">
+			<div
+				class="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-6 py-3 text-sm shadow-sm"
+			>
+				<span class="text-slate-600">Need help?</span>
+				<span class="text-slate-300">|</span>
+				<a
+					href="https://github.com/auros-one/django-sveltekit-starter/issues/new"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="inline-flex items-center gap-1.5 text-slate-700 transition-colors hover:text-slate-900"
+				>
+					<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+						<path
+							d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.237 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+						/>
+					</svg>
+					<span class="font-medium">Create an issue</span>
+				</a>
+				<span class="text-slate-300">|</span>
+				<a
+					href="mailto:contact@auros.one"
+					class="inline-flex items-center gap-1.5 font-medium text-primary-600 transition-colors hover:text-primary-700"
+				>
+					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+						/>
+					</svg>
+					Contact us
+				</a>
+			</div>
+		</div>
 	</div>
 
 	<!-- Footer -->
 	<footer class="border-t border-slate-200 bg-white">
-		<div class="container mx-auto px-6 py-8">
+		<div class="container mx-auto max-w-6xl px-6 py-8">
 			<div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
 				<p class="text-sm text-slate-600">
 					Made with

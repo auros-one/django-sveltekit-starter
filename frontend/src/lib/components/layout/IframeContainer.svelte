@@ -68,7 +68,7 @@
 <div class="iframe-container" style="--navbar-height: {navbarHeight}px">
 	{#if showOverlay}
 		<div class="loading-overlay" transition:fade={{ duration: 50 }}>
-			<Spinner size={40} />
+			<Spinner />
 			<p class="mt-4 text-sm text-gray-600">Loading {title}...</p>
 		</div>
 	{/if}

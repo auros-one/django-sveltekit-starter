@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { SpinnerTypes } from './spinner.type';
-	export let color: SpinnerTypes['color'] = '#8293b0';
+	export let color: SpinnerTypes['color'] = '#3484d6';
 	export let unit: SpinnerTypes['unit'] = 'px';
-	export let duration: SpinnerTypes['duration'] = '0.6s';
-	export let size: SpinnerTypes['size'] = '50';
+	export let duration: SpinnerTypes['duration'] = '0.3s';
+	export let size: SpinnerTypes['size'] = '26';
 	export let pause: SpinnerTypes['pause'] = false;
-	export let ringThickness: SpinnerTypes['ringThickness'] = 1;
+	export let ringThickness: SpinnerTypes['ringThickness'] = 1.5;
 </script>
 
 <div
