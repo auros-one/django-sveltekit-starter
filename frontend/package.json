@@ -22,7 +22,7 @@
 	},
 	"devDependencies": {
 		"@sentry/vite-plugin": "^3.0.0",
-		"@sveltejs/adapter-cloudflare": "^5.0.1",
+		"@sveltejs/adapter-auto": "^3.2.5",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@tanstack/eslint-plugin-query": "^5.64.2",
