@@ -142,6 +142,13 @@ class PasswordResetSerializer(RestAuthPasswordResetSerializer):
     Site-aware password reset serializer.
     """
 
+    @property
+    def password_reset_form_class(self):
+        """Use our custom form that generates frontend URLs."""
+        from .forms import CustomPasswordResetForm
+
+        return CustomPasswordResetForm
+
     def get_email_options(self):
         """Override to include site context in password reset emails."""
         request = self.context.get("request")

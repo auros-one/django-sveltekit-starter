@@ -1,17 +1,18 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { getProxyRequestHandler } from '$lib/utils/proxyUtils';
+import { ThirdPartyProxies } from '$lib/utils/thirdPartyProxies';
 import { PUBLIC_SENTRY_DSN } from '$env/static/public';
 
-function getSentryProxiedUrl(_url: URL, _request: Request): string {
-	const dsn = new URL(PUBLIC_SENTRY_DSN);
-	const projectId = dsn.pathname.replace(/^\/|\/$/g, '');
-	return `https://sentry.io/api/${projectId}/envelope/`;
-}
+/**
+ * Proxy handler for Sentry error reporting.
+ * Routes client-side error reports through our server to avoid CORS issues
+ * and hide the Sentry DSN from the client.
+ */
+const sentryProxyHandler = ThirdPartyProxies.sentry(PUBLIC_SENTRY_DSN);
 
-export const GET: RequestHandler = getProxyRequestHandler(getSentryProxiedUrl);
-export const POST: RequestHandler = getProxyRequestHandler(getSentryProxiedUrl);
-export const PATCH: RequestHandler = getProxyRequestHandler(getSentryProxiedUrl);
-export const PUT: RequestHandler = getProxyRequestHandler(getSentryProxiedUrl);
-export const DELETE: RequestHandler = getProxyRequestHandler(getSentryProxiedUrl);
-export const OPTIONS: RequestHandler = getProxyRequestHandler(getSentryProxiedUrl);
-export const HEAD: RequestHandler = getProxyRequestHandler(getSentryProxiedUrl);
+export const GET: RequestHandler = sentryProxyHandler;
+export const POST: RequestHandler = sentryProxyHandler;
+export const PATCH: RequestHandler = sentryProxyHandler;
+export const PUT: RequestHandler = sentryProxyHandler;
+export const DELETE: RequestHandler = sentryProxyHandler;
+export const OPTIONS: RequestHandler = sentryProxyHandler;
+export const HEAD: RequestHandler = sentryProxyHandler;

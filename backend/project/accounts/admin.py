@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin import AdminSite
+from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import AuthenticationForm, ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
@@ -209,6 +210,12 @@ class CustomAdminSite(AdminSite):
 
 # Create custom admin site instance
 admin_site = CustomAdminSite(name="admin")
+
+# Unregister Site from default admin (Django's sites app registers it automatically)
+try:
+    admin.site.unregister(Site)
+except NotRegistered:
+    pass  # Site wasn't registered, which is fine
 
 
 # Custom Site admin for better multi-tenant management

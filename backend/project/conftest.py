@@ -61,6 +61,16 @@ def ensure_http_requests_handled():
         yield
 
 
+@pytest.fixture(scope="session", autouse=True)
+def setup_test_site(django_db_setup, django_db_blocker):
+    """Ensure a Site exists for the test server domain."""
+    with django_db_blocker.unblock():
+        # Django test client uses 'testserver' as the default domain
+        Site.objects.get_or_create(
+            domain="testserver", defaults={"name": "Test Server"}
+        )
+
+
 @pytest.fixture
 def api_client() -> APIClient:
     """Return a DRF API client instance."""

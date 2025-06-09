@@ -13,8 +13,6 @@ export interface paths {
 		};
 		get?: never;
 		put?: never;
-		/** @description Site-aware email change view.
-		 *     Updates both public email and internal username. */
 		post: operations['accounts_change_email_create'];
 		delete?: never;
 		options?: never;
@@ -155,7 +153,8 @@ export interface paths {
 		};
 		get?: never;
 		put?: never;
-		/** @description Site-aware user registration view. */
+		/** @description Site-aware registration view.
+		 *     Adds site context to the serializer and handles site-specific signup. */
 		post: operations['accounts_signup_create'];
 		delete?: never;
 		options?: never;

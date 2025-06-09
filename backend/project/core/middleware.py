@@ -10,90 +10,105 @@ from django.utils.deprecation import MiddlewareMixin
 
 class SiteMiddleware(MiddlewareMixin):
     """
-    Middleware to identify and attach site context based on subdomain.
+    Middleware to identify and attach site context.
 
-    Subdomain pattern: {site_domain} -> site
+    Site determination order:
+    1. X-Tenant-Domain header (for development/API clients)
+    2. Host header domain matching
+    3. Subdomain extraction from host
+    4. Fallback to default site
 
-    For development: demo.localhost:5173 -> site with domain "demo.localhost"
-    For production: client1.example.com -> site with domain "client1.example.com"
-    Fallback: localhost:8000 -> first available site (for development convenience)
+    For development with separate frontend:
+    - Frontend sends X-Tenant-Domain: demo.localhost
+    - Backend uses that to determine the site
+
+    For production:
+    - Each tenant has its own domain
+    - Site is determined by the actual domain
     """
 
     def process_request(self, request):
-        """Extract site from domain and attach to request."""
-        host = request.get_host()
-
-        # Handle port for development
-        if ":" in host:
-            host_without_port = host.split(":")[0]
-        else:
-            host_without_port = host
-
+        """Extract site from domain/headers and attach to request."""
         site = None
 
-        try:
-            # Try to get site by exact domain match first
+        # First, check for X-Tenant-Domain header (useful for development)
+        tenant_domain = request.headers.get("x-tenant-domain")
+
+        if tenant_domain:
             try:
-                site = Site.objects.get(domain=host)
+                site = Site.objects.get(domain=tenant_domain)
             except Site.DoesNotExist:
-                try:
-                    # Try without port for development
-                    site = Site.objects.get(domain=host_without_port)
-                except Site.DoesNotExist:
-                    # Check if this is a development environment
-                    if settings.DEBUG:
-                        if "localhost" in host_without_port:
-                            # Extract subdomain from localhost
-                            parts = host_without_port.split(".")
-                            if len(parts) >= 2:  # e.g., "demo.localhost"
-                                subdomain = parts[0]
-                                # Create development site if it doesn't exist
-                                site, created = Site.objects.get_or_create(
-                                    domain=f"{subdomain}.localhost",
-                                    defaults={"name": f"{subdomain.title()} (Dev)"},
-                                )
-                            else:
-                                # Default localhost without subdomain - use first available site
-                                # This handles localhost:8000 access during development
-                                site = Site.objects.first()
-                                if not site:
-                                    # Create a default site if none exists
-                                    site = Site.objects.create(
-                                        domain="localhost",
-                                        name="Default Development Site",
-                                    )
-                        else:
-                            # Non-localhost development access - use first site
-                            site = Site.objects.first()
-                            if not site:
-                                # Create a default site instead of raising 404
-                                site = Site.objects.create(
-                                    domain=host_without_port, name="Default Site"
-                                )
-                    else:
-                        # Production: use first site as fallback instead of 404
-                        site = Site.objects.first()
-                        if not site:
-                            raise Http404(f"No sites configured for domain: {host}")
+                if settings.DEBUG:
+                    # Auto-create site in development
+                    site = Site.objects.create(
+                        domain=tenant_domain, name=f"{tenant_domain} (Auto-created)"
+                    )
 
-            # Attach site to request
-            request.site = site
+        # If no site from header, use host-based detection
+        if not site:
+            host = request.get_host()
 
-            # Set current site for Django
-            settings.SITE_ID = site.pk
-
-        except Exception as e:
-            # In case of any database errors, use a default site to prevent blocking
-            if settings.DEBUG:
-                # Create or get a default site
-                site, created = Site.objects.get_or_create(
-                    domain="localhost", defaults={"name": "Default Development Site"}
-                )
-                request.site = site
-                settings.SITE_ID = site.pk
+            # Handle port for development
+            if ":" in host:
+                host_without_port = host.split(":")[0]
             else:
-                # In production, re-raise the exception
-                raise e
+                host_without_port = host
+
+            try:
+                # Try to get site by exact domain match first
+                try:
+                    site = Site.objects.get(domain=host)
+                except Site.DoesNotExist:
+                    try:
+                        # Try without port for development
+                        site = Site.objects.get(domain=host_without_port)
+                    except Site.DoesNotExist:
+                        # Check if this is a development environment
+                        if settings.DEBUG:
+                            if "localhost" in host_without_port:
+                                # Extract subdomain from localhost
+                                parts = host_without_port.split(".")
+                                if len(parts) >= 2:  # e.g., "demo.localhost"
+                                    subdomain = parts[0]
+                                    # Create development site if it doesn't exist
+                                    site, created = Site.objects.get_or_create(
+                                        domain=f"{subdomain}.localhost",
+                                        defaults={"name": f"{subdomain.title()} (Dev)"},
+                                    )
+                                else:
+                                    # Default localhost without subdomain
+                                    # For development, default to demo.localhost
+                                    site = Site.objects.get_or_create(
+                                        domain="demo.localhost",
+                                        defaults={"name": "Demo Site (Development)"},
+                                    )[0]
+                            else:
+                                # Non-localhost development access
+                                site = Site.objects.get_or_create(
+                                    domain="demo.localhost",
+                                    defaults={"name": "Demo Site (Development)"},
+                                )[0]
+                        else:
+                            # Production: strict domain matching
+                            raise Http404(f"No site configured for domain: {host}")
+
+            except Exception as e:
+                # In case of any database errors
+                if settings.DEBUG:
+                    # Use demo site as fallback in development
+                    site = Site.objects.get_or_create(
+                        domain="demo.localhost",
+                        defaults={"name": "Demo Site (Development)"},
+                    )[0]
+                else:
+                    # In production, re-raise the exception
+                    raise e
+
+        # Attach site to request
+        request.site = site
+
+        # Set current site for Django (for compatibility)
+        settings.SITE_ID = site.pk
 
         # Always return None to continue processing
         return None

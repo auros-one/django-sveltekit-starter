@@ -1,3 +1,10 @@
+"""
+Tests for site-aware authentication APIs.
+
+These tests verify that our authentication system properly handles multi-tenancy
+using Django Sites framework.
+"""
+
 from http import HTTPStatus
 from unittest.mock import MagicMock, patch
 
@@ -9,7 +16,7 @@ from django.core import mail
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from ..models import User
+from project.accounts.models import User
 
 
 @pytest.mark.django_db
@@ -17,7 +24,7 @@ class TestSiteAwareAuthentication:
     """Test suite for Django Sites-based multi-tenant authentication."""
 
     def test_signup_creates_site_aware_user(self, api_client: APIClient, site):
-        """Test that signup creates users with proper site context and username format."""
+        """Test that signup creates users with correct site and username."""
         # Mock the site middleware
         with patch(
             "project.core.middleware.SiteMiddleware.process_request"
@@ -72,7 +79,7 @@ class TestSiteAwareAuthentication:
             assert len(mail.outbox) == 1  # Verification email sent
 
     def test_login_with_email_converts_to_username(self, api_client: APIClient, user):
-        """Test that login accepts email and converts to internal username for auth."""
+        """Test that login API accepts email and converts to internal username."""
         # Mock the site middleware
         with patch(
             "project.core.middleware.SiteMiddleware.process_request"
@@ -181,7 +188,7 @@ class TestSiteAwareAuthentication:
         assert user2.username == f"{other_site.pk}-{email}"
 
     def test_multi_tenant_isolation_login(self, api_client: APIClient):
-        """Test that users can only login within their own site."""
+        """Test that users can only login to their assigned site."""
         # Create same email in two different sites
         site1 = Site.objects.create(domain="site1.test", name="Site 1")
         site2 = Site.objects.create(domain="site2.test", name="Site 2")
@@ -231,7 +238,7 @@ class TestSiteAwareAuthentication:
             assert response.status_code == HTTPStatus.OK  # Should succeed with user2
 
     def test_user_details_only_exposes_public_fields(self, api_client: APIClient, user):
-        """Test that user details API never exposes internal username."""
+        """Test that user details API never exposes internal username or site info."""
         api_client.force_authenticate(user=user)
 
         response = api_client.get(reverse("rest_user_details"))
@@ -249,7 +256,7 @@ class TestSiteAwareAuthentication:
             assert field not in result
 
     def test_password_reset_site_aware(self, api_client: APIClient, user):
-        """Test password reset works within site context."""
+        """Test that password reset is site-aware."""
         # Create a proper mock request
         mock_request = MagicMock()
         mock_request.site = user.site
@@ -326,7 +333,7 @@ class TestSiteAwareAuthentication:
         assert "already in use" in response.json()["new_email"][0]
 
     def test_prevent_duplicate_emails_in_same_site(self, api_client: APIClient, site):
-        """Test that signup prevents duplicate emails within the same site."""
+        """Test that duplicate emails are prevented within the same site."""
         email = "duplicate@example.com"
         password = "duplicate-password-123!"
 

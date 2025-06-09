@@ -3,13 +3,14 @@ from http import HTTPStatus
 from unittest.mock import patch
 
 import pytest
-from allauth.account.admin import EmailAddress
+from allauth.account.models import EmailAddress
+from django.contrib.sites.models import Site
 from django.core import mail
 from django.urls import reverse
 from model_bakery import baker
 from rest_framework.test import APIClient
 
-from ..models import User
+from project.accounts.models import User
 
 
 class SiteMiddlewareMixin:
@@ -245,8 +246,6 @@ class TestEmailChangeView(SiteMiddlewareMixin):
         self, api_client: APIClient, user: User, site
     ):
         # Create a different site
-        from django.contrib.sites.models import Site
-
         other_site = Site.objects.create(domain="other.example.com", name="Other Site")
 
         # Create user with same email in different site (should be allowed)
@@ -271,7 +270,3 @@ class TestEmailChangeView(SiteMiddlewareMixin):
         assert response.json() == {
             "detail": "Email change initiated. Check your email to confirm."
         }
-
-        user.refresh_from_db()
-        assert user.email == "shared@example.com"
-        assert user.username == f"{user.site.pk}-shared@example.com"

@@ -1,65 +1,95 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
+export interface ProxyOptions {
+	/**
+	 * Function to determine the destination URL for the proxy request
+	 */
+	getDestinationUrl: (_url: URL, _request: Request) => string;
+
+	/**
+	 * Optional function to transform the request before sending
+	 * Can modify headers, body, etc.
+	 */
+	transformRequest?: (_request: Request) => Request | Promise<Request>;
+
+	/**
+	 * Optional function to transform the response before returning
+	 */
+	transformResponse?: (_response: Response) => Response | Promise<Response>;
+
+	/**
+	 * Headers to always exclude from forwarding (in addition to 'host')
+	 */
+	excludeHeaders?: string[];
+}
+
 /**
- * Returns a RequestHandler that proxies a request to another URL.
- * The URL is determined by the required getProxiedUrl function.
+ * Creates a RequestHandler that proxies requests with optional transformations.
  *
- * Example: a proxy to Mixpanel
+ * @param options Configuration for the proxy behavior
+ * @returns A RequestHandler that proxies requests according to the options
  *
- * function getMixpanelProxiedUrl(url: URL, request: Request): string {
- *     // Get the destination pathname by removing the '/mixpanel' prefix
- *     const destinationPathname = url.pathname.replace('/mixpanel', '');
+ * @example
+ * ```typescript
+ * // Simple proxy
+ * const handler = createProxyHandler({
+ *   getDestinationUrl: (url) => `https://api.example.com${url.pathname}`
+ * });
  *
- *     // Construct the proxy url
- *     const proxiedUrl = `https://api-js.mixpanel.com${destinationPathname}${url.search}`;
- *
- *     return proxiedUrl;
- * }
- *
- * export const GET: RequestHandler = getProxyRequestHandler(getMixpanelProxiedUrl);
- * export const POST: RequestHandler = getProxyRequestHandler(getMixpanelProxiedUrl);
- * export const PATCH: RequestHandler = getProxyRequestHandler(getMixpanelProxiedUrl);
- * export const PUT: RequestHandler = getProxyRequestHandler(getMixpanelProxiedUrl);
- * export const DELETE: RequestHandler = getProxyRequestHandler(getMixpanelProxiedUrl);
- * export const OPTIONS: RequestHandler = getProxyRequestHandler(getMixpanelProxiedUrl);
- * export const HEAD: RequestHandler = getProxyRequestHandler(getMixpanelProxiedUrl);
- *
- * @param getProxiedUrl A function that returns the URL to proxy to.
- * @returns A RequestHandler that proxies a request to another URL.
+ * // Proxy with request transformation
+ * const authHandler = createProxyHandler({
+ *   getDestinationUrl: (url) => `https://api.example.com${url.pathname}`,
+ *   transformRequest: (request) => {
+ *     const headers = new Headers(request.headers);
+ *     headers.set('Authorization', 'Bearer token');
+ *     return new Request(request, { headers });
+ *   }
+ * });
+ * ```
  */
-export function getProxyRequestHandler(
-	getProxiedUrl: (_url: URL, _request: Request) => string
-): RequestHandler {
-	const proxyRequest: RequestHandler = async ({ url, request }) => {
-		const destinationUrl = getProxiedUrl(url, request);
+export function createProxyHandler(options: ProxyOptions): RequestHandler {
+	const { getDestinationUrl, transformRequest, transformResponse, excludeHeaders = [] } = options;
 
-		// Forward all headers except 'host'
-		const forwardedHeaders: Record<string, string> = {};
-		for (const [header, value] of request.headers) {
-			if (header !== 'host') {
-				// Don't forward the original host header
-				forwardedHeaders[header] = value;
+	const excludeSet = new Set(['host', ...excludeHeaders.map((h) => h.toLowerCase())]);
+
+	return async ({ url, request }) => {
+		try {
+			// Apply request transformation if provided
+			const transformedRequest = transformRequest ? await transformRequest(request) : request;
+
+			// Get destination URL
+			const destinationUrl = getDestinationUrl(url, transformedRequest);
+
+			// Forward headers, excluding specified ones
+			const forwardedHeaders: Record<string, string> = {};
+			for (const [header, value] of transformedRequest.headers) {
+				if (!excludeSet.has(header.toLowerCase())) {
+					forwardedHeaders[header] = value;
+				}
 			}
+
+			// Set the correct host header for the destination
+			forwardedHeaders['host'] = new URL(destinationUrl).host;
+
+			// Prepare request options
+			const requestOptions = {
+				method: transformedRequest.method,
+				headers: forwardedHeaders,
+				body: transformedRequest.body,
+				duplex: 'half' as const,
+				redirect: 'manual' as const
+			};
+
+			// Make the proxy request
+			const response = await fetch(destinationUrl, requestOptions);
+
+			// Apply response transformation if provided
+			return transformResponse ? await transformResponse(response) : response;
+		} catch (err) {
+			const errorMessage = err instanceof Error ? err.message : String(err);
+
+			error(500, `Proxy error: ${errorMessage}`);
 		}
-		forwardedHeaders['host'] = new URL(destinationUrl).host;
-
-		const requestData = {
-			method: request.method,
-			headers: forwardedHeaders,
-			duplex: 'half' as const,
-			body: request.body,
-			redirect: 'manual' as const // Add this line to handle redirects manually
-		};
-
-		return fetch(destinationUrl.toString(), requestData).catch((err) => {
-			const keys = Object.keys(err);
-			const keysString = keys.join(', ');
-			error(
-				500,
-				`error "${err} "(keys: ${keysString}) (${err?.cause?.code}) ${err?.cause?.reason}`
-			);
-		});
 	};
-	return proxyRequest;
 }

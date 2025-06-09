@@ -1,19 +1,9 @@
 import type { Handle } from '@sveltejs/kit';
 import { serverInit } from '@jill64/sentry-sveltekit-cloudflare';
-import { PUBLIC_BASE_API_URL, PUBLIC_SENTRY_DSN } from '$env/static/public';
-import { getProxyRequestHandler } from '$lib/utils/proxyUtils';
+import { PUBLIC_SENTRY_DSN } from '$env/static/public';
+import { backendProxyHandler } from '$lib/utils/backendProxy';
 
 const PROXY_PATH = '/api';
-
-/* Create a proxy request handler using `getProxyRequestHandler` */
-
-function getBackendProxiedUrl(url: URL, _request: Request): string {
-	// Forward the request to the backend server
-	const proxiedUrl = `${PUBLIC_BASE_API_URL}${url.pathname}${url.search}`;
-	return proxiedUrl;
-}
-
-const backendProxyHandler = getProxyRequestHandler(getBackendProxiedUrl);
 
 /* Wrap server-side hooks to send errors to Sentry */
 
@@ -22,8 +12,9 @@ const { onHandle, onError } = serverInit(PUBLIC_SENTRY_DSN);
 /* Server-side hooks */
 
 export const handle: Handle = onHandle(async ({ event, resolve }) => {
-	// Intercept requests to `/api` and forwards the to the backend server
+	// Intercept requests to `/api` and forward to the backend server
 	if (event.url.pathname.startsWith(PROXY_PATH)) {
+		// Proxy to backend with tenant information
 		return backendProxyHandler(event);
 	}
 
