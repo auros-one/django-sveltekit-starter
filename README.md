@@ -64,6 +64,14 @@ django-sveltekit-starter/
    - Django Admin: http://localhost:8000/aoi/admin/
    - API Documentation: http://localhost:8000/api/docs/
 
+5. **Set up development data (optional)**
+   ```bash
+   make fresh-start
+   ```
+   This creates a clean database with default admin credentials:
+   - **Email**: `admin@admin.com`
+   - **Password**: `admin`
+
 ## ⚡ Development Commands
 
 ### Global Commands (from root directory)
