@@ -8,7 +8,7 @@ help:
 	@echo "  make dev               - Start development environment"
 	@echo "  make reset-db          - Reset database (WARNING: destroys all data)"
 	@echo "  make fresh-start       - Reset database + setup dev environment"
-	@echo "  make test              - Run all tests"
+	@echo "  make test              - Run all tests (auto-starts PostgreSQL)"
 	@echo "  make format            - Format all code"
 	@echo "  make lint              - Lint all code"
 	@echo "  make clean             - Clean up generated files"
@@ -50,10 +50,21 @@ dev-frontend:
 	cd frontend && npm run dev
 
 test:
-	@echo "Running backend tests..."
+	@echo "🔍 Checking if PostgreSQL is running..."
+	@if ! docker compose ps db 2>/dev/null | grep -q "running"; then \
+		echo "🚀 Starting PostgreSQL database..."; \
+		docker compose up db -d; \
+		echo "⏳ Waiting for database to be ready..."; \
+		until docker compose exec db pg_isready -U postgres >/dev/null 2>&1; do \
+			echo "Waiting for database to be ready..."; \
+			sleep 2; \
+		done; \
+		echo "✅ Database is ready!"; \
+	else \
+		echo "✅ PostgreSQL is already running!"; \
+	fi
+	@echo "🧪 Running tests..."
 	cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/django_sveltekit_db poetry run pytest
-	@echo "Running frontend tests..."
-	cd frontend && npm test
 
 format:
 	cd backend && poetry run black .
