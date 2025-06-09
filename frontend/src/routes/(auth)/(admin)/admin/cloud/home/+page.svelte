@@ -7,4 +7,4 @@
 		: '/api/admin';
 </script>
 
-<IframeContainer src={iframeSrc} title="Django Admin" />
+<IframeContainer src={iframeSrc} title="Cloud Home" />

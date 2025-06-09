@@ -2,4 +2,4 @@
 	import IframeContainer from '$lib/components/layout/IframeContainer.svelte';
 </script>
 
-<IframeContainer src="/api/admin/flower" title="Celery Flower" />
+<IframeContainer src="/api/admin/flower" title="Cloud Jobs" />
