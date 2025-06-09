@@ -72,7 +72,7 @@ services:
       context: ./backend
       dockerfile: docker/Dockerfile
     restart: unless-stopped
-    command: celery -A project flower --address=0.0.0.0 --port=5555
+    command: celery -A project flower --address=0.0.0.0 --port=5555 --url_prefix=api/admin/flower
     volumes:
       - ./backend:/app
     ports:
