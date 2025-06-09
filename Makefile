@@ -1,7 +1,8 @@
-.PHONY: help install dev test format lint clean setup-pre-commit sync-types reset-db fresh-start django-check
+.PHONY: help install dev test format lint clean setup-pre-commit sync-types reset-db fresh-start django-check all
 
 help:
 	@echo "Available commands:"
+	@echo "  make all               - Run format, lint, and test (all checks)"
 	@echo "  make install           - Install all dependencies"
 	@echo "  make setup-pre-commit  - Install pre-commit hooks"
 	@echo "  make sync-types        - Sync API types from backend to frontend"
@@ -13,6 +14,9 @@ help:
 	@echo "  make lint              - Lint all code"
 	@echo "  make django-check      - Run Django system checks"
 	@echo "  make clean             - Clean up generated files"
+
+all: format lint test
+	@echo "✅ All checks passed!"
 
 install:
 	@echo "Installing backend dependencies..."
@@ -113,3 +117,8 @@ fresh-start: reset-db
 	@echo "🎉 You can now login with:"
 	@echo "   Email: admin@admin.com"
 	@echo "   Password: admin"
+
+django-check:
+	@echo "🔍 Running Django system checks..."
+	cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/django_sveltekit_db poetry run python manage.py check --deploy --fail-level WARNING
+	@echo "✅ Django checks passed!"
