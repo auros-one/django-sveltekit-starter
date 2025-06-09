@@ -15,6 +15,6 @@
 			<ChangeEmailForm />
 			<ChangePasswordForm />
 		</div>
-		<Button class="bg-red-600 px-8 hover:bg-red-500" on:click={logout}>Log out</Button>
+		<Button class="bg-red-600 px-8 hover:bg-red-500" on:click={logout}>Sign out</Button>
 	</div>
 </div>
