@@ -4,6 +4,7 @@ from django.contrib.admin import AdminSite
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import AuthenticationForm, ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
+from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -210,8 +211,31 @@ class CustomAdminSite(AdminSite):
 admin_site = CustomAdminSite(name="admin")
 
 
+# Custom Site admin for better multi-tenant management
+@admin.register(Site, site=admin_site)
+class SiteAdmin(admin.ModelAdmin):
+    """
+    Enhanced Site admin for multi-tenant management.
+    """
+
+    list_display = ("domain", "name", "id")
+    list_display_links = ("domain", "name")
+    search_fields = ("domain", "name")
+    ordering = ("domain",)
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ("domain", "name"),
+                "description": "Each site represents a tenant in the multi-tenant system. "
+                "Users are isolated by site.",
+            },
+        ),
+    )
+
+
 @admin.register(User, site=admin_site)
-@admin.register(User)
 class UserAdmin(BaseUserAdmin):
     """
     Custom UserAdmin that shows email-friendly fields and uses our custom forms.
