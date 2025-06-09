@@ -29,7 +29,10 @@
 	}
 </script>
 
-<form class="w-[440px] rounded-lg bg-white px-6 py-4" on:submit|preventDefault={onChangeEmail}>
+<form
+	class="w-full max-w-md rounded-lg bg-white px-6 py-4 shadow-sm"
+	on:submit|preventDefault={onChangeEmail}
+>
 	<h2 class="mb-6 text-lg font-semibold leading-7 text-gray-900">Update Email</h2>
 	<label for="new_email" class="block text-sm font-medium leading-6 text-gray-700">New Email</label>
 	<div class="mb-4 mt-2">

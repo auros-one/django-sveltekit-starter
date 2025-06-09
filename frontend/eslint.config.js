@@ -50,7 +50,10 @@ export default [
 				URL: 'readonly',
 				FormData: 'readonly',
 				HTMLFormElement: 'readonly',
+				HTMLInputElement: 'readonly',
+				HTMLIFrameElement: 'readonly',
 				Event: 'readonly',
+				KeyboardEvent: 'readonly',
 				// Node.js globals
 				process: 'readonly',
 				console: 'readonly',

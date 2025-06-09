@@ -32,7 +32,10 @@
 	}
 </script>
 
-<form class="w-[440px] rounded-lg bg-white px-6 py-4" on:submit|preventDefault={onChangePassword}>
+<form
+	class="w-full max-w-md rounded-lg bg-white px-6 py-4 shadow-sm"
+	on:submit|preventDefault={onChangePassword}
+>
 	<h2 class="mb-6 text-lg font-semibold leading-7 text-gray-900">Update Password</h2>
 
 	<label for="password" class="block text-sm font-medium leading-6 text-gray-700"

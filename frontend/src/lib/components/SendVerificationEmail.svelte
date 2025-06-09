@@ -7,7 +7,7 @@
 
 	async function onSendVerificationEmail() {
 		error = null;
-		const { response } = await apiClient.POST('/accounts/signup/resend-email/', {
+		const { response } = await apiClient.POST('/accounts/resend-email/', {
 			body: {
 				email: $user.email
 			}
@@ -22,64 +22,43 @@
 	}
 </script>
 
-<div class="w-full rounded-lg bg-white px-6 py-4">
+<div class="w-full rounded-lg bg-white px-6 py-4 shadow-sm">
 	<div class="flex flex-row items-center gap-2">
-		{#if $user.verified}
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke-width="1.5"
-				stroke="currentColor"
-				class="h-6 w-6"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-				/>
-			</svg>
-		{:else}
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke-width="1.5"
-				stroke="currentColor"
-				class="h-6 w-6"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-				/>
-			</svg>
-		{/if}
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			fill="none"
+			viewBox="0 0 24 24"
+			stroke-width="1.5"
+			stroke="currentColor"
+			class="h-6 w-6 text-blue-500"
+		>
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+			/>
+		</svg>
 
-		<h3 class="mb-[3px] text-lg font-semibold leading-7 text-gray-900">
-			{#if $user.verified}Your Email Is Verified{:else}Verify Your Email{/if}
-		</h3>
+		<h3 class="mb-[3px] text-lg font-semibold leading-7 text-gray-900">Email Verification</h3>
 	</div>
 
-	<div class="flex flex-row items-center justify-between">
-		{#if $user.verified}
-			<p class="mb">Your email is verified. Verification helps keep your account secure.</p>
-		{:else}
-			<p class="mb">
-				Can't find the email? Check your spam folder or resend the verification email.
+	<div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+		<div class="flex-1">
+			<p class="text-sm text-gray-600">
+				Ensure your account is secure by verifying your email address. Can't find the email? Check
+				your spam folder.
 			</p>
-
-			<Button on:click={onSendVerificationEmail} disabled={sent}>
-				{#if sent}
-					Sent! Check your email
-				{:else}
-					Send new verification email
-				{/if}
-			</Button>
-
 			{#if error}
-				<p class="mt-2 text-red-600">{error}</p>
+				<p class="mt-2 text-sm text-red-600">{error}</p>
 			{/if}
-		{/if}
+		</div>
+
+		<Button on:click={onSendVerificationEmail} disabled={sent} class="whitespace-nowrap">
+			{#if sent}
+				✓ Sent! Check your email
+			{:else}
+				Send verification email
+			{/if}
+		</Button>
 	</div>
 </div>
