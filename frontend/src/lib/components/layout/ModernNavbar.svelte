@@ -106,7 +106,7 @@
 									<span
 										class="absolute inset-0 rounded-md bg-gray-100"
 										transition:fade={{ duration: 200 }}
-									/>
+									></span>
 								{/if}
 								<span class="relative flex items-center gap-1.5">
 									{#if route.icon}
@@ -135,6 +135,8 @@
 									class="dropdown-menu absolute left-0 top-full w-56 origin-top-left"
 									on:mouseenter={() => handleMouseEnter(route.name)}
 									on:mouseleave={handleMouseLeave}
+									role="menu"
+									tabindex="-1"
 								>
 									<div
 										transition:fly={{ y: -5, duration: 150 }}
@@ -170,7 +172,7 @@
 								<span
 									class="absolute inset-0 rounded-md bg-gray-100"
 									transition:fade={{ duration: 200 }}
-								/>
+								></span>
 							{/if}
 							<span class="relative flex items-center gap-1.5">
 								{#if route.icon}
@@ -223,12 +225,12 @@
 						>
 							<!-- Backdrop -->
 							<div
-								class="fixed inset-0 z-10"
+								class="fixed inset-0 bg-black/20 backdrop-blur-sm"
 								on:click={() => (showUserMenu = false)}
 								on:keydown={() => {}}
 								role="button"
 								tabindex="-1"
-							/>
+							></div>
 
 							<!-- Menu -->
 							<div class="relative z-20 rounded-lg border border-gray-200 bg-white shadow-lg">
@@ -321,7 +323,7 @@
 			on:keydown={() => {}}
 			role="button"
 			tabindex="-1"
-		/>
+		></div>
 
 		<!-- Slide-out Panel -->
 		<div
@@ -333,6 +335,7 @@
 				<button
 					on:click={() => (showMobileMenu = false)}
 					class="rounded-md p-2 text-gray-600 transition-colors hover:bg-gray-100"
+					aria-label="Close menu"
 				>
 					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path

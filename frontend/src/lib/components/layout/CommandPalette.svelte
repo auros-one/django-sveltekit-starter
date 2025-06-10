@@ -121,7 +121,7 @@
 			on:keydown={() => {}}
 			role="button"
 			tabindex="-1"
-		/>
+		></div>
 
 		<!-- Modal -->
 		<div

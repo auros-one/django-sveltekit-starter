@@ -18,7 +18,7 @@
 		if (key === null) return;
 		loading = true;
 
-		const { response } = await apiClient.POST('/accounts/signup/verify-email/', {
+		const { response } = await apiClient.POST('/accounts/verify-email/', {
 			body: {
 				key
 			}

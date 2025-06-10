@@ -34,7 +34,7 @@
 								<span
 									class="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary-600"
 									transition:fade={{ duration: 200 }}
-								/>
+								></span>
 							{/if}
 						</a>
 					{/each}
