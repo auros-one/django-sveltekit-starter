@@ -225,7 +225,7 @@
 						>
 							<!-- Backdrop -->
 							<div
-								class="fixed inset-0 bg-black/20 backdrop-blur-sm"
+								class="fixed inset-0"
 								on:click={() => (showUserMenu = false)}
 								on:keydown={() => {}}
 								role="button"
