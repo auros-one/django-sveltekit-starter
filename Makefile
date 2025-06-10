@@ -46,7 +46,7 @@ sync-types:
 	@echo "✅ API types synchronized successfully!"
 
 dev:
-	docker-compose up
+	docker compose up
 
 dev-backend:
 	cd backend && poetry run python manage.py runserver
