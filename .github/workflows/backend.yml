@@ -2,16 +2,6 @@ name: Backend CI/CD
 
 on:
   workflow_call:
-  push:
-    paths:
-      - 'backend/**'
-      - '.github/workflows/backend.yml'
-      - '.pre-commit-config.yaml'
-  pull_request:
-    paths:
-      - 'backend/**'
-      - '.github/workflows/backend.yml'
-      - '.pre-commit-config.yaml'
 
 defaults:
   run:
