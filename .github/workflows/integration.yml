@@ -13,6 +13,11 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    - name: Prepare environment files
+      run: |
+        # Copy .env.example to .env for frontend
+        cp frontend/.env.example frontend/.env
+
     - name: Build backend image with cache
       uses: docker/build-push-action@v5
       with:

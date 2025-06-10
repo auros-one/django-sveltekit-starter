@@ -95,9 +95,8 @@ services:
       - /app/node_modules
     ports:
       - "5173:5173"
-    environment:
-      PUBLIC_BASE_API_URL: http://backend:8000
-      TENANT_DOMAIN: demo.localhost
+    env_file:
+      - ./frontend/.env
     depends_on:
       - backend
 
