@@ -27,6 +27,8 @@ django-sveltekit-starter/
 │   └── static/             # Static assets
 ├── docker-compose.yml      # Development environment
 ├── Makefile                # Common development commands
+├── docs/                   # Project documentation
+│   └── engineering-handbook/ # Engineering practices and standards
 └── .github/                # CI/CD workflows
 ```
 
@@ -224,6 +226,8 @@ See `backend/deploy.md` for detailed deployment instructions.
 
 ## 📚 Documentation
 
+- **docs/**: Comprehensive project documentation
+  - **engineering-handbook/**: Engineering practices, standards, and workflows
 - **backend/README.md**: Backend-specific documentation
 - **frontend/README.md**: Frontend-specific documentation
 

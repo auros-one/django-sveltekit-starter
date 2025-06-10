@@ -1,4 +1,4 @@
-.PHONY: help install dev test format lint clean setup-pre-commit sync-types reset-db fresh-start django-check all
+.PHONY: help install dev test format lint clean setup-pre-commit sync-types reset-db fresh-start django-check all update-handbook
 
 help:
 	@echo "Available commands:"
@@ -14,6 +14,7 @@ help:
 	@echo "  make lint              - Lint all code"
 	@echo "  make django-check      - Run Django system checks"
 	@echo "  make clean             - Clean up generated files"
+	@echo "  make update-handbook   - Update engineering handbook to latest version"
 
 all: format lint test
 	@echo "✅ All checks passed!"
@@ -30,6 +31,8 @@ install:
 	pip install pre-commit
 	@echo "Setting up pre-commit hooks..."
 	pre-commit install --install-hooks
+	@echo "Initializing git submodules..."
+	git submodule update --init --recursive
 
 setup-pre-commit:
 	@echo "Installing pre-commit..."
@@ -126,3 +129,8 @@ django-check:
 	@echo "🔍 Running Django system checks..."
 	cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/django_sveltekit_db poetry run python manage.py check --deploy --fail-level WARNING
 	@echo "✅ Django checks passed!"
+
+update-handbook:
+	@echo "📚 Updating engineering handbook to latest version..."
+	git submodule update --remote docs/engineering-handbook
+	@echo "✅ Engineering handbook updated!"

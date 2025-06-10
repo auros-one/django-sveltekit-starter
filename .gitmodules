@@ -1,0 +1,3 @@
+[submodule "docs/engineering-handbook"]
+	path = docs/engineering-handbook
+	url = git@github.com:auros-one/engineering-handbook.git

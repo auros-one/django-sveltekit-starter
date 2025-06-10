@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Engineering Handbook
+
+This project follows the engineering standards defined in our [Engineering Handbook](./docs/engineering-handbook/).
+Key areas covered:
+- Code standards for Python and TypeScript
+- Development workflows and Git practices
+- Architecture patterns and decisions
+- Testing and security standards
+
+**Always consult the handbook for best practices and standards.**
+
 ## Architecture Overview
 
 This is a Django-SvelteKit monorepo with production-ready infrastructure:
