@@ -8,8 +8,6 @@ default_stages:
   - pre-merge-commit
   - pre-rebase
   - pre-push
-default_language_version:
-  python: python3.11
 repos:
   # General file checks (run on all files)
   - repo: https://github.com/pre-commit/pre-commit-hooks

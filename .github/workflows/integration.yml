@@ -48,7 +48,7 @@ jobs:
         echo "Waiting for backend..."
         timeout 60 bash -c 'until curl -f http://localhost:8000/api/healthcheck/ 2>/dev/null; do sleep 2; done'
         echo "✅ Backend is healthy!"
-        
+
         echo "Waiting for frontend..."
         timeout 60 bash -c 'until curl -f http://localhost:5173/ 2>/dev/null; do sleep 2; done'
         echo "✅ Frontend is healthy!"
@@ -57,13 +57,13 @@ jobs:
       run: |
         # Test API is accessible
         curl -f http://localhost:8000/api/healthcheck/ || exit 1
-        
+
         # Test frontend can reach backend
         docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T frontend curl -f http://backend:8000/api/healthcheck/ || exit 1
-        
+
         # Test database connection
         docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T backend python manage.py check --database default
-        
+
         # Test frontend build with current types
         docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T frontend npm run build
 

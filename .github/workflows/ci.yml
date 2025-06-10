@@ -48,4 +48,4 @@ jobs:
   integration:
     needs: changes
     if: needs.changes.outputs.integration == 'true'
-    uses: ./.github/workflows/integration.yml 
+    uses: ./.github/workflows/integration.yml
