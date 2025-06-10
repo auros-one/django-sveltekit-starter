@@ -17,7 +17,7 @@ cd backend/
 poetry run python manage.py runserver  # Dev server
 poetry run python manage.py migrate    # Run migrations
 poetry run pytest                      # Run tests
-docker-compose up                      # Full stack
+docker compose up                      # Full stack
 ```
 
 ### Frontend (SvelteKit)

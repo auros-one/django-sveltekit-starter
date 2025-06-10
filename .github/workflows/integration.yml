@@ -21,8 +21,8 @@ jobs:
 
     - name: Build and start services
       run: |
-        docker-compose build
-        docker-compose up -d
+        docker compose build
+        docker compose up -d
 
     - name: Wait for backend to be healthy
       run: |
@@ -55,7 +55,7 @@ jobs:
         curl -f http://localhost:5173/ || exit 1
 
         # Test that frontend can reach backend API
-        docker-compose exec -T frontend curl -f http://backend:8000/api/ || exit 1
+        docker compose exec -T frontend curl -f http://backend:8000/api/ || exit 1
 
     - name: Test type synchronization
       run: |
@@ -74,24 +74,24 @@ jobs:
         echo "Running integration tests..."
 
         # Test database connection through backend
-        docker-compose exec -T backend poetry run python manage.py check --database default
+        docker compose exec -T backend poetry run python manage.py check --database default
 
         # Test frontend build with synced types
-        docker-compose exec -T frontend npm run build
+        docker compose exec -T frontend npm run build
 
     - name: Show logs on failure
       if: failure()
       run: |
         echo "=== Backend logs ==="
-        docker-compose logs backend
+        docker compose logs backend
         echo "=== Frontend logs ==="
-        docker-compose logs frontend
+        docker compose logs frontend
         echo "=== Database logs ==="
-        docker-compose logs db
+        docker compose logs db
 
     - name: Stop services
       if: always()
-      run: docker-compose down -v
+      run: docker compose down -v
 
   docker-build:
     runs-on: ubuntu-latest

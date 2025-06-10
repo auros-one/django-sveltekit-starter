@@ -135,7 +135,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    	cd frontend && npm install
 
    dev:
-   	docker-compose up
+   	docker compose up
 
    dev-backend:
    	cd backend && poetry run python manage.py runserver
@@ -379,8 +379,8 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
 
        - name: Build and start services
          run: |
-           docker-compose build
-           docker-compose up -d
+           docker compose build
+           docker compose up -d
 
        - name: Wait for services
          run: |
@@ -395,11 +395,11 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
 
        - name: Show logs on failure
          if: failure()
-         run: docker-compose logs
+         run: docker compose logs
 
        - name: Stop services
          if: always()
-         run: docker-compose down -v
+         run: docker compose down -v
    EOF
 
    git add .github/workflows/integration.yml
