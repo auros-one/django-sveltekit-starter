@@ -6,30 +6,22 @@ on:
       - 'frontend/**'
       - 'backend/**'
       - '.github/workflows/frontend.yml'
-      - 'docker-compose.yml'
-      - '.pre-commit-config.yaml'
   pull_request:
     paths:
       - 'frontend/**'
       - 'backend/**'
       - '.github/workflows/frontend.yml'
-      - 'docker-compose.yml'
-      - '.pre-commit-config.yaml'
 
 defaults:
   run:
     working-directory: frontend
 
 jobs:
-  type-sync:
+  type-check:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'backend/') || contains(join(github.event.commits.*.modified), 'backend/')
-
+    
     steps:
     - uses: actions/checkout@v4
-
-    - name: Setup environment variables
-      run: cp .env.example .env
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -38,10 +30,7 @@ jobs:
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
 
-    - name: Install frontend dependencies
-      run: npm ci
-
-    - name: Set up Python (for Django schema generation)
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
@@ -56,24 +45,29 @@ jobs:
       working-directory: backend
       run: poetry install --no-interaction --no-root
 
+    - name: Install frontend dependencies
+      working-directory: frontend
+      run: npm ci
+
     - name: Sync API types
+      working-directory: frontend
       run: npm run sync-types
       env:
         DJANGO_SETTINGS_MODULE: project.settings
 
     - name: Check if types changed
       run: |
-        if git diff --exit-code src/lib/api/backend-api-schema.d.ts; then
-          echo "Types are up to date"
+        if git diff --exit-code src/lib/api/schema.d.ts; then
+          echo "✅ Types are up to date"
         else
-          echo "Types were updated"
-          git diff src/lib/api/backend-api-schema.d.ts
+          echo "❌ API types are out of sync. Please run 'npm run sync-types' locally and commit the changes."
+          git diff src/lib/api/schema.d.ts
+          exit 1
         fi
 
   test:
     runs-on: ubuntu-latest
-    needs: [type-sync]
-    if: always() && (needs.type-sync.result == 'success' || needs.type-sync.result == 'skipped')
+    needs: [type-check]
 
     steps:
     - uses: actions/checkout@v4
