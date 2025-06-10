@@ -122,7 +122,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    help:
    	@echo "Available commands:"
    	@echo "  make install    - Install all dependencies"
-   	@echo "  make dev        - Start development environment"
+   	@echo "  make run        - Start development environment"
    	@echo "  make test       - Run all tests"
    	@echo "  make format     - Format all code"
    	@echo "  make lint       - Lint all code"
@@ -475,7 +475,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
 
    3. **Start development environment**
       ```bash
-      make dev
+      make run
       ```
 
    4. **Access the applications**
@@ -488,7 +488,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    ```bash
    make help        # Show all available commands
    make install     # Install all dependencies
-   make dev         # Start Docker Compose stack
+   make run         # Start Docker Compose stack
    make test        # Run all tests
    make format      # Format code
    make lint        # Lint code
@@ -541,7 +541,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
    make test
 
    # Try starting development environment
-   make dev
+   make run
    ```
 
 3. Verify Git history is preserved:
@@ -561,7 +561,7 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
 
 - [ ] Both Git histories are preserved
 - [ ] `make install` works
-- [ ] `make dev` starts both services
+- [ ] `make run` starts both services
 - [ ] Frontend can communicate with backend
 - [ ] CI/CD workflows trigger correctly on path changes
 - [ ] README is accurate and helpful

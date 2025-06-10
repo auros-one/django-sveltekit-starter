@@ -55,7 +55,7 @@ django-sveltekit-starter/
 3. **Start development environment**
 
    ```bash
-   make dev
+   make run
    ```
 
 4. **Access the applications**
@@ -81,7 +81,7 @@ make help               # Show all available commands
 make install            # Install all dependencies + pre-commit hooks
 make setup-pre-commit   # Install pre-commit hooks only
 make sync-types         # Sync API types from backend to frontend
-make dev                # Start Docker Compose stack
+make run                # Start Docker Compose stack
 make test               # Run all tests
 make format             # Format code
 make lint               # Lint code
@@ -200,7 +200,7 @@ npm test         # Unit tests (if configured)
 Use the root `docker-compose.yml` for simple development:
 
 ```bash
-make dev  # Starts all services
+make run  # Starts all services
 ```
 
 ### Production

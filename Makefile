@@ -6,7 +6,7 @@ help:
 	@echo "  make install           - Install all dependencies"
 	@echo "  make setup-pre-commit  - Install pre-commit hooks"
 	@echo "  make sync-types        - Sync API types from backend to frontend"
-	@echo "  make dev               - Start development environment"
+	@echo "  make run               - Start development environment"
 	@echo "  make reset-db          - Reset database (WARNING: destroys all data)"
 	@echo "  make fresh-start       - Reset database + setup dev environment"
 	@echo "  make test              - Run all tests (auto-starts PostgreSQL)"
@@ -23,6 +23,9 @@ install:
 	cd backend && poetry install
 	@echo "Installing frontend dependencies..."
 	cd frontend && npm install
+	@echo "Setting up environment files..."
+	cp backend/.env.example backend/.env
+	cp frontend/.env.example frontend/.env
 	@echo "Installing pre-commit..."
 	pip install pre-commit
 	@echo "Setting up pre-commit hooks..."
