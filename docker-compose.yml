@@ -97,6 +97,7 @@ services:
       - "5173:5173"
     environment:
       PUBLIC_BASE_API_URL: http://backend:8000
+      TENANT_DOMAIN: demo.localhost
     depends_on:
       - backend
 
