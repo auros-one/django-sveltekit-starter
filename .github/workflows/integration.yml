@@ -57,7 +57,7 @@ jobs:
         docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T frontend curl -f http://backend:8000/api/healthcheck/ || exit 1
         
         # Test database connection
-        docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T backend poetry run python manage.py check --database default
+        docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T backend python manage.py check --database default
         
         # Test frontend build with current types
         docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T frontend npm run build
