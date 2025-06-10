@@ -1,0 +1,23 @@
+# CI override file - uses pre-built images instead of building
+services:
+  backend:
+    image: django-sveltekit-backend:ci
+    build: !reset  # This prevents building in CI
+
+  celery_worker:
+    image: django-sveltekit-backend:ci
+    build: !reset
+
+  celery_beat:
+    image: django-sveltekit-backend:ci
+    build: !reset
+
+  celery_flower:
+    image: django-sveltekit-backend:ci
+    build: !reset
+
+  frontend:
+    image: django-sveltekit-frontend:ci
+    build: !reset
+    env_file:
+      - ./frontend/.env.example

@@ -1,0 +1,51 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Determine what changed to run workflows conditionally
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      integration: ${{ steps.filter.outputs.integration }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          backend:
+            - 'backend/**'
+            - '.github/workflows/**'
+            - '.pre-commit-config.yaml'
+          frontend:
+            - 'frontend/**'
+            - 'backend/**'
+            - '.github/workflows/**'
+          integration:
+            - 'backend/**'
+            - 'frontend/**'
+            - 'docker-compose.yml'
+            - '.github/workflows/**'
+
+  # Call individual workflows
+  backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    uses: ./.github/workflows/backend.yml
+
+  frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    uses: ./.github/workflows/frontend.yml
+
+  integration:
+    needs: changes
+    if: needs.changes.outputs.integration == 'true'
+    uses: ./.github/workflows/integration.yml

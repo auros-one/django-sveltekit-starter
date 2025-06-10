@@ -1,0 +1,102 @@
+name: Integration Tests
+
+on:
+  workflow_call:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Prepare environment files
+      run: |
+        # Copy .env.example to .env for frontend
+        cp frontend/.env.example frontend/.env
+
+    - name: Build backend image with cache
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        file: ./backend/docker/Dockerfile
+        load: true
+        tags: django-sveltekit-backend:ci
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build frontend image with cache
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        file: ./frontend/docker/Dockerfile
+        load: true
+        tags: django-sveltekit-frontend:ci
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Start services with pre-built images
+      run: |
+        # Start services using the CI override file
+        docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+
+    - name: Wait for services to be healthy
+      run: |
+        echo "Waiting for backend..."
+        timeout 60 bash -c 'until curl -f http://localhost:8000/api/healthcheck/ 2>/dev/null; do sleep 2; done'
+        echo "✅ Backend is healthy!"
+
+        echo "Waiting for frontend..."
+        timeout 60 bash -c 'until curl -f http://localhost:5173/ 2>/dev/null; do sleep 2; done'
+        echo "✅ Frontend is healthy!"
+
+    - name: Run integration checks
+      run: |
+        # Test API is accessible
+        curl -f http://localhost:8000/api/healthcheck/ || exit 1
+
+        # Test frontend can reach backend
+        docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T frontend curl -f http://backend:8000/api/healthcheck/ || exit 1
+
+        # Test database connection
+        docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T backend python manage.py check --database default
+
+        # Test frontend build with current types
+        docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T frontend npm run build
+
+    - name: Show logs on failure
+      if: failure()
+      run: |
+        echo "=== Backend logs ==="
+        docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend --tail=50
+        echo "=== Frontend logs ==="
+        docker compose -f docker-compose.yml -f docker-compose.ci.yml logs frontend --tail=50
+
+    - name: Stop services
+      if: always()
+      run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+
+  docker-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [backend, frontend]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build ${{ matrix.service }} Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./${{ matrix.service }}
+        file: ./${{ matrix.service }}/docker/Dockerfile
+        push: false
+        tags: django-sveltekit-${{ matrix.service }}:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
