@@ -76,7 +76,7 @@ repos:
         args: [--config=backend/pyproject.toml]
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.280
+    rev: v0.7.4
     hooks:
       - id: ruff
         files: ^backend/.*\.py$

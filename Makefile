@@ -82,6 +82,7 @@ lint:
 	cd backend && poetry run pyright .
 	cd backend && poetry run python manage.py check --deploy --fail-level WARNING
 	cd frontend && npm run lint
+	cd frontend && npm run check
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
