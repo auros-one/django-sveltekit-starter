@@ -109,7 +109,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./${{ matrix.service }}
-        dockerfile: ./docker/Dockerfile
+        file: ./${{ matrix.service }}/docker/Dockerfile
         push: false
         tags: django-sveltekit-${{ matrix.service }}:test
         cache-from: type=gha
