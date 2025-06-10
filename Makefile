@@ -48,7 +48,7 @@ sync-types:
 	cd frontend && rm temp-schema.yml
 	@echo "✅ API types synchronized successfully!"
 
-dev:
+run:
 	docker compose up
 
 dev-backend:
