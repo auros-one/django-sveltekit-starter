@@ -12,10 +12,10 @@
 		<div class="px-4 py-16 sm:px-6 lg:px-8">
 			<div class="mx-auto max-w-4xl text-center">
 				<h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-					Django + SvelteKit
+					Django-SvelteKit
 				</h1>
 				<p class="mt-4 text-xl text-gray-600">
-					A modern full-stack template with AI-powered development
+					A modern full-stack template for AI-powered development
 				</p>
 				<div class="mt-8 flex justify-center">
 					<a
