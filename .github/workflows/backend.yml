@@ -105,4 +105,4 @@ jobs:
     - name: Run pre-commit on backend files
       uses: pre-commit/action@v3.0.0
       with:
-        extra_args: --files backend/**/* --skip sync-types
+        extra_args: --files backend/**/* --skip-hook sync-types
