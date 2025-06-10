@@ -201,7 +201,9 @@ You'll be merging two repositories into a single monorepo called `django-sveltek
          DEBUG: "True"
 
      frontend:
-       build: ./frontend
+       build:
+         context: ./frontend
+         dockerfile: docker/Dockerfile
        command: npm run dev -- --host
        volumes:
          - ./frontend:/app

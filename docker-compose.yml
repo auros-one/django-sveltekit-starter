@@ -85,7 +85,9 @@ services:
       DEBUG: "1"
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: docker/Dockerfile
     restart: unless-stopped
     command: npm run dev -- --host
     volumes:
