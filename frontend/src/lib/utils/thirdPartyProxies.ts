@@ -50,18 +50,6 @@ export function createPrefixProxy(prefix: string, targetDomain: string): Request
  */
 export const ThirdPartyProxies = {
 	/**
-	 * Creates a Mixpanel proxy handler
-	 * Route: /mixpanel/* -> https://api.mixpanel.com/*
-	 */
-	mixpanel: () => createPrefixProxy('/mixpanel', 'https://api.mixpanel.com'),
-
-	/**
-	 * Creates a Google Analytics proxy handler
-	 * Route: /ga/* -> https://www.google-analytics.com/*
-	 */
-	googleAnalytics: () => createPrefixProxy('/ga', 'https://www.google-analytics.com'),
-
-	/**
 	 * Creates a PostHog analytics proxy handler
 	 * Route: /posthog/* -> https://app.posthog.com/*
 	 */
@@ -78,52 +66,6 @@ export const ThirdPartyProxies = {
 				const dsnUrl = new URL(dsn);
 				const projectId = dsnUrl.pathname.replace(/^\/|\/$/g, '');
 				return `https://sentry.io/api/${projectId}/envelope/`;
-			}
-		}),
-
-	/**
-	 * Creates a Plausible Analytics proxy handler with domain injection
-	 */
-	plausible: (domain: string) =>
-		createProxyHandler({
-			getDestinationUrl: (url) => {
-				if (url.pathname.includes('/api/event')) {
-					return 'https://plausible.io/api/event';
-				}
-				return `https://plausible.io/js/script.js`;
-			},
-			transformRequest: async (request) => {
-				// Add the domain to Plausible events
-				if (request.method === 'POST') {
-					const body = await request.text();
-					const data = JSON.parse(body);
-					data.domain = domain;
-					return new Request(request, {
-						body: JSON.stringify(data)
-					});
-				}
-				return request;
-			}
-		}),
-
-	/**
-	 * Creates a Stripe webhook proxy handler with signature verification
-	 * Note: This is just an example - you'd need to implement actual signature verification
-	 */
-	stripeWebhooks: (_endpointSecret: string) =>
-		createProxyHandler({
-			getDestinationUrl: (_url) => {
-				// This would forward to your internal webhook handler
-				return 'http://localhost:8000/webhooks/stripe';
-			},
-			transformRequest: async (request) => {
-				// Verify Stripe signature before forwarding
-				const signature = request.headers.get('stripe-signature');
-				if (!signature) {
-					throw new Error('Missing Stripe signature');
-				}
-				// TODO: Implement actual signature verification using _endpointSecret
-				return request;
 			}
 		})
 };
